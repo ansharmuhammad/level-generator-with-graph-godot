@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "Rule",
+"language": "GDScript",
+"path": "res://generator/rules/Rule.gd"
+}, {
+"base": "Node",
 "class": "TYPE_EDGE",
 "language": "GDScript",
 "path": "res://generator/graph/edge/TYPE_EDGE.gd"
@@ -20,6 +25,7 @@ _global_script_classes=[ {
 "path": "res://generator/graph/vertex/TYPE_VERTEX.gd"
 } ]
 _global_script_class_icons={
+"Rule": "",
 "TYPE_EDGE": "",
 "TYPE_VERTEX": ""
 }
@@ -27,7 +33,12 @@ _global_script_class_icons={
 [application]
 
 config/name="level generator graph"
+run/low_processor_mode=true
 config/icon="res://icon.png"
+
+[global]
+
+os=false
 
 [physics]
 
