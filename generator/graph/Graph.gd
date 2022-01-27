@@ -131,6 +131,12 @@ func get_sources(typeEdge: String = "") -> Array:
 			 listVertex.append(vertex)
 	return listVertex
 
+func invert_edge(edge: Node):
+	var tempFrom: String = edge.from
+	var tempTo: String = edge.to
+	edge.from = tempTo
+	edge.to = tempFrom
+
 func get_variation():
 	var Ed: float = 0
 	var edges: Array = []
