@@ -4,6 +4,10 @@ export onready var population: int = 3
 
 const Graph = preload("res://generator/graph/Graph.tscn")
 
+onready var placeGraph: Node = null
+
+onready var result: Node = null
+
 func _ready():
 	running()
 
@@ -30,7 +34,14 @@ func _generate(_population: int) -> Node:
 		graph.get_exploration()
 		graph.get_shortest_path()
 	#TODO: CHOOSE BEST GRAPH
-	return $Graphs.get_child(0)
+	var bestGraph: Node = null
+	for graph in $Graphs.get_children():
+		graph.get_fitness()
+		if bestGraph == null:
+			bestGraph = graph
+		elif bestGraph.fitness < graph.fitness:
+			bestGraph = graph
+	return bestGraph
 
 func _transform(graph: Node):
 	#create place rule
@@ -49,8 +60,6 @@ func _transform(graph: Node):
 			3: _add_lock_after_place(graph)
 	
 	#transformative rule
-	
-	return graph
 
 func _create_entrance(graph: Node, vertex: Node):
 	#create entrance
@@ -98,7 +107,7 @@ func _add_element_before_place(graph: Node):
 		for vertex2 in graph.get_outgoing_vertex(vertex1, TYPE_EDGE.PATH):
 			if graph.is_place(vertex1) and graph.is_element(vertex2):
 				matchVertices.append([vertex1, vertex2])
-	
+	# example
 	if !matchVertices.empty():
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
@@ -107,9 +116,19 @@ func _add_element_before_place(graph: Node):
 			if edge.from == choosenMatch[0].name and edge.to == choosenMatch[1].name:
 				edge.queue_free()
 			elif edge.from == choosenMatch[1].name:
-				edge.from = choosenMatch[0].name
+				var theVertex: Node = graph.get_vertex_by_name(edge.to)
+				if graph.is_place(theVertex):
+					edge.from = choosenMatch[0].name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(choosenMatch[0], theVertex)
 			elif edge.to == choosenMatch[1].name:
-				edge.to = choosenMatch[0].name
+				var theVertex: Node = graph.get_vertex_by_name(edge.from)
+				if graph.is_place(theVertex):
+					edge.to = choosenMatch[0].name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(theVertex, choosenMatch[0])
 		print("execute rule addElementBeforePlace at" + str(choosenMatch[0]) + str(choosenMatch[1]))
 
 func _add_lock_after_place(graph: Node):
@@ -127,9 +146,19 @@ func _add_lock_after_place(graph: Node):
 			if edge.from == choosenMatch[0].name and edge.to == choosenMatch[1].name:
 				edge.queue_free()
 			elif edge.from == choosenMatch[0].name:
-				edge.from = choosenMatch[1].name
+				var theVertex: Node = graph.get_vertex_by_name(edge.to)
+				if graph.is_place(theVertex):
+					edge.from = choosenMatch[1].name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(choosenMatch[1], theVertex)
 			elif edge.to == choosenMatch[0].name:
-				edge.to = choosenMatch[1].name
+				var theVertex: Node = graph.get_vertex_by_name(edge.from)
+				if graph.is_place(theVertex):
+					edge.to = choosenMatch[1].name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(theVertex, choosenMatch[1])
 		print("execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]))
 
 func _place_key_element(graph: Node):
@@ -146,9 +175,20 @@ func _place_key_element(graph: Node):
 		choosenMatch[0].subOf = newVertex
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0].name:
-				edge.from = newVertex.name
+				var theVertex: Node = graph.get_vertex_by_name(edge.to)
+				if graph.is_place(theVertex):
+					edge.from = newVertex.name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(newVertex, theVertex)
 			elif edge.to == choosenMatch[0].name:
-				edge.to = newVertex.name
+				var theVertex: Node = graph.get_vertex_by_name(edge.from)
+				if graph.is_place(theVertex):
+					edge.to = newVertex.name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(theVertex, newVertex)
+				
 		print("execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]))
 
 func _add_element_after_place(graph: Node):
@@ -167,9 +207,19 @@ func _add_element_after_place(graph: Node):
 			if edge.from == choosenMatch[1].name and edge.to == choosenMatch[2].name:
 				edge.queue_free()
 			if edge.from == choosenMatch[1].name:
-				edge.from = choosenMatch[2].name
+				var theVertex: Node = graph.get_vertex_by_name(edge.to)
+				if graph.is_place(theVertex):
+					edge.from = choosenMatch[2].name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(choosenMatch[2], theVertex)
 			elif edge.to == choosenMatch[1].name:
-				edge.to = choosenMatch[2].name
+				var theVertex: Node = graph.get_vertex_by_name(edge.from)
+				if graph.is_place(theVertex):
+					edge.to = choosenMatch[2].name
+				else:
+					edge.type = TYPE_EDGE.ELEMENT
+					graph.connect_vertex(theVertex, choosenMatch[2])
 		print("execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]) + str(choosenMatch[2]))
 
 func _outside_element_exist(graph: Node) -> bool:

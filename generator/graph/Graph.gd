@@ -1,18 +1,37 @@
 extends Node
 
+##
+## Graph Scene.
+##
+## @desc:
+##     Scene object consisting of vertices and edges
+##
+
 const Vertex = preload("res://generator/graph/vertex/Vertex.tscn")
 const Edge = preload("res://generator/graph/edge/Edge.tscn")
 
+## objec function value
 onready var variation: float = 0.0
-onready var exploration: int = 0
+onready var exploration: int = 0 #???
 onready var shortesPathLength: int = 0
+onready var standardShortPath: float = 0.0
+onready var weightDuration: float = 0.0
+onready var optionReplay: float = 0.0
 
+# (1) generic method for a graph ===============================================
+
+## fitness function value
+onready var fitness: float = 0.0
+
+## get all vertices in graph
 func get_vertices() -> Array:
 	return $Vertices.get_children()
 
+## get all edges in graph
 func get_edges() -> Array:
 	return $Edges.get_children()
 
+## add vertex to graph
 func add_vertex(name: String = "", type: String = "") -> Node:
 	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name
 	var _type = TYPE_VERTEX.TASK if type == "" else type
@@ -21,21 +40,25 @@ func add_vertex(name: String = "", type: String = "") -> Node:
 	$Vertices.add_child(vertex)
 	return vertex
 
+## connecting between two vertex in graph with an edge
 func connect_vertex(from: Node, to: Node, type: String = ""):
 	var edge = Edge.instance()
 	var _type = type if type != "" else TYPE_EDGE.PATH
 	edge.init(from.name, to.name, _type)
 	$Edges.add_child(edge)
 
+## connecting between two vertex in graph with an edge with parameter name of those vertex
 func connect_vertex_by_name(from: String, to: String, type: String) -> void:
 	var edge = Edge.instance()
 	var _type = type if type != "" else TYPE_EDGE.PATH
 	edge.init(from, to, _type)
 	$Edges.add_child(edge)
 
+## get vertex object by its name
 func get_vertex_by_name(vertexName: String) -> Node:
 	return $Vertices.get_node(vertexName)
 
+## get list of incoming edges on a vertex
 func get_incoming_edges(vertex: Node, type: String = "") -> Array:
 	var listEdge: Array = []
 	for edge in $Edges.get_children():
@@ -46,6 +69,7 @@ func get_incoming_edges(vertex: Node, type: String = "") -> Array:
 				listEdge.append(edge)
 	return listEdge
 
+## get list of outgoing edges on a vertex
 func get_outgoing_edges(vertex: Node, type: String = "") -> Array:
 	var listEdge: Array = []
 	for edge in $Edges.get_children():
@@ -56,6 +80,7 @@ func get_outgoing_edges(vertex: Node, type: String = "") -> Array:
 				listEdge.append(edge)
 	return listEdge
 
+## get list edges on a vertex
 func get_edges_of(vertex: Node, type: String = "") -> Array:
 	var listEdge: Array = []
 	for edge in $Edges.get_children():
@@ -66,15 +91,19 @@ func get_edges_of(vertex: Node, type: String = "") -> Array:
 				listEdge.append(edge)
 	return listEdge
 
+## get sum of incoming edges on a vertex
 func get_indegree(vertex: Node, typeEdge: String = "") -> int:
 	return get_incoming_edges(vertex, typeEdge).size()
 
+## get sum of outgoing edges on a vertex
 func get_outdegree(vertex: Node, typeEdge: String = "") -> int:
 	return get_outgoing_edges(vertex, typeEdge).size()
 
+## get sum of edges on a vertex
 func get_degree_of(vertex: Node, typeEdge: String = "") -> int:
 	return get_edges_of(vertex, typeEdge).size()
 
+## get list incoming edges on a vertex
 func get_incoming_vertex(vertex: Node, typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	var edges: Array = get_incoming_edges(vertex, typeEdge)
@@ -84,6 +113,7 @@ func get_incoming_vertex(vertex: Node, typeEdge: String = "") -> Array:
 			listVertex.append(fromVertex)
 	return listVertex
 
+## get list outgoing edges on a vertex
 func get_outgoing_vertex(vertex: Node, typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	var edges: Array = get_outgoing_edges(vertex, typeEdge)
@@ -93,6 +123,7 @@ func get_outgoing_vertex(vertex: Node, typeEdge: String = "") -> Array:
 			listVertex.append(toVertex)
 	return listVertex
 
+## get list another vertex which connected on a vertex
 func get_neighbors(vertex: Node, typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	var edges: Array
@@ -110,6 +141,7 @@ func get_neighbors(vertex: Node, typeEdge: String = "") -> Array:
 			listVertex.append(toVertex)
 	return listVertex
 
+## get list of vertex which didn't connected with any other vertex
 func get_isolated(typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	for vertex in $Vertices.get_children():
@@ -117,6 +149,7 @@ func get_isolated(typeEdge: String = "") -> Array:
 			 listVertex.append(vertex)
 	return listVertex
 
+## get list of vertex which only have incoming edges
 func get_sinks(typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	for vertex in $Vertices.get_children():
@@ -124,6 +157,7 @@ func get_sinks(typeEdge: String = "") -> Array:
 			 listVertex.append(vertex)
 	return listVertex
 
+## get list of vertex which only have outgoing edges
 func get_sources(typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	for vertex in $Vertices.get_children():
@@ -131,11 +165,16 @@ func get_sources(typeEdge: String = "") -> Array:
 			 listVertex.append(vertex)
 	return listVertex
 
+## invert value of "from" and "to" on a edge
 func invert_edge(edge: Node):
 	var tempFrom: String = edge.from
 	var tempTo: String = edge.to
 	edge.from = tempTo
 	edge.to = tempFrom
+
+# (1) end ======================================================================
+
+# (2) methode for calculate fittness function ==================================
 
 func get_variation():
 	var Ed: float = 0
@@ -153,9 +192,27 @@ func get_variation():
 	variation = fe
 	return variation
 
-func get_exploration():
+func get_exploration(): #???
 	exploration = $Vertices.get_child_count()
 	return exploration
+
+func get_weight_duration() -> float:
+	var preferred_value = 2
+	var sumWeight = 0
+	var edges: Array = get_edges()
+	for edge in edges:
+		sumWeight += edge.weight
+	var result =  abs(sumWeight - (edges.size() * preferred_value)) / edges.size()
+	weightDuration = 1 - result
+	return weightDuration
+
+func get_option_replay() -> float:
+	var sum_branched_vertex = 0
+	var vertices: Array = get_vertices()
+	for vertex in vertices:
+		if get_outdegree(vertex) > 1 : sum_branched_vertex += 1
+	var result = 1 -  (sum_branched_vertex / vertices.size())
+	return optionReplay
 
 func get_shortest_path() -> int:
 	var start: Node = null
@@ -174,6 +231,15 @@ func get_shortest_path() -> int:
 	var shortesPath = _reconstruc_path(start, goal, prev)
 	shortesPathLength = shortesPath.size()
 	return shortesPathLength
+
+func get_standard_short_path() -> float:
+	var preferred_value = 30
+	var shortPathLength = get_shortest_path()
+	var vertices = get_vertices()
+	var shortPathPercentage = (shortPathLength / vertices.size()) * 100
+	var result = 1 - (abs(preferred_value -shortPathPercentage)/preferred_value)
+	standardShortPath = result
+	return result
 
 func _solve_path(startVertex: Node) -> Dictionary:
 	var queue: Array = []
@@ -207,6 +273,19 @@ func _reconstruc_path(startVertex: Node, goalVertex: Node, prevDict: Dictionary)
 		return path
 	return []
 
+func get_fitness() -> float:
+	var variation = get_variation()
+	var weighDuration = get_weight_duration()
+	var optionReplay = get_option_replay()
+	var standardShortPath = get_standard_short_path()
+	
+	var result = (variation + weighDuration + optionReplay + standardShortPath)/4
+	
+	fitness = result
+	return fitness
+
+# (2) end ======================================================================
+
 func is_element(vertex: Node) -> bool:
 	var element: Array = [
 		TYPE_VERTEX.KEY,
@@ -230,3 +309,16 @@ func _to_string() -> String:
 	for edge in $Edges.get_children():
 		output += " " + str(edge) + "\n"
 	return output
+
+func get_adjacent_list(onlyPath: bool = true, typeEdge: String = "") -> Dictionary:
+	var adjacentList: Dictionary = {}
+	for vertex in get_vertices():
+		var listNeihgbor: Array = []
+		for neighbor in get_neighbors(vertex, typeEdge):
+			listNeihgbor.append(neighbor.name)
+		adjacentList[vertex.name] = listNeihgbor
+	
+	for key in adjacentList.keys():
+		if adjacentList[key] == null:
+			adjacentList.erase(key)
+	return adjacentList

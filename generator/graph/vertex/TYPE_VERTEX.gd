@@ -1,5 +1,13 @@
-class_name TYPE_VERTEX
 extends Node
+
+class_name TYPE_VERTEX
+
+##
+## Type Vertex
+##
+## @desc:
+##     class which contain types of vertex
+##
 
 const INIT: String = "INIT"
 const START: String = "START"

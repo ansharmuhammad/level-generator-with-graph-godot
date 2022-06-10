@@ -7,6 +7,7 @@ func _condition(graph: Node, edge: Node) -> bool:
 	return false
 
 func _generate(graph: Node, edge: Node):
+	print("execute rule init1 at" + str(edge))
 	var vertex1 = graph.get_vertex_by_name(edge.from)
 	vertex1.type = TYPE_VERTEX.START
 	
@@ -18,5 +19,3 @@ func _generate(graph: Node, edge: Node):
 	graph.connect_vertex(vertex2, vertex3)
 	graph.connect_vertex(vertex3, vertex4)
 	graph.connect_vertex(vertex4, vertex1)
-	
-	print("execute rule init1 at" + str(edge))

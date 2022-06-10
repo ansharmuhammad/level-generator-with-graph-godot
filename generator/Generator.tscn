@@ -21,9 +21,6 @@
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Recipe" type="Node" parent="."]
 
@@ -44,6 +41,7 @@ script = ExtResource( 5 )
 [node name="RuleExtend3" parent="Recipe/StepExtend" instance=ExtResource( 8 )]
 
 [node name="StepSecret" parent="Recipe" instance=ExtResource( 2 )]
+repeat = 3
 
 [node name="RuleSecret" parent="Recipe/StepSecret" instance=ExtResource( 9 )]
 
@@ -53,7 +51,7 @@ repeat = 3
 [node name="RuleObstacle" parent="Recipe/StepObstacle" instance=ExtResource( 13 )]
 
 [node name="StepReward" parent="Recipe" instance=ExtResource( 2 )]
-repeat = 2
+repeat = 3
 
 [node name="RuleReward" parent="Recipe/StepReward" instance=ExtResource( 10 )]
 
