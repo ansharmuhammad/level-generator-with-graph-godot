@@ -3,6 +3,7 @@ extends Control
 export onready var population: int = 3
 
 const Graph = preload("res://generator/graph/Graph.tscn")
+const Tester = preload("res://generator/tester/Tester.cs")
 
 onready var placeGraph: Node = null
 
@@ -18,6 +19,8 @@ func running():
 	$Result.add_child(result)
 	_transform(result)
 	$Drawer.to_dot(result)
+	var faces = $Tester.GetFaces(result)
+	print(faces)
 
 func _generate(_population: int) -> Node:
 	for n in range(_population):
@@ -41,9 +44,11 @@ func _generate(_population: int) -> Node:
 			bestGraph = graph
 		elif bestGraph.fitness < graph.fitness:
 			bestGraph = graph
+	
 	return bestGraph
 
 func _transform(graph: Node):
+	$Drawer.to_dot(graph)
 	#create place rule
 	for vertex in graph.get_vertices():
 		_create_entrance(graph, vertex)
@@ -72,8 +77,9 @@ func _create_entrance(graph: Node, vertex: Node):
 				edge.from = newVertex.name
 			elif edge.to == vertex.name:
 				edge.to = newVertex.name
-		print("execute rule createEntrance at" + str(vertex))
-		print("new "+str(newVertex))
+		var msg = "execute rule createEntrance at " + str(vertex) +" new "+str(newVertex)
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _create_goal(graph: Node, vertex: Node):
 	#create goal
@@ -85,8 +91,9 @@ func _create_goal(graph: Node, vertex: Node):
 				edge.from = newVertex.name
 			elif edge.to == vertex.name:
 				edge.to = newVertex.name
-		print("execute rule createGoal at" + str(vertex))
-		print("new "+str(newVertex))
+		var msg = "execute rule createGoal at" + str(vertex) +" new "+str(newVertex)
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _create_secret(graph: Node, vertex: Node):
 	#create secret
@@ -98,8 +105,9 @@ func _create_secret(graph: Node, vertex: Node):
 				edge.from = newVertex.name
 			elif edge.to == vertex.name:
 				edge.to = newVertex.name
-		print("execute rule createSecret at" + str(vertex))
-		print("new "+str(newVertex))
+		var msg = "execute rule createSecret at" + str(vertex) +" new "+str(newVertex)
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _add_element_before_place(graph: Node):
 	var matchVertices: Array = []
@@ -129,7 +137,9 @@ func _add_element_before_place(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[0])
-		print("execute rule addElementBeforePlace at" + str(choosenMatch[0]) + str(choosenMatch[1]))
+		var msg = "execute rule addElementBeforePlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _add_lock_after_place(graph: Node):
 	var matchVertices: Array = []
@@ -159,7 +169,9 @@ func _add_lock_after_place(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[1])
-		print("execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]))
+		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _place_key_element(graph: Node):
 	var matchVertices: Array = []
@@ -188,8 +200,9 @@ func _place_key_element(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, newVertex)
-				
-		print("execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]))
+		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _add_element_after_place(graph: Node):
 	var matchVertices: Array = []
@@ -220,7 +233,9 @@ func _add_element_after_place(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[2])
-		print("execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]) + str(choosenMatch[2]))
+		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]) + str(choosenMatch[2])
+		print(msg)
+		$Drawer.to_dot(graph, msg)
 
 func _outside_element_exist(graph: Node) -> bool:
 	for vertex in graph.get_vertices():

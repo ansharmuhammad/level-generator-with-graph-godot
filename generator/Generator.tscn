@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://generator/Generator.gd" type="Script" id=1]
 [ext_resource path="res://generator/step/Step.tscn" type="PackedScene" id=2]
@@ -16,6 +16,7 @@
 [ext_resource path="res://generator/rules/RuleKL2.tscn" type="PackedScene" id=14]
 [ext_resource path="res://generator/rules/RuleKL3.tscn" type="PackedScene" id=15]
 [ext_resource path="res://generator/drawer/Drawer.tscn" type="PackedScene" id=16]
+[ext_resource path="res://generator/tester/Tester.tscn" type="PackedScene" id=17]
 
 [node name="Generator" type="Control"]
 anchor_right = 1.0
@@ -71,3 +72,5 @@ repeat = 3
 [node name="Drawer" parent="." instance=ExtResource( 16 )]
 
 [node name="Result" type="Node" parent="."]
+
+[node name="Tester" parent="." instance=ExtResource( 17 )]
