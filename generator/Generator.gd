@@ -145,7 +145,7 @@ func _add_lock_after_place(graph: Node):
 	var matchVertices: Array = []
 	for vertex1 in graph.get_vertices():
 		for vertex2 in graph.get_outgoing_vertex(vertex1, TYPE_EDGE.PATH):
-			if vertex1.type == TYPE_EDGE.KEY_LOCK and graph.is_place(vertex2):
+			if vertex1.type == TYPE_VERTEX.LOCK and graph.is_place(vertex2):
 				matchVertices.append([vertex1, vertex2])
 	
 	if matchVertices.size() > 0:

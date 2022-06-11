@@ -53,8 +53,7 @@ public class Tester : Node
     public Godot.Collections.Array GetFaces(Godot.Object graph)
     {
         CreateCgraph(graph);
-        GD.Print("is planar = " + tester.IsPlanar(cgraph, out var embedding));
-        // GD.Print()
+        GD.Print("is planar = " + tester.IsPlanar(cgraph));
         tester.TryGetPlanarFaces(cgraph, out var faces);
         List<List<string>> resultFace = faces.Faces;
 

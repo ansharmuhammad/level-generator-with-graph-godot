@@ -32,6 +32,8 @@ func to_dot(graph: Node, label: String = ""):
 			file.store_line('"'+vertex_dot(vertex)+'"' + " [peripheries=2]")
 		if vertex.type == TYPE_VERTEX.GOAL and vertex.subOf == null:
 			file.store_line('"'+vertex_dot(vertex)+'"' + " [peripheries=2]")
+		if vertex.type == TYPE_VERTEX.ENTRANCE and vertex.subOf == null:
+			file.store_line('"'+vertex_dot(vertex)+'"' + " [peripheries=2]")
 		if vertex.type == TYPE_VERTEX.REWARD and vertex.subOf == null:
 			file.store_line('"'+vertex_dot(vertex)+'"' + " [fillcolor=6]")
 		if vertex.type == TYPE_VERTEX.OBSTACLE and vertex.subOf == null:
