@@ -1,7 +1,9 @@
 extends Rule
 
 func _condition(graph: Node, edge: Node) -> bool:
-	if edge.to == TYPE_VERTEX.GOAL:
+	var from = graph.get_vertex_by_name(edge.from)
+	var to = graph.get_vertex_by_name(edge.to)
+	if graph.is_place(from) and to.type == TYPE_VERTEX.GOAL:
 		return true
 	return false
 

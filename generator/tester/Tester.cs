@@ -22,11 +22,6 @@ public class Tester : Node
 
     public void CreateCgraph(Godot.Object graph)
     {
-        // cgraph.AddEdge("a","b");
-        // cgraph.AddEdge("b","c");
-        // cgraph.AddEdge("c","d");
-        // cgraph.AddEdge("d","a");
-        
         Godot.Collections.Array vertices = (Godot.Collections.Array)graph.Call("get_vertices");
 
         foreach (Godot.Node vertex in vertices)
@@ -53,7 +48,7 @@ public class Tester : Node
     public Godot.Collections.Array GetFaces(Godot.Object graph)
     {
         CreateCgraph(graph);
-        GD.Print("is planar = " + tester.IsPlanar(cgraph));
+        GD.Print("is planar = " + tester.IsPlanar(cgraph, out var embedding));
         tester.TryGetPlanarFaces(cgraph, out var faces);
         List<List<string>> resultFace = faces.Faces;
 
@@ -71,11 +66,4 @@ public class Tester : Node
         return listFaces;
     }
 
-    
-
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
-//  public override void _Process(float delta)
-//  {
-//      
-//  }
 }
