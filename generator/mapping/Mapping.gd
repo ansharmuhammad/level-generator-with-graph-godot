@@ -131,6 +131,7 @@ func _execute():
 	print("pathConnector = ", pathConnector)
 #	pathConnector.append_array([Vector2(5,5),line.position])
 	line.position = line.position + halfTileSize
+	placeCell(pathConnector, unplaceVertex)
 	for i in range(pathConnector.size()):
 		pathConnector[i] = map_to_world(pathConnector[i])
 	line.points = pathConnector
@@ -222,6 +223,17 @@ func getStraightPath(point1: Vector2, point2: Vector2) -> Array:
 			result.append(point1)
 	return result
 
+func placeCell(path: Array, unplaceVertex: Array):
+	print("path.size() ",path.size())
+	print("unplaceVertex.size() ", unplaceVertex.size())
+	if path.size() < unplaceVertex.size():
+		return false
+	for i in range(path.size()):
+		var vertex = unplaceVertex if i < (unplaceVertex.size()-1) else unplaceVertex[-1]
+		var point = path[i]
+		set_cell(point.x, point.y, room)
+		print("placing at ",Vector2(point.x,point.y))
+		posCells[vect2str(Vector2(point.x,point.y))] = vertex
 #func _get_path(start, end):
 #	path = astar.get_point_path(id(start), id(end))
 #	var linePath = []
