@@ -6,7 +6,7 @@ func _condition(graph: Node, edge: Node) -> bool:
 	return false
 
 func _generate(graph: Node, edge: Node):
-	print("execute rule Extend3 at" + str(edge))
+	#("execute rule Extend3 at" + str(edge))
 	var vertex1 = graph.get_vertex_by_name(edge.from)
 	var vertex2 = graph.get_vertex_by_name(edge.to)
 	var vertex3 = graph.add_vertex()

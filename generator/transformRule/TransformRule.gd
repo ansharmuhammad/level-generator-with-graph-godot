@@ -33,7 +33,7 @@ func _create_entrance(graph: Node, vertex: Node):
 			elif edge.to == vertex.name:
 				edge.to = newVertex.name
 		var msg = "execute rule createEntrance at " + str(vertex) +" new "+str(newVertex)
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _create_goal(graph: Node, vertex: Node):
@@ -47,7 +47,7 @@ func _create_goal(graph: Node, vertex: Node):
 			elif edge.to == vertex.name:
 				edge.to = newVertex.name
 		var msg = "execute rule createGoal at" + str(vertex) +" new "+str(newVertex)
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _create_secret(graph: Node, vertex: Node):
@@ -61,7 +61,7 @@ func _create_secret(graph: Node, vertex: Node):
 			elif edge.to == vertex.name:
 				edge.to = newVertex.name
 		var msg = "execute rule createSecret at" + str(vertex) +" new "+str(newVertex)
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _add_element_before_place(graph: Node):
@@ -93,7 +93,7 @@ func _add_element_before_place(graph: Node):
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[0])
 		var msg = "execute rule addElementBeforePlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _add_lock_after_place(graph: Node):
@@ -125,7 +125,7 @@ func _add_lock_after_place(graph: Node):
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[1])
 		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _place_key_element(graph: Node):
@@ -156,7 +156,7 @@ func _place_key_element(graph: Node):
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, newVertex)
 		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _add_element_after_place(graph: Node):
@@ -189,7 +189,7 @@ func _add_element_after_place(graph: Node):
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[2])
 		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]) + str(choosenMatch[2])
-		print(msg)
+		#(msg)
 		Drawer.to_dot(graph, msg)
 
 func _outside_element_exist(graph: Node) -> bool:

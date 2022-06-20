@@ -15,4 +15,4 @@ func _generate(graph: Node, edge: Node):
 	graph.connect_vertex(vertex4, vertex3)
 	graph.connect_vertex(vertex3, vertex2)
 	
-	print("execute rule Extend2 at" + str(edge))
+	#("execute rule Extend2 at" + str(edge))

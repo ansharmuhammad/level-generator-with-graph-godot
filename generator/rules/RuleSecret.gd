@@ -23,4 +23,4 @@ func _generate(graph: Node, edge: Node):
 	
 	graph.connect_vertex(vertex1, vertex2)
 	
-	print("execute rule Secret at" + str(edge) + "detail : " + vertex1.name)
+	#("execute rule Secret at" + str(edge) + "detail : " + vertex1.name)

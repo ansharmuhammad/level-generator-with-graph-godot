@@ -46,15 +46,15 @@ func _generate(_population: int) -> Node:
 	var bestGraph: Node = null
 	var logidx = 0
 	for graph in Graphs.get_children():
-		print(logidx)
+		#(logidx)
 		logidx += 1
 		graph.get_fitness()
 		if bestGraph == null:
 			bestGraph = graph
-			print("best ", logidx)
+			#("best ", logidx)
 		elif bestGraph.fitness < graph.fitness:
 			bestGraph = graph
-			print("best ", logidx)
+			#("best ", logidx)
 	
 	return bestGraph
 
