@@ -1,6 +1,6 @@
 extends TileMap
 
-onready var line = $Line2D
+#onready var line = $Line2D
 
 var astar  = AStar2D.new()
 var usedCell = get_used_cells()
@@ -24,7 +24,8 @@ var step: int = 0
 var faces: Array
 
 func _ready():
-	line.position = line.position + halfTileSize
+	pass
+#	line.position = line.position + halfTileSize
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_accept"):
@@ -79,9 +80,9 @@ func _execute():
 	var endVerticesPos: Array = getAllPosfromvalue(posCells, endVertex)
 	print("endVerticesPos = ",endVerticesPos)
 	var startVertexSpaceAvail: Array = getSpacePosFromVertices(startVerticesxPos)
-	#("startVertexSpaceAvail = ",startVertexSpaceAvail)
+	print("startVertexSpaceAvail = ",startVertexSpaceAvail)
 	var endVertexpSaceAvail: Array = getSpacePosFromVertices(endVerticesPos)
-	#("endVertexpSaceAvail = ",endVertexpSaceAvail)
+	print("endVertexpSaceAvail = ",endVertexpSaceAvail)
 	
 	#get shortes distance from combination start and end point available
 	var shortestDist = 1000
@@ -116,6 +117,13 @@ func _execute():
 	placeCell(pathConnector, unplaceVertex)
 	for i in range(pathConnector.size()):
 		pathConnector[i] = map_to_world(pathConnector[i])
+	
+	var Line2d = Line2D
+	var line = Line2d.new()
+	add_child(line)
+	line.position = Vector2.ZERO + halfTileSize
+	line.width = 5
+	line.set_default_color(Color( randf(), randf(), randf(), 0.6 ))
 	line.points = pathConnector
 	
 	faces.erase(exploreFace)
