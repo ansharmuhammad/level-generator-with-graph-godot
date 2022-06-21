@@ -43,6 +43,14 @@ func _execute():
 	#update executed face
 	_update_executed_face(visitedVertices)
 	
+	var deadendsVertices: Array = []
+	_get_deadends(executedFace, deadendsVertices)
+	
+	print("==========================================")
+	print("executedFace = ", executedFace)
+	print("deadendsVertices = ", deadendsVertices)
+	print("==========================================")
+	
 	#get unvisited vertices on face
 	var unvisitedVerticesonFace: Array = _get_unvisited_vertices_on_face(visitedVertices)
 	print("unvisitedVerticesonFace = ", unvisitedVerticesonFace)
@@ -125,6 +133,27 @@ func _update_executed_face(visitedVertices: Array):
 				executedFace = face
 				print("executedFace = ", executedFace)
 				return
+
+func _get_deadends(face: Array, outArray: Array):
+	for i in range(face.size()):
+		var nextIdx: int = i + 1 if (i + 1) < face.size() else 0
+		if face[i-1] == face[nextIdx]:
+			var connect = face[i-1]
+			var deadendvertex = face[i]
+			var deadend: Dictionary = {
+				"connect":  connect,
+				"deadend": deadendvertex
+			}
+			
+			face.remove(i-1)
+			face.erase(deadendvertex)
+			
+			print("ada deadend", deadend)
+			
+			outArray.push_front(deadend)
+			_get_deadends(face, outArray)
+			
+			return
 
 func _get_unvisited_vertices_on_face(visitedVertices: Array) -> Array:
 	print("executedFace = ", executedFace)
