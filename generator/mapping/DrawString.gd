@@ -13,5 +13,5 @@ func _draw():
 		return false
 	for pos in tilemap.posCells.keys():
 		var node: String = tilemap.posCells[pos]
-		draw_string(dfont, tilemap.map_to_world(tilemap.str2vec(pos)) + Vector2(3,15), node.lstrip("Node"), Color.black)
+		draw_string(dfont, tilemap.map_to_world(tilemap._str2vec(pos)) + Vector2(3,15), node.lstrip("Node"), Color.black)
 #	draw_string(dfont, tilemap.map_to_world(Vector2(5,5)) + Vector2(3,15) ,"5,5", Color.black)

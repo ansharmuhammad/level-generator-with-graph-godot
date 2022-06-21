@@ -141,6 +141,23 @@ func get_neighbors(vertex: Node, typeEdge: String = "") -> Array:
 			listVertex.append(toVertex)
 	return listVertex
 
+func get_neighbors_name_by_name(vertexName: String, typeEdge: String = "") -> Array:
+	var listVertex: Array = []
+	var edges: Array
+	
+	edges = get_incoming_edges(get_vertex_by_name(vertexName), typeEdge)
+	for edge in edges:
+		var fromVertex: Node = get_vertex_by_name(edge.from)
+		if listVertex.find(fromVertex) == -1:
+			listVertex.append(fromVertex.name)
+	
+	edges = get_outgoing_edges(get_vertex_by_name(vertexName), typeEdge)
+	for edge in edges:
+		var toVertex: Node = get_vertex_by_name(edge.to)
+		if listVertex.find(toVertex) == -1:
+			listVertex.append(toVertex.name)
+	return listVertex
+
 ## get list of vertex which didn't connected with any other vertex
 func get_isolated(typeEdge: String = "") -> Array:
 	var listVertex: Array = []

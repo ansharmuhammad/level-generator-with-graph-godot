@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://generator/mapping/Mapping.gd" type="Script" id=1]
+[ext_resource path="res://generator/mapping/Mapping2.gd" type="Script" id=1]
 [ext_resource path="res://assets/sand_packed.png" type="Texture" id=2]
 [ext_resource path="res://generator/mapping/DrawString.gd" type="Script" id=3]
 

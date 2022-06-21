@@ -23,6 +23,8 @@ var room = tile_set.find_tile_by_name("room")
 var step: int = 0
 var faces: Array
 
+var choosedDirection: Vector2
+
 func _ready():
 	pass
 #	line.position = line.position + halfTileSize
@@ -115,6 +117,7 @@ func _execute():
 #	pathConnector.append_array([Vector2(5,5),line.position])
 	
 	placeCell(pathConnector, unplaceVertex)
+	
 	for i in range(pathConnector.size()):
 		pathConnector[i] = map_to_world(pathConnector[i])
 	
@@ -296,7 +299,7 @@ func getPathConnector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: Arr
 		
 		var directions: Array = sameValue(startPointDirectionAvail, endPointDirectionAvail)
 		directions.shuffle()
-		var choosedDirection: Vector2
+#		choosedDirection
 		var dirWeght:int = 1000
 		for direction in directions:
 			if countCellOnDirectionWith2Point(usedPos, startPoint, endPoint, direction) < dirWeght:
@@ -308,11 +311,11 @@ func getPathConnector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: Arr
 		
 	return pathConnector
 
-func extendPath(path: Array, direction: Vector2, starPoint: Vector2, endPoint: Vector2):
+func extendPath(path: Array, direction: Vector2, startPoint: Vector2, endPoint: Vector2):
 	for i in (path.size()):
 		path[i] = path[i] + direction
 	
-	path.push_front(starPoint)
+	path.push_front(startPoint)
 	path.push_back(endPoint)
 
 func placeCell(path: Array, unplaceVertex: Array):
