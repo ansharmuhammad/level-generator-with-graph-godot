@@ -50,19 +50,31 @@ func _execute():
 	#if all node in face has placed, remove face and go to next iteration
 	if unvisitedVerticesonFace.empty():
 		faces.erase(executedFace)
+		executedFace.clear()
 		return
 	
 	#get start and end vertex
 	var vertex: Dictionary = _get_start_and_end_vertex(visitedVertices, unvisitedVerticesonFace)
 	
+	#get vertices will placed
+	var verticesWillPlaced: Array = []
+	var startCycle: int = executedFace.find(vertex["start"])
+	var endCycle: int = executedFace.find(vertex["end"])
+	while executedFace[startCycle-1] != executedFace[endCycle]:
+		startCycle -= 1
+		if executedFace[startCycle] != executedFace[endCycle]:
+			verticesWillPlaced.append(executedFace[startCycle])
+	
+	print("verticesWillPlaced = ", verticesWillPlaced)
+	
 	#get start and end point to place unvisited vertex
 	var point: Dictionary = _get_start_and_end_point(vertex["start"], vertex["end"])
 	
 	#get path connector from start to end point
-	var pathConnector: Array = _get_path_connector(point["start"], point["end"], unvisitedVerticesonFace, choosedDirection)
+	var pathConnector: Array = _get_path_connector(point["start"], point["end"], verticesWillPlaced, choosedDirection)
 	print("pathConnector = ", pathConnector)
 	
-	_place_cell(pathConnector, unvisitedVerticesonFace)
+	_place_cell(pathConnector, verticesWillPlaced)
 	
 	for i in range(pathConnector.size()):
 		pathConnector[i] = map_to_world(pathConnector[i])
@@ -123,14 +135,15 @@ func _get_start_and_end_vertex(visitedVertices: Array, unvisitedVerticesOnFace: 
 	var endVertex = null
 #	[yyyyynnnyy]
 	for i in range(executedFace.size()):
-		if visitedVertices.has(executedFace[i]) and unvisitedVerticesOnFace.has(executedFace[i-1]):
-			startVertex = executedFace[i]
-		
 		var nextIdx = i + 1
 		if nextIdx >= executedFace.size():
 			nextIdx = 0
 		if visitedVertices.has(executedFace[i]) and unvisitedVerticesOnFace.has(executedFace[nextIdx]):
 			endVertex = executedFace[i]
+		
+		if visitedVertices.has(executedFace[i]) and unvisitedVerticesOnFace.has(executedFace[i-1]):
+			startVertex = executedFace[i]
+	
 	print("startVertex = ", startVertex)
 	print("endVertex = ", endVertex)
 	var vertex = { 
@@ -198,7 +211,7 @@ func _get_start_and_end_point(startVertex: String, endVertex: String) -> Diction
 	var startVertexConnectionUnplace = _difference(resultGraph.get_neighbors_name_by_name(startVertex), posCells.values()).size()
 	var endVertexConnectionUnplace = _difference(resultGraph.get_neighbors_name_by_name(endVertex), posCells.values()).size()
 	print("connStart ",startVertexConnectionUnplace," vs avail ",spaceAvail["start"].size())
-	print("connStart ",endVertexConnectionUnplace," vs avail ",spaceAvail["end"].size())
+	print("connEnd ",endVertexConnectionUnplace," vs avail ",spaceAvail["end"].size())
 	if startVertexConnectionUnplace > spaceAvail["start"].size():
 		print("extend start")
 		set_cellv(startPoint, room)
