@@ -43,12 +43,11 @@ func _execute():
 	#update executed face
 	_update_executed_face(visitedVertices)
 	
-	var deadendsVertices: Array = []
-	_get_deadends(executedFace, deadendsVertices)
+	var deadends: Array = _get_deadends(executedFace)
 	
 	print("==========================================")
 	print("executedFace = ", executedFace)
-	print("deadendsVertices = ", deadendsVertices)
+	print("deadendsVertices = ", deadends)
 	print("==========================================")
 	
 	#get unvisited vertices on face
@@ -134,26 +133,34 @@ func _update_executed_face(visitedVertices: Array):
 				print("executedFace = ", executedFace)
 				return
 
-func _get_deadends(face: Array, outArray: Array):
-	for i in range(face.size()):
-		var nextIdx: int = i + 1 if (i + 1) < face.size() else 0
-		if face[i-1] == face[nextIdx]:
-			var connect = face[i-1]
-			var deadendvertex = face[i]
-			var deadend: Dictionary = {
-				"connect":  connect,
-				"deadend": deadendvertex
-			}
-			
-			face.remove(i-1)
-			face.erase(deadendvertex)
-			
-			print("ada deadend", deadend)
-			
-			outArray.push_front(deadend)
-			_get_deadends(face, outArray)
-			
-			return
+func _get_deadends(face: Array) -> Array:
+	var deadends: Array = []
+	var search: bool = true
+	while search:
+		search = false
+		var listDelete: Array = []
+		for i in range(face.size()):
+			var nextIdx: int = i + 1 if (i + 1) < face.size() else 0
+			if face[i-1] == face[nextIdx] :
+				var connectvertex = face[i-1]
+				var deadendvertex = face[i]
+				var deadend: Dictionary = {
+					"connect":  connectvertex,
+					"deadend": deadendvertex
+				}
+				deadends.push_front(deadend)
+				listDelete.append_array([deadendvertex, connectvertex])
+				search = true
+				print("ketemu")
+		if search:
+			print("face deadedn = ", face)
+			print("delete = ", listDelete)
+			for vertex in listDelete:
+				face.erase(vertex)
+			print("face deadend now = ", face)
+	
+	return deadends
+
 
 func _get_unvisited_vertices_on_face(visitedVertices: Array) -> Array:
 	print("executedFace = ", executedFace)
@@ -329,8 +336,6 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 	#get intersect point
 	var intersectPoint = [Vector2(startPoint.x, endPoint.y), Vector2(endPoint.x, startPoint.y)]
 	for point in intersectPoint:
-		#("candidatepoint = ", point)
-		#("usedCell.has ", usedPos.has(point))
 		if get_used_cells().has(point):
 			intersectPoint.erase(point)
 	intersectPoint = intersectPoint[randi() % intersectPoint.size()]
@@ -338,46 +343,40 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 	
 	#get path connector
 	var pathConnector: Array = []
-	#("start = ", intersectPoint, " to = ", startPoint)
+	print("start = ", intersectPoint, " to = ", startPoint)
 	if !_get_straight_path(intersectPoint, startPoint).empty():
 		pathConnector.append_array(_get_straight_path(intersectPoint, startPoint))
-		#("pathConnector = ", pathConnector)
 	pathConnector.append(intersectPoint)
-	#("start = ", intersectPoint, " to = ", endPoint)
+	print("start = ", intersectPoint, " to = ", endPoint)
 	if !_get_straight_path(intersectPoint, endPoint).empty():
 		pathConnector.append_array(_get_straight_path(intersectPoint, endPoint))
-		#("pathConnector = ", pathConnector)
 	
-#	var canItPlaced: bool = !_share_value(unplaceVertex, posCells.values()) and pathConnector.size() >= unplaceVertex.size()
+	print("path now = ", pathConnector)
+	
 	var canItPlaced: bool = !_share_value(pathConnector, get_used_cells()) and pathConnector.size() >= unplaceVertex.size()
 	
 	#get safe direction
-#	if !canItPlaced:
 	if !canItPlaced:
 		var directionsCheck: Array = [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]
 		var startPointDirectionAvail: Array = []
 		var endPointDirectionAvail: Array = []
-#		print("used pos ", get_used_cells())
 		for direction in directionsCheck:
 			var startAvailPoint = startPoint + direction
 			if !get_used_cells().has(startAvailPoint) and startAvailPoint != endPoint:
-				#("startAvailPoint ", startAvailPoint)
 				startPointDirectionAvail.append(direction)
 			var endAvailPoint = endPoint + direction
 			if !get_used_cells().has(endAvailPoint) and endAvailPoint != startPoint:
-				#("endAvailPoint ", endAvailPoint)
 				endPointDirectionAvail.append(direction)
 		
 		var directions: Array = _same_value(startPointDirectionAvail, endPointDirectionAvail)
 		directions.shuffle()
-#		choosedDirection
 		var dirWeght:int = 1000
 		for direction in directions:
 			if _count_cell_on_direction_with_2Point(get_used_cells(), startPoint, endPoint, direction) < dirWeght:
 				choosedDirection = direction
-		print("choosedDirection", choosedDirection)
 		while !canItPlaced:
 			_extend_path(pathConnector, choosedDirection, startPoint, endPoint)
+			print("path after extend = ", pathConnector)
 			canItPlaced = !_share_value(pathConnector, get_used_cells()) and pathConnector.size() >= unplaceVertex.size()
 		
 	return pathConnector
