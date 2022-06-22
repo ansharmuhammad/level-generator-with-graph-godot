@@ -27,6 +27,13 @@ func running():
 	TransformRule.transform(result)
 	Drawer.to_dot(result)
 	faces = _get_sorted_face(result)
+#	faces = Tester.GetFaces(graph)
+#	faces.invert()
+#	for face in faces:
+#		printraw("face = [")
+#		for vertex in face:
+#			printraw(vertex + ", ")
+#		print("]")
 
 func _generate(_population: int) -> Node:
 	for n in range(_population):

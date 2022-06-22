@@ -184,7 +184,6 @@ func _get_deadends(face: Array) -> Array:
 	
 	return deadends
 
-
 func _get_unvisited_vertices_on_face(visitedVertices: Array) -> Array:
 	print("executedFace = ", executedFace)
 	return _difference(executedFace, visitedVertices)
@@ -348,15 +347,14 @@ func _count_cell_on_direction_with_2Point(arrayPos: Array, point1: Vector2, poin
 	return result.size()
 
 func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: Array) -> Array:
-#	
 	
 	#get intersect point
-	var intersectPoint = [Vector2(startPoint.x, endPoint.y), Vector2(endPoint.x, startPoint.y)]
-	for point in intersectPoint:
-		if get_used_cells().has(point):
-			intersectPoint.erase(point)
-	intersectPoint = intersectPoint[randi() % intersectPoint.size()]
-	print("intersectPoint = ",intersectPoint)
+	var intersectPoint = _get_intersect_point(startPoint, endPoint)
+#	for point in intersectPoint:
+#		if get_used_cells().has(point):
+#			intersectPoint.erase(point)
+#	intersectPoint = intersectPoint[randi() % intersectPoint.size()]
+#	print("intersectPoint = ",intersectPoint)
 	
 	#get path connector
 	var pathConnector: Array = []
@@ -412,12 +410,79 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 			print("path = ", pathConnector)
 			_extend_path(pathConnector, choosedDirection, startPoint, endPoint)
 			print("path after extend = ", pathConnector)
-			canItPlaced = !_share_value(pathConnector, get_used_cells()) and pathConnector.size() >= unplaceVertex.size()
+#			canItPlaced = !_share_value(pathConnector, get_used_cells()) and pathConnector.size() >= unplaceVertex.size()
+			canItPlaced = pathConnector.size() >= unplaceVertex.size()
 			print("not shar val? ", !_share_value(pathConnector, get_used_cells()))
 			print("size enough? ", pathConnector.size() >= unplaceVertex.size())
 			print("*********************path extend end*****************************")
 		
 	return pathConnector
+
+func _get_intersect_point(startPoint: Vector2, endPoint: Vector2) -> Vector2:
+	var intersectPoints = [Vector2(startPoint.x, endPoint.y), Vector2(endPoint.x, startPoint.y)]
+	var intersectPoint: Vector2
+#	for point in intersectPoint:
+#		if get_used_cells().has(point):
+#			intersectPoints.erase(point)
+	
+	if  intersectPoints.size() > 1:
+		var intersect1 = intersectPoints[0]
+		var intersect2 = intersectPoints[1]
+		var intersect1pos: Array = []
+		var intersect2pos: Array = []
+		if intersect1.y < intersect2.y:
+			intersect1pos.append(Vector2.UP)
+			intersect2pos.append(Vector2.DOWN)
+		else:
+			intersect1pos.append(Vector2.DOWN)
+			intersect2pos.append(Vector2.UP)
+		if intersect1.x < intersect2.x:
+			intersect1pos.append(Vector2.LEFT)
+			intersect2pos.append(Vector2.RIGHT)
+		else:
+			intersect1pos.append(Vector2.RIGHT)
+			intersect2pos.append(Vector2.LEFT)
+		
+		var intersect1Weight: int = 0
+		var intersect2Weight: int = 0
+		
+		for position in intersect1pos:
+			intersect1Weight += _count_cell_backward_direction(intersect1, position)
+		for position in intersect2pos:
+			intersect2Weight += _count_cell_backward_direction(intersect2, position)
+		
+		if intersect1Weight > intersect2Weight:
+			intersectPoint = intersect1
+		elif intersect1Weight < intersect2Weight:
+			intersectPoint = intersect2
+		else:
+			intersectPoint = intersectPoints[randi() % intersectPoints.size()]
+	else:
+		intersectPoint = intersectPoints[0]
+	print("intersectPoint = ",intersectPoint)
+	return intersectPoint
+
+func _count_cell_backward_direction(point: Vector2, direction: Vector2) -> int:
+	var result: int = 0
+	var arrayPos = get_used_cells()
+	match direction:
+		Vector2.UP:
+			for vector in arrayPos:
+				if vector.y > point.y:
+					result += 1
+		Vector2.DOWN:
+			for vector in arrayPos:
+				if vector.y < point.y:
+					result += 1
+		Vector2.LEFT:
+			for vector in arrayPos:
+				if vector.x > point.x:
+					result += 1
+		Vector2.RIGHT:
+			for vector in arrayPos:
+				if vector.x < point.x:
+					result += 1
+	return result
 
 func _get_straight_path(point1: Vector2, point2: Vector2) -> Array:
 	var result: Array = []
@@ -505,6 +570,18 @@ func _place_deadends(deadends: Array):
 		print("deadend now = ", deadend)
 		var connectSpaceAvail: Array = _get_sapce_availabel(deadend["connect"])
 		connectSpaceAvail.shuffle()
+		
+		#new
+		var resultGraph = Generator.get_node("Result/GrapResult")
+		var connectionUnplace = _difference(resultGraph.get_neighbors_name_by_name(deadend["connect"]), posCells.values()).size()
+		print("connStart ",connectionUnplace," vs avail ",connectSpaceAvail.size())
+		
+		if connectionUnplace > connectSpaceAvail.size():
+			set_cellv(connectSpaceAvail[0], room)
+			posCells[_vect2str(connectSpaceAvail[0])] = deadend["connect"]
+			_place_deadends(deadends)
+		#end new
+		
 		print("avail = ", connectSpaceAvail)
 		set_cellv(connectSpaceAvail[0], room)
 		posCells[_vect2str(connectSpaceAvail[0])] = deadend["deadend"]
