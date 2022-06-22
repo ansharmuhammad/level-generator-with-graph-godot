@@ -12,7 +12,6 @@ var step: int = 0
 var executedFace: Array = []
 
 var posCells: Dictionary = {}
-var choosedDirection: Vector2
 
 func _ready():
 	pass
@@ -78,7 +77,7 @@ func _execute():
 	var point: Dictionary = _get_start_and_end_point(vertex["start"], vertex["end"])
 	
 	#get path connector from start to end point
-	var pathConnector: Array = _get_path_connector(point["start"], point["end"], verticesWillPlaced, choosedDirection)
+	var pathConnector: Array = _get_path_connector(point["start"], point["end"], verticesWillPlaced)
 	print("pathConnector = ", pathConnector)
 	
 	_place_cell(pathConnector, verticesWillPlaced)
@@ -219,29 +218,6 @@ func _get_start_and_end_point(startVertex: String, endVertex: String) -> Diction
 	print("startPoint = ",startPoint)
 	print("endPoint = ",endPoint)
 	
-	var directionsCheck: Array = [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]
-	var startPointDirectionAvail: Array = []
-	var endPointDirectionAvail: Array = []
-	print("used pos ", get_used_cells())
-	for direction in directionsCheck:
-		var startAvailPoint = startPoint + direction
-		if !get_used_cells().has(startAvailPoint) and startAvailPoint != endPoint:
-			#("startAvailPoint ", startAvailPoint)
-			startPointDirectionAvail.append(direction)
-		var endAvailPoint = endPoint + direction
-		if !get_used_cells().has(endAvailPoint) and endAvailPoint != startPoint:
-			#("endAvailPoint ", endAvailPoint)
-			endPointDirectionAvail.append(direction)
-	
-	var directions: Array = _same_value(startPointDirectionAvail, endPointDirectionAvail)
-	directions.shuffle()
-	
-	var dirWeght:int = 1000
-	for direction in directions:
-		if _count_cell_on_direction_with_2Point(get_used_cells(), startPoint, endPoint, direction) < dirWeght:
-			choosedDirection = direction
-	print("choosedDirection", choosedDirection)
-	
 	var rekursifResult: Dictionary
 	var resultGraph = Generator.get_node("Result/GrapResult")
 	var startVertexConnectionUnplace = _difference(resultGraph.get_neighbors_name_by_name(startVertex), posCells.values()).size()
@@ -330,8 +306,8 @@ func _count_cell_on_direction_with_2Point(arrayPos: Array, point1: Vector2, poin
 					result.append(vector)
 	return result.size()
 
-func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: Array, choosedDirection: Vector2) -> Array:
-#	var usedPos = _keysofVec(posCells)
+func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: Array) -> Array:
+#	
 	
 	#get intersect point
 	var intersectPoint = [Vector2(startPoint.x, endPoint.y), Vector2(endPoint.x, startPoint.y)]
@@ -343,11 +319,11 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 	
 	#get path connector
 	var pathConnector: Array = []
-	print("start = ", intersectPoint, " to = ", startPoint)
+	print("from = ", intersectPoint, " to start = ", startPoint)
 	if !_get_straight_path(intersectPoint, startPoint).empty():
 		pathConnector.append_array(_get_straight_path(intersectPoint, startPoint))
 	pathConnector.append(intersectPoint)
-	print("start = ", intersectPoint, " to = ", endPoint)
+	print("from = ", intersectPoint, " to end = ", endPoint)
 	if !_get_straight_path(intersectPoint, endPoint).empty():
 		pathConnector.append_array(_get_straight_path(intersectPoint, endPoint))
 	
@@ -370,10 +346,14 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 		
 		var directions: Array = _same_value(startPointDirectionAvail, endPointDirectionAvail)
 		directions.shuffle()
+		var choosedDirection: Vector2
 		var dirWeght:int = 1000
 		for direction in directions:
 			if _count_cell_on_direction_with_2Point(get_used_cells(), startPoint, endPoint, direction) < dirWeght:
 				choosedDirection = direction
+		
+		#check if intersect point and direction opposite each other cause tie between 2 value 
+		choosedDirection = _check_switch_dir(startPoint, endPoint, intersectPoint, choosedDirection)
 		while !canItPlaced:
 			_extend_path(pathConnector, choosedDirection, startPoint, endPoint)
 			print("path after extend = ", pathConnector)
@@ -398,7 +378,27 @@ func _get_straight_path(point1: Vector2, point2: Vector2) -> Array:
 			result.append(point1)
 	return result
 
-func _extend_path(path: Array, direction: Vector2, startPoint: Vector2, endPoint: Vector2):
+func _check_switch_dir(startPoint: Vector2, endpoint: Vector2, intersectPoint: Vector2, direction: Vector2) -> Vector2:
+	match(direction):
+		Vector2.RIGHT:
+			if startPoint.direction_to(intersectPoint).x < 0 or endpoint.direction_to(intersectPoint).x < 0:
+				direction = Vector2.LEFT
+		
+		Vector2.LEFT:
+			if startPoint.direction_to(intersectPoint).x > 0 or endpoint.direction_to(intersectPoint).x > 0:
+				direction = Vector2.RIGHT
+		
+		Vector2.DOWN:
+			if startPoint.direction_to(intersectPoint).y < 0 or endpoint.direction_to(intersectPoint).y < 0:
+				direction = Vector2.UP
+		
+		Vector2.UP:
+			if startPoint.direction_to(intersectPoint).y < 0 or endpoint.direction_to(intersectPoint).y < 0:
+				direction = Vector2.DOWN
+	
+	return direction
+
+func _extend_path(path: Array, direction: Vector2, startPoint: Vector2, endPoint: Vector2):	
 	for i in (path.size()):
 		path[i] = path[i] + direction
 	
