@@ -22,7 +22,10 @@ func _unhandled_input(event):
 		if step == 1:
 			firstStep()
 		elif !faces.empty():
+			print("faces ", faces)
 			_execute()
+		else:
+			print("done")
 
 func firstStep():
 	var initPos = 15
@@ -36,6 +39,8 @@ func firstStep():
 	drawString.update()
 
 func _execute():
+	print("================================start==============================")
+	
 	#get all visited vertices on face
 	var visitedVertices: Array = posCells.values()
 	
@@ -55,40 +60,59 @@ func _execute():
 	
 	#if all node in face has placed, remove face and go to next iteration
 	if unvisitedVerticesonFace.empty():
+		print(faces)
+		print("erase face = ", executedFace)
 		faces.erase(executedFace)
 		executedFace.clear()
-		return
+#		return
 	
-	#get start and end vertex
-	var vertex: Dictionary = _get_start_and_end_vertex(visitedVertices, unvisitedVerticesonFace)
+	if !executedFace.empty():
+		#get start and end vertex
+		var vertex: Dictionary = _get_start_and_end_vertex(visitedVertices, unvisitedVerticesonFace)
+		
+		#get vertices will placed
+		var verticesWillPlaced: Array = []
+		var startCycle: int = executedFace.find(vertex["start"])
+		var endCycle: int = executedFace.find(vertex["end"])
+		print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		print("executedFace ", executedFace)
+		print("startCycle ", startCycle)
+		print("endCycle ", endCycle)
+		print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		while executedFace[startCycle-1] != executedFace[endCycle]:
+			startCycle -= 1
+			if executedFace[startCycle] != executedFace[endCycle]:
+				verticesWillPlaced.append(executedFace[startCycle])
+		
+		print("verticesWillPlaced = ", verticesWillPlaced)
+		
+		#get start and end point to place unvisited vertex
+		var point: Dictionary = _get_start_and_end_point(vertex["start"], vertex["end"])
+		
+		#get path connector from start to end point
+		var pathConnector: Array = _get_path_connector(point["start"], point["end"], verticesWillPlaced)
+		print("pathConnector = ", pathConnector)
+		
+		_place_cell(pathConnector, verticesWillPlaced)
+		
+		for i in range(pathConnector.size()):
+			pathConnector[i] = map_to_world(pathConnector[i])
+		
+		_addLine(pathConnector)
+		
+		if _difference(executedFace, posCells.values()).empty():
+			print(faces)
+			print("erase face = ", executedFace)
+			faces.erase(executedFace)
+			executedFace.clear()
 	
-	#get vertices will placed
-	var verticesWillPlaced: Array = []
-	var startCycle: int = executedFace.find(vertex["start"])
-	var endCycle: int = executedFace.find(vertex["end"])
-	while executedFace[startCycle-1] != executedFace[endCycle]:
-		startCycle -= 1
-		if executedFace[startCycle] != executedFace[endCycle]:
-			verticesWillPlaced.append(executedFace[startCycle])
+	#chek if deadends need to be placed
+	if !deadends.empty():
+		print("placing deadends")
+		_place_deadends(deadends)
+		deadends.clear()
 	
-	print("verticesWillPlaced = ", verticesWillPlaced)
-	
-	#get start and end point to place unvisited vertex
-	var point: Dictionary = _get_start_and_end_point(vertex["start"], vertex["end"])
-	
-	#get path connector from start to end point
-	var pathConnector: Array = _get_path_connector(point["start"], point["end"], verticesWillPlaced)
-	print("pathConnector = ", pathConnector)
-	
-	_place_cell(pathConnector, verticesWillPlaced)
-	
-	for i in range(pathConnector.size()):
-		pathConnector[i] = map_to_world(pathConnector[i])
-	
-	_addLine(pathConnector)
-	
-	if _difference(executedFace, posCells.values()).empty():
-		executedFace.clear()
+	print("================================finish==============================")
 
 func _vect2str(vector: Vector2) -> String:
 	return "(" + str(vector.x) + ", " + str(vector.y) + ")"
@@ -194,6 +218,17 @@ func _get_start_and_end_point(startVertex: String, endVertex: String) -> Diction
 		"end" : _get_sapce_availabel(endVertex)
 	}
 	
+	print("spaceAvail :")
+	print(spaceAvail)
+	
+	if spaceAvail["start"] == spaceAvail["start"] and spaceAvail["start"].size() == 1:
+		print("extend only one")
+		var points = spaceAvail["start"] 
+		set_cellv(points[0], room)
+		posCells[_vect2str(points[0])] = startVertex
+		var rekursifResult = _get_start_and_end_point(startVertex, endVertex)
+		return rekursifResult
+	
 	var shortestDist = 1000
 	var startPoint: Vector2
 	var endPoint: Vector2
@@ -224,7 +259,13 @@ func _get_start_and_end_point(startVertex: String, endVertex: String) -> Diction
 	var endVertexConnectionUnplace = _difference(resultGraph.get_neighbors_name_by_name(endVertex), posCells.values()).size()
 	print("connStart ",startVertexConnectionUnplace," vs avail ",spaceAvail["start"].size())
 	print("connEnd ",endVertexConnectionUnplace," vs avail ",spaceAvail["end"].size())
-	if startVertexConnectionUnplace > spaceAvail["start"].size():
+	if endVertex == startVertex and startVertexConnectionUnplace > spaceAvail["start"].size():
+		print("extend start")
+		set_cellv(endPoint, room)
+		posCells[_vect2str(endPoint)] = startVertex
+		rekursifResult = _get_start_and_end_point(startVertex, endVertex)
+		return rekursifResult
+	elif startVertexConnectionUnplace > spaceAvail["start"].size():
 		print("extend start")
 		set_cellv(startPoint, room)
 		posCells[_vect2str(startPoint)] = startVertex
@@ -345,6 +386,14 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 				endPointDirectionAvail.append(direction)
 		
 		var directions: Array = _same_value(startPointDirectionAvail, endPointDirectionAvail)
+		#if startx and endx have same value (parallel y) 
+		if startPoint.x == endPoint.x:
+			directions.erase(Vector2.UP)
+			directions.erase(Vector2.DOWN)
+		#if starty and endy have same value (parallel x)
+		if startPoint.y == endPoint.y:
+			directions.erase(Vector2.LEFT)
+			directions.erase(Vector2.RIGHT)
 		directions.shuffle()
 		var choosedDirection: Vector2
 		var dirWeght:int = 1000
@@ -353,11 +402,20 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 				choosedDirection = direction
 		
 		#check if intersect point and direction opposite each other cause tie between 2 value 
-		choosedDirection = _check_switch_dir(startPoint, endPoint, intersectPoint, choosedDirection)
+#		print("===================================================================")
+#		print("choosed direction ", choosedDirection)
+#		choosedDirection = _check_switch_dir(startPoint, endPoint, intersectPoint, choosedDirection)
+#		print("new choosed direction ", choosedDirection)
+#		print("===================================================================")
 		while !canItPlaced:
+			print("*********************path extend start****************************")
+			print("path = ", pathConnector)
 			_extend_path(pathConnector, choosedDirection, startPoint, endPoint)
 			print("path after extend = ", pathConnector)
 			canItPlaced = !_share_value(pathConnector, get_used_cells()) and pathConnector.size() >= unplaceVertex.size()
+			print("not shar val? ", !_share_value(pathConnector, get_used_cells()))
+			print("size enough? ", pathConnector.size() >= unplaceVertex.size())
+			print("*********************path extend end*****************************")
 		
 	return pathConnector
 
@@ -382,23 +440,40 @@ func _check_switch_dir(startPoint: Vector2, endpoint: Vector2, intersectPoint: V
 	match(direction):
 		Vector2.RIGHT:
 			if startPoint.direction_to(intersectPoint).x < 0 or endpoint.direction_to(intersectPoint).x < 0:
-				direction = Vector2.LEFT
+				print("intersect ", intersectPoint, " vs direction ", direction)
+#				direction = Vector2.LEFT
+#				print("direction new ", direction)
+				intersectPoint = Vector2(intersectPoint.y, intersectPoint.x)
+				print("intersectPoint new ", intersectPoint)
 		
 		Vector2.LEFT:
 			if startPoint.direction_to(intersectPoint).x > 0 or endpoint.direction_to(intersectPoint).x > 0:
-				direction = Vector2.RIGHT
+				print("intersect ", intersectPoint, " vs direction ", direction)
+#				direction = Vector2.RIGHT
+#				print("direction new ", direction)
+				intersectPoint = Vector2(intersectPoint.y, intersectPoint.x)
+				print("intersectPoint new ", intersectPoint)
 		
 		Vector2.DOWN:
 			if startPoint.direction_to(intersectPoint).y < 0 or endpoint.direction_to(intersectPoint).y < 0:
-				direction = Vector2.UP
+				print("intersect ", intersectPoint, " vs direction ", direction)
+#				direction = Vector2.UP
+#				print("direction new ", direction)
+				intersectPoint = Vector2(intersectPoint.y, intersectPoint.x)
+				print("intersectPoint new ", intersectPoint)
 		
 		Vector2.UP:
 			if startPoint.direction_to(intersectPoint).y < 0 or endpoint.direction_to(intersectPoint).y < 0:
-				direction = Vector2.DOWN
+				print("intersect ", intersectPoint, " vs direction ", direction)
+#				direction = Vector2.DOWN
+#				print("direction new ", direction)
+				intersectPoint = Vector2(intersectPoint.y, intersectPoint.x)
+				print("intersectPoint new ", intersectPoint)
 	
 	return direction
 
-func _extend_path(path: Array, direction: Vector2, startPoint: Vector2, endPoint: Vector2):	
+func _extend_path(path: Array, direction: Vector2, startPoint: Vector2, endPoint: Vector2):
+	print("extend path at direction ", direction)
 	for i in (path.size()):
 		path[i] = path[i] + direction
 	
@@ -410,10 +485,10 @@ func _place_cell(path: Array, unplaceVertex: Array):
 	#("unplaceVertex.size() ", unplaceVertex.size())
 	for i in range(path.size()):
 		var vertex = unplaceVertex[i] if i < (unplaceVertex.size()-1) else unplaceVertex[-1]
-		var point = path[i]
-		set_cell(point.x, point.y, room)
+		var point: Vector2 = path[i]
+		set_cellv(point, room)
 		#("placing at ",Vector2(point.x,point.y))
-		posCells[_vect2str(Vector2(point.x,point.y))] = vertex
+		posCells[_vect2str(point)] = vertex
 	drawString.update()
 
 func _addLine(path: Array):
@@ -424,3 +499,13 @@ func _addLine(path: Array):
 	line.width = 5
 	line.set_default_color(Color( randf(), randf(), randf(), 0.6 ))
 	line.points = path
+
+func _place_deadends(deadends: Array):
+	for deadend in deadends:
+		print("deadend now = ", deadend)
+		var connectSpaceAvail: Array = _get_sapce_availabel(deadend["connect"])
+		connectSpaceAvail.shuffle()
+		print("avail = ", connectSpaceAvail)
+		set_cellv(connectSpaceAvail[0], room)
+		posCells[_vect2str(connectSpaceAvail[0])] = deadend["deadend"]
+	drawString.update()
