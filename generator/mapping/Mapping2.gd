@@ -20,20 +20,18 @@ func _unhandled_input(event):
 	if event.is_action_pressed("ui_accept"):
 		step += 1
 		if step == 1:
-			firstStep()
+			_firstStep()
 		elif !faces.empty():
 			print("faces ", faces)
 			_execute()
 		else:
 			print("done")
 
-func firstStep():
+func _firstStep():
 	var initPos = 15
 	faces = Generator.faces.duplicate()
 	var initVertex = faces[0]
-	#("faces[0] = ", faces[0])
 	initVertex = initVertex[0]
-	#("initVertex = ", initVertex)
 	set_cell(initPos, initPos, room)
 	posCells[_vect2str(Vector2(initPos,initPos))] = initVertex
 	drawString.update()
@@ -398,13 +396,6 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 		for direction in directions:
 			if _count_cell_on_direction_with_2Point(get_used_cells(), startPoint, endPoint, direction) < dirWeght:
 				choosedDirection = direction
-		
-		#check if intersect point and direction opposite each other cause tie between 2 value 
-#		print("===================================================================")
-#		print("choosed direction ", choosedDirection)
-#		choosedDirection = _check_switch_dir(startPoint, endPoint, intersectPoint, choosedDirection)
-#		print("new choosed direction ", choosedDirection)
-#		print("===================================================================")
 		while !canItPlaced:
 			print("*********************path extend start****************************")
 			print("path = ", pathConnector)
@@ -421,9 +412,6 @@ func _get_path_connector(startPoint: Vector2, endPoint: Vector2, unplaceVertex: 
 func _get_intersect_point(startPoint: Vector2, endPoint: Vector2) -> Vector2:
 	var intersectPoints = [Vector2(startPoint.x, endPoint.y), Vector2(endPoint.x, startPoint.y)]
 	var intersectPoint: Vector2
-#	for point in intersectPoint:
-#		if get_used_cells().has(point):
-#			intersectPoints.erase(point)
 	
 	if  intersectPoints.size() > 1:
 		var intersect1 = intersectPoints[0]
