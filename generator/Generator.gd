@@ -16,6 +16,8 @@ onready var Recipe = $Recipe
 onready var Mapping = $Mapping
 onready var faces
 
+var countSplit: int = 0
+
 func _ready():
 	running()
 
@@ -26,17 +28,19 @@ func running():
 	Result.add_child(result)
 	TransformRule.transform(result)
 	Drawer.to_dot(result)
+	_splitting_edges(result)
+	
 #	faces = _get_sorted_face(result)
 	faces = Tester.GetFaces(result)
-	faces = _rearrange_faces(faces)
+#	faces = _rearrange_faces(faces)
 	for face in faces:
 		printraw("face = [")
 		for vertex in face:
 			printraw(vertex + ", ")
 		print("]")
 
-func _generate(_population: int) -> Node:
-	for n in range(_population):
+func _generate(population: int) -> Node:
+	for n in range(population):
 		var graph = Graph.instance()
 		Graphs.add_child(graph)
 		graph.name = 'Graph' + str(n)
@@ -64,6 +68,29 @@ func _generate(_population: int) -> Node:
 			#("best ", logidx)
 	
 	return bestGraph
+
+func _splitting_edges(graph: Node):
+	var search: bool = true
+	while search:
+		search = false
+		for vertex in graph.get_vertices():
+			if vertex.type == TYPE_VERTEX.TASK and graph.get_degree_of(vertex, TYPE_EDGE.PATH) > 4:
+				countSplit += 1
+				var newVertex = graph.add_vertex()
+				newVertex.name = vertex.name + "," + str(countSplit)
+				var edges = graph.get_edges_of(vertex)
+				print("edges", edges)
+				for i in range(edges.size()/2):
+					if edges[i].from == vertex.name:
+						edges[i].from = newVertex.name
+					elif edges[i].to == vertex.name:
+						edges[i].to = newVertex.name
+				graph.connect_vertex(vertex, newVertex)
+		for vertex in graph.get_vertices():
+			if vertex.type == TYPE_VERTEX.TASK and graph.get_degree_of(vertex, TYPE_EDGE.PATH) > 4:
+				search = true
+				break
+	Drawer.to_dot(graph, "splitting edges")
 
 func _rearrange_faces(faces: Array) -> Array:
 	#get the biggest face and remove from faces for a while

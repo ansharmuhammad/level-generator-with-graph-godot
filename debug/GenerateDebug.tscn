@@ -1,0 +1,135 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://debug/visualNode/VisualNode.tscn" type="PackedScene" id=1]
+[ext_resource path="res://SpanningCamera2D/SpanningCamera2D.tscn" type="PackedScene" id=2]
+[ext_resource path="res://debug/GenerateDebug.gd" type="Script" id=3]
+
+[node name="World" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="VisualNode" parent="." instance=ExtResource( 1 )]
+position = Vector2( 310, 310 )
+
+[node name="VisualNode2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 671, 185 )
+
+[node name="Camera2D" parent="." instance=ExtResource( 2 )]
+zoom = Vector2( 5, 5 )
+
+[node name="GUI" type="CanvasLayer" parent="."]
+
+[node name="WindowDialog" type="WindowDialog" parent="GUI"]
+margin_right = 263.0
+margin_bottom = 317.0
+window_title = "Generator controller"
+
+[node name="MarginContainer" type="MarginContainer" parent="GUI/WindowDialog"]
+margin_right = 261.0
+margin_bottom = 314.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 251.0
+margin_bottom = 304.0
+custom_constants/separation = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_right = 241.0
+margin_bottom = 74.0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer"]
+margin_right = 241.0
+margin_bottom = 14.0
+text = "single rule :"
+
+[node name="OptionSingleRule" type="OptionButton" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer"]
+margin_top = 24.0
+margin_right = 241.0
+margin_bottom = 44.0
+text = "init1"
+items = [ "init1", null, false, 0, null, "init2", null, false, 1, null ]
+selected = 0
+
+[node name="ButtonExecuteSingleRule" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer"]
+margin_top = 54.0
+margin_right = 241.0
+margin_bottom = 74.0
+text = "execute"
+
+[node name="HSeparator" type="HSeparator" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 84.0
+margin_right = 241.0
+margin_bottom = 88.0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 98.0
+margin_right = 241.0
+margin_bottom = 292.0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2"]
+margin_right = 241.0
+margin_bottom = 14.0
+text = "make recipe :"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2"]
+margin_top = 24.0
+margin_right = 241.0
+margin_bottom = 44.0
+
+[node name="OptionRuleRecipe" type="OptionButton" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_right = 202.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "init1"
+items = [ "init1", null, false, 0, null, "init2", null, false, 1, null ]
+selected = 0
+
+[node name="ButtonAddRule" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_left = 206.0
+margin_right = 241.0
+margin_bottom = 20.0
+text = "add"
+
+[node name="PanelContainer" type="PanelContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2"]
+margin_top = 54.0
+margin_right = 241.0
+margin_bottom = 154.0
+rect_min_size = Vector2( 0, 100 )
+size_flags_horizontal = 3
+
+[node name="RichTextRecipe" type="RichTextLabel" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2/PanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 234.0
+margin_bottom = 93.0
+size_flags_vertical = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2"]
+margin_top = 164.0
+margin_right = 241.0
+margin_bottom = 164.0
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2"]
+margin_top = 174.0
+margin_right = 241.0
+margin_bottom = 194.0
+
+[node name="ButtonExecuteRecipe" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer3"]
+margin_right = 118.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "execute"
+
+[node name="ButtonClearRecipe" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer3"]
+margin_left = 122.0
+margin_right = 241.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "clear"

@@ -63,6 +63,17 @@ public class Tester : Node
             listFaces.Add(verticesFace);
         }
 
+        Dictionary<string, List<IEdge<string>>> embed = embedding.embedding;
+        foreach (var item in embed)
+        {
+            GD.Print(item.Key, ":");
+            foreach(var value in item.Value)
+            {
+                GD.PrintRaw("< ", value.Source, "->", value.Target, " >, ");
+            }
+            GD.Print("");
+        }
+
         return listFaces;
     }
 

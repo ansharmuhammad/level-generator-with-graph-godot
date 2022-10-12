@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Camera2D",
+"class": "PanningCamera2D",
+"language": "GDScript",
+"path": "res://SpanningCamera2D/SpanningCamera2D.gd"
+}, {
 "base": "Node",
 "class": "Rule",
 "language": "GDScript",
@@ -25,6 +30,7 @@ _global_script_classes=[ {
 "path": "res://generator/graph/vertex/TYPE_VERTEX.gd"
 } ]
 _global_script_class_icons={
+"PanningCamera2D": "",
 "Rule": "",
 "TYPE_EDGE": "",
 "TYPE_VERTEX": ""
@@ -40,6 +46,23 @@ config/icon="res://icon.png"
 
 os=false
 ide=false
+
+[input]
+
+click={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+drag={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":3,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+
+[mono]
+
+project/assembly_name="level generator graph"
 
 [physics]
 

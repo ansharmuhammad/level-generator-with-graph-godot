@@ -19,6 +19,7 @@ func transform(graph: Node):
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
 	
+	_element_edges(graph)
 	#transformative rule
 
 func _create_entrance(graph: Node, vertex: Node):
@@ -198,3 +199,8 @@ func _outside_element_exist(graph: Node) -> bool:
 			return true
 	return false
 
+func _element_edges(graph: Node):
+	for edge in graph.get_edges():
+		if graph.get_vertex_by_name(edge.from).type != TYPE_VERTEX.KEY and graph.get_vertex_by_name(edge.to).type != TYPE_VERTEX.LOCK:
+			if graph.is_element(graph.get_vertex_by_name(edge.from)) or graph.is_element(graph.get_vertex_by_name(edge.to)):
+				edge.type = TYPE_EDGE.ELEMENT

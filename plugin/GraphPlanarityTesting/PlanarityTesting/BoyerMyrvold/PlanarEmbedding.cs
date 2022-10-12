@@ -10,7 +10,7 @@
 	/// <typeparam name="T"></typeparam>
 	public class PlanarEmbedding<T>
 	{
-		public readonly Dictionary<T, List<IEdge<T>>> embedding;
+		public Dictionary<T, List<IEdge<T>>> embedding;
 
 		public PlanarEmbedding(Dictionary<T, List<IEdge<T>>> embedding)
 		{
