@@ -1,6 +1,6 @@
 extends Node2D
 
-
+onready var label = $Label
 const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
 const Edge = preload("res://debug/visualEdge/VisualEdge.tscn")
 
@@ -14,6 +14,13 @@ onready var optionReplay: float = 0.0
 
 ## fitness function value
 onready var fitness: float = 0.0
+
+var index: int
+
+func init(_name: String, _index: int):
+	name = _name
+	$Label.text = _name
+	index = _index
 
 # (1) generic method for a graph ===============================================
 
@@ -38,5 +45,16 @@ func add_vertex(name: String = "", type: String = "") -> Node:
 func connect_vertex(from: Node, to: Node, type: String = ""):
 	var edge = Edge.instance()
 	var _type = type if type != "" else TYPE_EDGE.PATH
-	edge.init(from.name, to.name, _type)
+	edge.init(from, to, _type)
 	$Edges.add_child(edge)
+
+## get vertex object by its name
+func get_vertex_by_name(vertexName: String) -> Node:
+	return $Vertices.get_node(vertexName)
+
+## get vertex object by its name
+func get_vertex(vertex: Node2D) -> Node:
+	return $Vertices.get_node(vertex.name)
+
+#func _draw():
+#	draw_string()

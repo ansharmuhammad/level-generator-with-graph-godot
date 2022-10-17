@@ -3,4 +3,6 @@
 [ext_resource path="res://debug/visualEdge/VisualEdge.gd" type="Script" id=1]
 
 [node name="VisualEdge" type="Line2D"]
+begin_cap_mode = 1
+end_cap_mode = 2
 script = ExtResource( 1 )
