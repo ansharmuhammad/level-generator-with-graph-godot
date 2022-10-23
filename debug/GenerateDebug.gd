@@ -87,6 +87,70 @@ func ruleInit2(graph: Node):
 		graph.connect_vertex(vertex6, vertex2)
 #		print("execute rule init2 at" + str(chosenEdge))
 
+func ruleExtend1(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is init vertex
+		if edge.type == TYPE_EDGE.PATH:
+			match_edge.append(edge)
+
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var vertex3 = graph.add_vertex()
+		vertex3.position = (vertex1.position + vertex2.position)/2
+		
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex2)
+#		print("execute rule Extend1 at" + str(chosenEdge))
+
+func ruleExtend2(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is init vertex
+		if edge.type == TYPE_EDGE.PATH:
+			match_edge.append(edge)
+
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var rad = vertex1.colShape.get_shape().radius * 2
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var vertex3 = graph.add_vertex()
+		var vertex4 = graph.add_vertex()
+		vertex4.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
+		vertex3.position = vertex2.position + Vector2(rad, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		
+		graph.connect_vertex(vertex1, vertex4)
+		graph.connect_vertex(vertex4, vertex3)
+		graph.connect_vertex(vertex3, vertex2)
+		
+#		print("execute rule Extend2 at" + str(chosenEdge))
+
+func ruleExtend3(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is init vertex
+		if edge.type == TYPE_EDGE.PATH:
+			match_edge.append(edge)
+
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var rad = vertex1.colShape.get_shape().radius * 2
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var vertex3 = graph.add_vertex()
+		var vertex4 = graph.add_vertex()
+		vertex4.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
+		vertex3.position = vertex2.position + Vector2(rad, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		
+		graph.connect_vertex(vertex2, vertex3)
+		graph.connect_vertex(vertex3, vertex4)
+		graph.connect_vertex(vertex4, vertex1)
+		
+#		print("execute rule Extend2 at" + str(chosenEdge))
+
 # end of collection of rules ===================================================
 
 # add new graph
@@ -120,3 +184,9 @@ func _on_ButtonExecuteSingleRule_pressed():
 			ruleInit1(targetGraph)
 		"init2":
 			ruleInit2(targetGraph)
+		"extend1":
+			ruleExtend1(targetGraph)
+		"extend2":
+			ruleExtend2(targetGraph)
+		"extend3":
+			ruleExtend3(targetGraph)
