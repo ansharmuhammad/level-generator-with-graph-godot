@@ -39,6 +39,7 @@ func ruleInit1(graph: Node):
 		var chosenEdge = match_edge[randi() % match_edge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		vertex1.type = TYPE_VERTEX.START
+		vertex1.labelType.text = "S"
 		var rad = vertex1.colShape.get_shape().radius * 2
 
 		var vertex2 = graph.add_vertex()
@@ -66,6 +67,7 @@ func ruleInit2(graph: Node):
 		var chosenEdge = match_edge[randi() % match_edge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		vertex1.type = TYPE_VERTEX.START
+		vertex1.labelType.text = "S"
 		var rad = vertex1.colShape.get_shape().radius * 2
 		
 		var vertex2 = graph.add_vertex()
@@ -90,7 +92,7 @@ func ruleInit2(graph: Node):
 func ruleExtend1(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
-		#check if there is init vertex
+		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH:
 			match_edge.append(edge)
 
@@ -108,7 +110,7 @@ func ruleExtend1(graph: Node):
 func ruleExtend2(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
-		#check if there is init vertex
+		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH:
 			match_edge.append(edge)
 
@@ -125,13 +127,12 @@ func ruleExtend2(graph: Node):
 		graph.connect_vertex(vertex1, vertex4)
 		graph.connect_vertex(vertex4, vertex3)
 		graph.connect_vertex(vertex3, vertex2)
-		
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
 func ruleExtend3(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
-		#check if there is init vertex
+		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH:
 			match_edge.append(edge)
 
@@ -142,14 +143,49 @@ func ruleExtend3(graph: Node):
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex()
 		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
 		vertex3.position = vertex2.position + Vector2(rad, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		vertex4.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
 		
 		graph.connect_vertex(vertex2, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex1)
-		
 #		print("execute rule Extend2 at" + str(chosenEdge))
+
+func ruleSecret(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is init vertex
+		var from = graph.get_vertex(edge.from)
+		var to = graph.get_vertex(edge.to)
+		if (from.type == TYPE_VERTEX.TASK or to.type == TYPE_VERTEX.TASK) and edge.type == TYPE_EDGE.PATH:
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var from = graph.get_vertex(chosenEdge.from)
+		var to = graph.get_vertex(chosenEdge.to)
+		
+		var arrayVertex: Array = []
+		if from.type == TYPE_VERTEX.TASK:
+			arrayVertex.append(from)
+		if to.type == TYPE_VERTEX.TASK:
+			arrayVertex.append(to)
+		
+		var idx = randi() % arrayVertex.size()
+		var vertex1 = arrayVertex[idx]
+		var rad = vertex1.colShape.get_shape().radius * 2
+		var vertex2 = graph.add_vertex("",TYPE_VERTEX.SECRET)
+		
+		if idx == 0:
+			print("0")
+			vertex2.position = from.position + Vector2(rad, 0).rotated(from.position.angle_to_point(to.position) + deg2rad(-90))
+		else:
+			print("1")
+			vertex2.position = to.position + Vector2(rad, 0).rotated(to.position.angle_to_point(from.position) + deg2rad(-90))
+		
+		graph.connect_vertex(vertex1, vertex2)
+		
+		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
 
 # end of collection of rules ===================================================
 
@@ -190,3 +226,5 @@ func _on_ButtonExecuteSingleRule_pressed():
 			ruleExtend2(targetGraph)
 		"extend3":
 			ruleExtend3(targetGraph)
+		"secret":
+			ruleSecret(targetGraph)

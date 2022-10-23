@@ -2,6 +2,7 @@ extends RigidBody2D
 
 onready var colShape = $CollisionShape2D
 onready var sprite = $Sprite
+onready var labelType = $VisualNode/LabelType
 
 export var type: String = "TASK"
 
