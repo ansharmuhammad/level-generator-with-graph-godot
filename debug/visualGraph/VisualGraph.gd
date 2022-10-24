@@ -56,5 +56,10 @@ func get_vertex_by_name(vertexName: String) -> Node:
 func get_vertex(vertex: Node2D) -> Node:
 	return $Vertices.get_node(vertex.name)
 
+func is_place(vertex: Node) -> bool:
+	if vertex.type == TYPE_VERTEX.TASK or vertex.type == TYPE_VERTEX.SECRET:
+		return true
+	return false
+
 #func _draw():
 #	draw_string()

@@ -27,6 +27,7 @@ func init(_name: String = "", _type: String = "TASK"):
 
 func changeType(_type: String):
 	type = _type
+	var shape = colShape.get_shape()
 	match _type:
 		TYPE_VERTEX.TASK:
 			$Sprite.modulate = Color.white
@@ -43,15 +44,27 @@ func changeType(_type: String):
 		TYPE_VERTEX.OBSTACLE:
 			$Sprite.modulate = Color.red
 			$VisualNode/LabelType.text = "O"
+			scale = Vector2(0.25, 0.25)
+			shape.radius = 300 * scale.x
+			sprite.modulate = Color.red
 		TYPE_VERTEX.REWARD:
 			$Sprite.modulate = Color.yellow
 			$VisualNode/LabelType.text = "R"
+			scale = Vector2(0.25, 0.25)
+			shape.radius = 300 * scale.x
+			sprite.modulate = Color.yellow
 		TYPE_VERTEX.KEY:
 			$Sprite.modulate = Color.greenyellow
 			$VisualNode/LabelType.text = "K"
+			scale = Vector2(0.25, 0.25)
+			shape.radius = 300 * scale.x
+			sprite.modulate = Color.greenyellow
 		TYPE_VERTEX.LOCK:
 			$Sprite.modulate = Color.blue
 			$VisualNode/LabelType.text = "L"
+			scale = Vector2(0.25, 0.25)
+			shape.radius = 300 * scale.x
+			sprite.modulate = Color.aqua
 
 func setColor(color: Color):
 	sprite.modulate = color

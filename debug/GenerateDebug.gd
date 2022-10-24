@@ -216,14 +216,136 @@ func ruleReward(graph: Node):
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
-		var vertex4 = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		vertex3.position = (vertex1.position + vertex2.position)/2
+		var vertex4 = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		vertex4.position = (vertex3.position + vertex2.position)/2
 		
 		chosenEdge.init(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex2)
 #		print("execute rule Reward at" + str(chosenEdge))
+
+func ruleKnL1(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is 2 place vertex connected
+		var from = graph.get_vertex(edge.from)
+		var to = graph.get_vertex(edge.to)
+		if graph.is_place(from) and graph.is_place(to):
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		
+		var vertex3 = graph.add_vertex("", TYPE_VERTEX.KEY)
+		vertex3.position = (vertex1.position + vertex2.position)/2
+		var vertex4 = graph.add_vertex("", TYPE_VERTEX.TASK)
+		vertex4.position = (vertex3.position + vertex2.position)/2
+		var vertex5 = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		vertex5.position = (vertex4.position + vertex2.position)/2
+		
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex4)
+		graph.connect_vertex(vertex4, vertex5)
+		graph.connect_vertex(vertex5, vertex2)
+		
+		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
+#		print("execute rule KL1 at" + str(edge))
+
+func ruleKnL2(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is 2 vertex connected
+		if edge.to != null:
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var rad = vertex1.colShape.get_shape().radius * 2
+		
+		var vertex3 = graph.add_vertex("", TYPE_VERTEX.TASK)
+		vertex3.position = (vertex1.position + vertex2.position)/2
+		var vertex4 = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		vertex4.position = (vertex3.position + vertex2.position)/2
+		var vertex5 = graph.add_vertex("", TYPE_VERTEX.KEY)
+		vertex5.position = vertex3.position + Vector2(rad, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		var vertex6 = graph.add_vertex("", TYPE_VERTEX.TASK)
+		vertex6.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
+		
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex4)
+		graph.connect_vertex(vertex1, vertex6)
+		graph.connect_vertex(vertex6, vertex5)
+		graph.connect_vertex(vertex5, vertex3)
+		
+		graph.connect_vertex(vertex4, vertex2)
+		graph.connect_vertex(vertex5, vertex4, TYPE_EDGE.KEY_LOCK)
+#		print("execute rule KL2 at" + str(chosenEdge))
+
+func ruleKnL3(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is 2 vertex connected
+		if edge.to != null:
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var rad = vertex1.colShape.get_shape().radius * 2
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		
+		var vertex3 = graph.add_vertex("", TYPE_VERTEX.TASK)
+		vertex3.position = (vertex1.position + vertex2.position)/2
+		var vertex4 = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		vertex4.position = (vertex3.position + vertex2.position)/2
+		var vertex5 = graph.add_vertex("", TYPE_VERTEX.TASK)
+		vertex5.position = vertex3.position + Vector2(rad, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		var vertex6 = graph.add_vertex("", TYPE_VERTEX.KEY)
+		vertex6.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
+		
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex4)
+		graph.connect_vertex(vertex3, vertex5)
+		graph.connect_vertex(vertex5, vertex6)
+		graph.connect_vertex(vertex6, vertex1)
+		
+		graph.connect_vertex(vertex4, vertex2)
+		graph.connect_vertex(vertex6, vertex4, TYPE_EDGE.KEY_LOCK)
+	#	print("execute rule KL3 at" + str(chosenEdge))
+
+func ruleKnL4(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is 2 vertex connected and the secon vertex type is goal
+		var from = graph.get_vertex(edge.from)
+		var to = graph.get_vertex(edge.to)
+		if graph.is_place(from) and to.type == TYPE_VERTEX.GOAL:
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		
+		var vertex3 = graph.add_vertex("", TYPE_VERTEX.KEY)
+		vertex3.position = (vertex1.position + vertex2.position)/2
+		var vertex4 = graph.add_vertex("", TYPE_VERTEX.TASK)
+		vertex4.position = (vertex3.position + vertex2.position)/2
+		var vertex5 = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		vertex5.position = (vertex4.position + vertex2.position)/2
+		
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex4)
+		graph.connect_vertex(vertex4, vertex5)
+		graph.connect_vertex(vertex5, vertex2)
+		
+		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
+	#	print("execute rule KL4 at" + str(chosenEdge))
 
 # end of collection of rules ===================================================
 
@@ -270,3 +392,11 @@ func _on_ButtonExecuteSingleRule_pressed():
 			ruleObstacle(targetGraph)
 		"reward":
 			ruleReward(targetGraph)
+		"key&lock1":
+			ruleKnL1(targetGraph)
+		"key&lock2":
+			ruleKnL2(targetGraph)
+		"key&lock3":
+			ruleKnL3(targetGraph)
+		"key&lock4":
+			ruleKnL4(targetGraph)

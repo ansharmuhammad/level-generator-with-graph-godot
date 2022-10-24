@@ -5,7 +5,7 @@ export var type: String = "PATH"
 var from: Node2D
 var to: Node2D
 export var weight: int = 1
-export var color: Color = Color.yellow
+export var color: Color = Color.black
 
 func _ready():
 	pass
@@ -15,6 +15,7 @@ func init(_from: Node2D = null, _to: Node2D = null, _type: String = "PATH"):
 	from = _from
 	to = _to
 	type = _type
+	color = Color.black if type == TYPE_EDGE.PATH else Color.yellow
 	weight = randi() % 3 + 1
 	var fromString = from.name if from != null else "null"
 	var toString = to.name if to != null else "null"

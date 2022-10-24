@@ -93,7 +93,7 @@ margin_right = 133.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "init1"
-items = [ "init1", null, false, 0, null, "init2", null, false, 1, null, "extend1", null, false, 2, null, "extend2", null, false, 3, null, "extend3", null, false, 4, null, "secret", null, false, 5, null, "obstacle", null, false, 6, null, "reward", null, false, 7, null ]
+items = [ "init1", null, false, 0, null, "init2", null, false, 1, null, "extend1", null, false, 2, null, "extend2", null, false, 3, null, "extend3", null, false, 4, null, "secret", null, false, 5, null, "obstacle", null, false, 6, null, "reward", null, false, 7, null, "key&lock1", null, false, 8, null, "key&lock2", null, false, 9, null, "key&lock3", null, false, 10, null, "key&lock4", null, false, 11, null ]
 selected = 0
 
 [node name="ButtonExecuteSingleRule" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionSingleRule/HBoxContainer"]
