@@ -22,8 +22,11 @@ func _ready():
 ## initiate vertex with name and type
 func init(_name: String = "", _type: String = "TASK"):
 	name = _name
-	type = _type
 	$Sprite/Label.text = _name
+	changeType(_type)
+
+func changeType(_type: String):
+	type = _type
 	match _type:
 		TYPE_VERTEX.TASK:
 			$Sprite.modulate = Color.white

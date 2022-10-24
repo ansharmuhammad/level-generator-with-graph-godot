@@ -184,8 +184,46 @@ func ruleSecret(graph: Node):
 			vertex2.position = to.position + Vector2(rad, 0).rotated(to.position.angle_to_point(from.position) + deg2rad(-90))
 		
 		graph.connect_vertex(vertex1, vertex2)
+#		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
+
+func ruleObstacle(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is 2 vertex connected
+		if edge.to != null:
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
+		vertex3.position = (vertex1.position + vertex2.position)/2
 		
-		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex2)
+#		print("execute rule Obstacle at" + str(chosenEdge))
+
+func ruleReward(graph: Node):
+	var match_edge: Array = []
+	for edge in graph.get_node("Edges").get_children():
+		#check if there is 2 vertex connected
+		if edge.to != null:
+			match_edge.append(edge)
+	
+	if match_edge.size() > 0:
+		var chosenEdge = match_edge[randi() % match_edge.size()]
+		var vertex1 = graph.get_vertex(chosenEdge.from)
+		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
+		var vertex4 = graph.add_vertex("", TYPE_VERTEX.REWARD)
+		vertex3.position = (vertex1.position + vertex2.position)/2
+		vertex4.position = (vertex3.position + vertex2.position)/2
+		
+		chosenEdge.init(vertex1, vertex3)
+		graph.connect_vertex(vertex3, vertex4)
+		graph.connect_vertex(vertex4, vertex2)
+#		print("execute rule Reward at" + str(chosenEdge))
 
 # end of collection of rules ===================================================
 
@@ -228,3 +266,7 @@ func _on_ButtonExecuteSingleRule_pressed():
 			ruleExtend3(targetGraph)
 		"secret":
 			ruleSecret(targetGraph)
+		"obstacle":
+			ruleObstacle(targetGraph)
+		"reward":
+			ruleReward(targetGraph)
