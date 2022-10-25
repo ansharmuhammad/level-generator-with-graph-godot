@@ -376,7 +376,6 @@ func _create_entrance(graph: Node, vertex: Node):
 	if vertex.type == TYPE_VERTEX.START:
 		var newVertex: Node = graph.add_vertex()
 		vertex.subOf = newVertex
-#		vertex.type = TYPE_VERTEX.ENTRANCE
 		vertex.changeType(TYPE_VERTEX.ENTRANCE)
 		vertex.changeLayer(2)
 		vertex.setScale(0.5)
@@ -388,6 +387,39 @@ func _create_entrance(graph: Node, vertex: Node):
 				edge.to = newVertex
 #		var msg = "execute rule createEntrance at " + str(vertex) +" new "+str(newVertex)
 #		print(msg)
+
+func _create_goal(graph: Node, vertex: Node):
+	#create goal
+	if vertex.type == TYPE_VERTEX.GOAL:
+		var newVertex: Node = graph.add_vertex()
+		vertex.subOf = newVertex
+		vertex.changeLayer(2)
+		vertex.setScale(0.5)
+		vertex.position = newVertex.position
+		for edge in graph.get_edges_of(vertex):
+			if edge.from == vertex:
+				edge.from = newVertex
+			elif edge.to == vertex:
+				edge.to = newVertex
+#		var msg = "execute rule createGoal at" + str(vertex) +" new "+str(newVertex)
+#		print(msg)
+
+func _create_secret(graph: Node, vertex: Node):
+	#create secret
+	if vertex.type == TYPE_VERTEX.SECRET:
+		var newVertex: Node = graph.add_vertex()
+		vertex.subOf = newVertex
+		vertex.changeLayer(2)
+		vertex.setScale(0.5)
+		vertex.position = newVertex.position
+		for edge in graph.get_edges_of(vertex):
+			if edge.from == vertex:
+				edge.from = newVertex
+			elif edge.to == vertex:
+				edge.to = newVertex
+#		var msg = "execute rule createSecret at" + str(vertex) +" new "+str(newVertex)
+#		print(msg)
+
 # end of collection transform rule =============================================
 
 # add new graph
@@ -492,3 +524,5 @@ func _on_ButtonExecuteRecipe_pressed():
 	var vertices = targetGraph.get_vertices()
 	for vertex in vertices:
 		_create_entrance(targetGraph, vertex)
+		_create_goal(targetGraph, vertex)
+		_create_secret(targetGraph, vertex)
