@@ -10,8 +10,12 @@ export var color: Color = Color.black
 func _ready():
 	pass
 
+#disable for performance
+func _physics_process(delta):
+	update()
+
 ## initiate edge to connection vertex in one line
-func init(_from: Node2D = null, _to: Node2D = null, _type: String = "PATH"):
+func initObject(_from: Node2D = null, _to: Node2D = null, _type: String = "PATH"):
 	from = _from
 	to = _to
 	type = _type

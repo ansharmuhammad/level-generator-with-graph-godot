@@ -6,24 +6,47 @@ onready var optionTargetGraph = $"%OptionTargetGraph"
 onready var graphs = $Graphs
 onready var optionSingleRule = $"%OptionSingleRule"
 onready var buttonExecuteSingleRule = $"%ButtonExecuteSingleRule"
+onready var optionRuleRecipe = $"%OptionRuleRecipe"
+onready var richTextRecipe = $"%RichTextRecipe"
+onready var butttonExecuteRecipe = $"%ButtonExecuteRecipe"
 
 const Graph = preload("res://debug/visualGraph/VisualGraph.tscn")
 const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
 const Edge = preload("res://debug/visualEdge/VisualEdge.tscn")
 
-var targetGraph: Node2D
+onready var targetGraph: Node2D = null
 onready var indexGraph: int = 0
 onready var indexVertex: int = 0
+onready var recipe: Array = [
+	"randomInit",
+	"randomExtend", "randomExtend", "randomExtend",
+	"secret",
+	"obstacle", "obstacle",
+	"reward", "reward", "reward",
+	"randomKeyLock", "randomKeyLock", "randomKeyLock"
+]
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	for rule in recipe:
+		richTextRecipe.add_text(rule)
+		richTextRecipe.newline()
 	randomize()
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_RIGHT:
 		var mouse = get_viewport().get_mouse_position()
 		popup.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
+
+#disable for performance
+func _physics_process(delta):
+	if targetGraph == null:
+		buttonExecuteSingleRule.disabled = true
+		butttonExecuteRecipe.disabled = true
+	else:
+		buttonExecuteSingleRule.disabled = false
+		butttonExecuteRecipe.disabled = false
 
 # collection of rules ==========================================================
 
@@ -49,7 +72,7 @@ func ruleInit1(graph: Node):
 		var vertex4 = graph.add_vertex()
 		vertex4.position = vertex1.position + (Vector2.DOWN * rad)
 
-		chosenEdge.init(vertex1, vertex2)
+		chosenEdge.initObject(vertex1, vertex2)
 		graph.connect_vertex(vertex2, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex1)
@@ -81,7 +104,7 @@ func ruleInit2(graph: Node):
 		var vertex6 = graph.add_vertex()
 		vertex6.position = vertex4.position + (Vector2.LEFT * rad)
 		
-		chosenEdge.init(vertex1, vertex2)
+		chosenEdge.initObject(vertex1, vertex2)
 		graph.connect_vertex(vertex2, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex5)
@@ -103,7 +126,7 @@ func ruleExtend1(graph: Node):
 		var vertex3 = graph.add_vertex()
 		vertex3.position = (vertex1.position + vertex2.position)/2
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex2)
 #		print("execute rule Extend1 at" + str(chosenEdge))
 
@@ -177,10 +200,8 @@ func ruleSecret(graph: Node):
 		var vertex2 = graph.add_vertex("",TYPE_VERTEX.SECRET)
 		
 		if idx == 0:
-			print("0")
 			vertex2.position = from.position + Vector2(rad, 0).rotated(from.position.angle_to_point(to.position) + deg2rad(-90))
 		else:
-			print("1")
 			vertex2.position = to.position + Vector2(rad, 0).rotated(to.position.angle_to_point(from.position) + deg2rad(-90))
 		
 		graph.connect_vertex(vertex1, vertex2)
@@ -200,7 +221,7 @@ func ruleObstacle(graph: Node):
 		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		vertex3.position = (vertex1.position + vertex2.position)/2
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex2)
 #		print("execute rule Obstacle at" + str(chosenEdge))
 
@@ -220,7 +241,7 @@ func ruleReward(graph: Node):
 		var vertex4 = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		vertex4.position = (vertex3.position + vertex2.position)/2
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex2)
 #		print("execute rule Reward at" + str(chosenEdge))
@@ -246,7 +267,7 @@ func ruleKnL1(graph: Node):
 		var vertex5 = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		vertex5.position = (vertex4.position + vertex2.position)/2
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex5)
 		graph.connect_vertex(vertex5, vertex2)
@@ -276,7 +297,7 @@ func ruleKnL2(graph: Node):
 		var vertex6 = graph.add_vertex("", TYPE_VERTEX.TASK)
 		vertex6.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex1, vertex6)
 		graph.connect_vertex(vertex6, vertex5)
@@ -308,7 +329,7 @@ func ruleKnL3(graph: Node):
 		var vertex6 = graph.add_vertex("", TYPE_VERTEX.KEY)
 		vertex6.position = vertex1.position + Vector2(rad, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex3, vertex5)
 		graph.connect_vertex(vertex5, vertex6)
@@ -316,7 +337,7 @@ func ruleKnL3(graph: Node):
 		
 		graph.connect_vertex(vertex4, vertex2)
 		graph.connect_vertex(vertex6, vertex4, TYPE_EDGE.KEY_LOCK)
-	#	print("execute rule KL3 at" + str(chosenEdge))
+#		print("execute rule KL3 at" + str(chosenEdge))
 
 func ruleKnL4(graph: Node):
 	var match_edge: Array = []
@@ -339,13 +360,13 @@ func ruleKnL4(graph: Node):
 		var vertex5 = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		vertex5.position = (vertex4.position + vertex2.position)/2
 		
-		chosenEdge.init(vertex1, vertex3)
+		chosenEdge.initObject(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
 		graph.connect_vertex(vertex4, vertex5)
 		graph.connect_vertex(vertex5, vertex2)
 		
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
-	#	print("execute rule KL4 at" + str(chosenEdge))
+#		print("execute rule KL4 at" + str(chosenEdge))
 
 # end of collection of rules ===================================================
 
@@ -353,10 +374,10 @@ func ruleKnL4(graph: Node):
 func _on_ButtonAddGraph_pressed():
 	#make graph
 	var graph = Graph.instance()
-	graph.init("graph"+str(indexGraph), indexGraph)
+	graph.initObject("graph"+str(indexGraph), indexGraph)
 	#initiate vertex 
 	var vertexinit = Vertex.instance()
-	vertexinit.init("Node" + str(indexVertex), TYPE_VERTEX.INIT)
+	vertexinit.initObject("Node" + str(indexVertex), TYPE_VERTEX.INIT)
 	graph.get_node("Vertices").add_child(vertexinit)
 	indexVertex += 1
 	graph.connect_vertex(vertexinit, null)
@@ -368,35 +389,83 @@ func _on_ButtonAddGraph_pressed():
 	targetGraph = graph
 	indexGraph += 1
 
+func executeRule(rule: String, graph: Node):
+	match rule:
+		"init1":
+			ruleInit1(graph)
+		"init2":
+			ruleInit2(graph)
+		"extend1":
+			ruleExtend1(graph)
+		"extend2":
+			ruleExtend2(graph)
+		"extend3":
+			ruleExtend3(graph)
+		"secret":
+			ruleSecret(graph)
+		"obstacle":
+			ruleObstacle(graph)
+		"reward":
+			ruleReward(graph)
+		"key&lock1":
+			ruleKnL1(graph)
+		"key&lock2":
+			ruleKnL2(graph)
+		"key&lock3":
+			ruleKnL3(graph)
+		"key&lock4":
+			ruleKnL4(graph)
+		"randomInit":
+			var chosenrule = randi() % 2 + 1
+			if chosenrule == 1:
+				ruleInit1(graph)
+			else:
+				ruleInit2(graph)
+		"randomExtend":
+			var chosenrule = randi() % 3 + 1
+			if chosenrule == 1:
+				ruleExtend1(graph)
+			elif chosenrule == 2:
+				ruleExtend2(graph)
+			else:
+				ruleExtend3(graph)
+		"randomKeyLock":
+			var chosenrule = randi() % 4 + 1
+			match chosenrule:
+				1: ruleKnL1(graph)
+				2: ruleKnL2(graph)
+				3: ruleKnL3(graph)
+				4: ruleKnL4(graph)
 
 func _on_OptionTargetGraph_item_selected(index):
 	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
-	
 
 func _on_ButtonExecuteSingleRule_pressed():
 	var selectedRule = optionSingleRule.get_item_text(optionSingleRule.get_selected_id())
-	match selectedRule:
-		"init1":
-			ruleInit1(targetGraph)
-		"init2":
-			ruleInit2(targetGraph)
-		"extend1":
-			ruleExtend1(targetGraph)
-		"extend2":
-			ruleExtend2(targetGraph)
-		"extend3":
-			ruleExtend3(targetGraph)
-		"secret":
-			ruleSecret(targetGraph)
-		"obstacle":
-			ruleObstacle(targetGraph)
-		"reward":
-			ruleReward(targetGraph)
-		"key&lock1":
-			ruleKnL1(targetGraph)
-		"key&lock2":
-			ruleKnL2(targetGraph)
-		"key&lock3":
-			ruleKnL3(targetGraph)
-		"key&lock4":
-			ruleKnL4(targetGraph)
+	executeRule(selectedRule, targetGraph)
+
+
+func _on_ButtonClearAll_pressed():
+	for graph in graphs.get_children():
+		graph.queue_free()
+	targetGraph = null
+	optionTargetGraph.clear()
+	indexGraph = 0
+	indexVertex = 0
+
+
+func _on_ButtonAddRule_pressed():
+	var textItem = optionRuleRecipe.get_item_text(optionRuleRecipe.get_selected_id())
+	recipe.append(textItem)
+	richTextRecipe.add_text(textItem)
+	richTextRecipe.newline()
+
+
+func _on_ButtonClearRecipe_pressed():
+	recipe.clear()
+	richTextRecipe.clear()
+
+
+func _on_ButtonExecuteRecipe_pressed():
+	for rule in recipe:
+		executeRule(rule, targetGraph)

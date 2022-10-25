@@ -13,22 +13,21 @@ export var subOfStr: String = ""
 var is_held = false
 
 func _ready():
-	scale = Vector2(0.5, 0.5)
+	changeType(type)
 	var shape = colShape.get_shape()
-	shape.radius = 300 * scale.x
-	sprite.modulate = Color.white
 	set_process_input(true)
 
 ## initiate vertex with name and type
-func init(_name: String = "", _type: String = "TASK"):
+func initObject(_name: String = "", _type: String = "TASK"):
 	name = _name
 	$Sprite/Label.text = _name
-	changeType(_type)
+	type = _type
 
 func changeType(_type: String):
-	type = _type
-	var shape = colShape.get_shape()
 	match _type:
+		TYPE_VERTEX.INIT:
+			$Sprite.modulate = Color.white
+			$VisualNode/LabelType.text = "I"
 		TYPE_VERTEX.TASK:
 			$Sprite.modulate = Color.white
 			$VisualNode/LabelType.text = "T"
@@ -44,33 +43,23 @@ func changeType(_type: String):
 		TYPE_VERTEX.OBSTACLE:
 			$Sprite.modulate = Color.red
 			$VisualNode/LabelType.text = "O"
-			scale = Vector2(0.25, 0.25)
-			shape.radius = 300 * scale.x
-			sprite.modulate = Color.red
 		TYPE_VERTEX.REWARD:
 			$Sprite.modulate = Color.yellow
 			$VisualNode/LabelType.text = "R"
-			scale = Vector2(0.25, 0.25)
-			shape.radius = 300 * scale.x
-			sprite.modulate = Color.yellow
 		TYPE_VERTEX.KEY:
 			$Sprite.modulate = Color.greenyellow
 			$VisualNode/LabelType.text = "K"
-			scale = Vector2(0.25, 0.25)
-			shape.radius = 300 * scale.x
-			sprite.modulate = Color.greenyellow
 		TYPE_VERTEX.LOCK:
-			$Sprite.modulate = Color.blue
+			$Sprite.modulate = Color.aqua
 			$VisualNode/LabelType.text = "L"
-			scale = Vector2(0.25, 0.25)
-			shape.radius = 300 * scale.x
-			sprite.modulate = Color.aqua
 
 func setColor(color: Color):
 	sprite.modulate = color
 
 func setScale(_scale: float):
-	scale = Vector2(_scale, _scale)
+	$Sprite.scale = Vector2(_scale, _scale)
+	var shape = colShape.get_shape()
+	shape.radius = 300 * _scale
 
 func _to_string() -> String:
 	if subOfStr == "":

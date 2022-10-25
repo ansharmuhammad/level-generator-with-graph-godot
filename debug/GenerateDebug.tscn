@@ -19,12 +19,16 @@ unique_name_in_owner = true
 visible = true
 margin_top = -5.0
 margin_right = 221.0
-margin_bottom = 350.0
+margin_bottom = 446.0
 window_title = "Generator controller"
 
 [node name="MarginContainer" type="MarginContainer" parent="GUI/WindowDialog"]
-margin_right = 220.0
-margin_bottom = 348.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 6.0
+margin_right = -4.0
+margin_bottom = 1.0
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
 custom_constants/margin_left = 10
@@ -33,24 +37,24 @@ custom_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer"]
 margin_left = 10.0
 margin_top = 10.0
-margin_right = 210.0
-margin_bottom = 338.0
+margin_right = 203.0
+margin_bottom = 436.0
 custom_constants/separation = 10
 
 [node name="SectionGraph" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 50.0
 custom_constants/separation = 10
 
 [node name="ButtonAddGraph" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGraph"]
 unique_name_in_owner = true
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 20.0
 text = "Create Graph"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGraph"]
 margin_top = 30.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 50.0
 
 [node name="Label" type="Label" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGraph/HBoxContainer"]
@@ -62,34 +66,34 @@ text = "target graph :"
 [node name="OptionTargetGraph" type="OptionButton" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGraph/HBoxContainer"]
 unique_name_in_owner = true
 margin_left = 88.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 
 [node name="HSeparator" type="HSeparator" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
 margin_top = 60.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 64.0
 
 [node name="SectionSingleRule" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
 margin_top = 74.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 118.0
 custom_constants/separation = 10
 
 [node name="Label" type="Label" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionSingleRule"]
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 14.0
 text = "single rule :"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionSingleRule"]
 margin_top = 24.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 44.0
 
 [node name="OptionSingleRule" type="OptionButton" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionSingleRule/HBoxContainer"]
 unique_name_in_owner = true
-margin_right = 133.0
+margin_right = 126.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "init1"
@@ -98,46 +102,51 @@ selected = 0
 
 [node name="ButtonExecuteSingleRule" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionSingleRule/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 137.0
-margin_right = 200.0
+margin_left = 130.0
+margin_right = 193.0
 margin_bottom = 20.0
 text = "execute"
 
-[node name="SectionRecipe" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
 margin_top = 128.0
-margin_right = 200.0
-margin_bottom = 322.0
+margin_right = 193.0
+margin_bottom = 132.0
+
+[node name="SectionRecipe" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 142.0
+margin_right = 193.0
+margin_bottom = 326.0
 custom_constants/separation = 10
 
 [node name="Label" type="Label" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 14.0
 text = "make recipe :"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
 margin_top = 24.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 44.0
 
 [node name="OptionRuleRecipe" type="OptionButton" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer"]
 unique_name_in_owner = true
-margin_right = 161.0
+margin_right = 154.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "init1"
-items = [ "init1", null, false, 0, null, "init2", null, false, 1, null ]
+items = [ "init1", null, false, 0, null, "init2", null, false, 1, null, "extend1", null, false, 2, null, "extend2", null, false, 3, null, "extend3", null, false, 4, null, "secret", null, false, 5, null, "obstacle", null, false, 6, null, "reward", null, false, 7, null, "key&lock1", null, false, 8, null, "key&lock2", null, false, 9, null, "key&lock3", null, false, 10, null, "key&lock4", null, false, 11, null, "randomInit", null, false, 12, null, "randomExtend", null, false, 13, null, "randomKeyLock", null, false, 14, null ]
 selected = 0
 
 [node name="ButtonAddRule" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 165.0
-margin_right = 200.0
+margin_left = 158.0
+margin_right = 193.0
 margin_bottom = 20.0
 text = "add"
 
 [node name="PanelContainer" type="PanelContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
 margin_top = 54.0
-margin_right = 200.0
+margin_right = 193.0
 margin_bottom = 154.0
 rect_min_size = Vector2( 0, 100 )
 size_flags_horizontal = 3
@@ -146,35 +155,50 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 193.0
+margin_right = 186.0
 margin_bottom = 93.0
 size_flags_vertical = 3
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
 margin_top = 164.0
-margin_right = 200.0
-margin_bottom = 164.0
+margin_right = 193.0
+margin_bottom = 184.0
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
-margin_top = 174.0
-margin_right = 200.0
-margin_bottom = 194.0
-
-[node name="ButtonExecuteRecipe" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer3"]
+[node name="ButtonExecuteRecipe" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer2"]
 unique_name_in_owner = true
-margin_right = 98.0
+margin_right = 94.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "execute"
 
-[node name="ButtonClearRecipe" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer3"]
+[node name="ButtonClearRecipe" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer2"]
 unique_name_in_owner = true
-margin_left = 102.0
-margin_right = 200.0
+margin_left = 98.0
+margin_right = 193.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "clear"
 
+[node name="HSeparator3" type="HSeparator" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 336.0
+margin_right = 193.0
+margin_bottom = 340.0
+
+[node name="SectionGeneral" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 350.0
+margin_right = 193.0
+margin_bottom = 370.0
+
+[node name="ButtonClearAll" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGeneral"]
+unique_name_in_owner = true
+margin_right = 193.0
+margin_bottom = 20.0
+text = "clear all graph"
+
 [connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGraph/ButtonAddGraph" to="." method="_on_ButtonAddGraph_pressed"]
 [connection signal="item_selected" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGraph/HBoxContainer/OptionTargetGraph" to="." method="_on_OptionTargetGraph_item_selected"]
 [connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionSingleRule/HBoxContainer/ButtonExecuteSingleRule" to="." method="_on_ButtonExecuteSingleRule_pressed"]
+[connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer/ButtonAddRule" to="." method="_on_ButtonAddRule_pressed"]
+[connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer2/ButtonExecuteRecipe" to="." method="_on_ButtonExecuteRecipe_pressed"]
+[connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer2/ButtonClearRecipe" to="." method="_on_ButtonClearRecipe_pressed"]
+[connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGeneral/ButtonClearAll" to="." method="_on_ButtonClearAll_pressed"]
