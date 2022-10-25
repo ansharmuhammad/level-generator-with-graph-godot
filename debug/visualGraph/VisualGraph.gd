@@ -32,6 +32,17 @@ func get_vertices() -> Array:
 func get_edges() -> Array:
 	return $Edges.get_children()
 
+## get list edges on a vertex
+func get_edges_of(vertex: Node, type: String = "") -> Array:
+	var listEdge: Array = []
+	for edge in $Edges.get_children():
+		if edge.from == vertex or edge.to == vertex:
+			if type == "":
+				listEdge.append(edge)
+			elif edge.type == type:
+				listEdge.append(edge)
+	return listEdge
+
 ## add vertex to graph
 func add_vertex(name: String = "", type: String = "") -> Node:
 	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name

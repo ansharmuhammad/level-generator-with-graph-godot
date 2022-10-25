@@ -370,6 +370,26 @@ func ruleKnL4(graph: Node):
 
 # end of collection of rules ===================================================
 
+# collection transform rule ====================================================
+func _create_entrance(graph: Node, vertex: Node):
+	#create entrance
+	if vertex.type == TYPE_VERTEX.START:
+		var newVertex: Node = graph.add_vertex()
+		vertex.subOf = newVertex
+#		vertex.type = TYPE_VERTEX.ENTRANCE
+		vertex.changeType(TYPE_VERTEX.ENTRANCE)
+		vertex.changeLayer(2)
+		vertex.setScale(0.5)
+		vertex.position = newVertex.position
+		for edge in graph.get_edges_of(vertex):
+			if edge.from == vertex:
+				edge.from = newVertex
+			elif edge.to == vertex:
+				edge.to = newVertex
+#		var msg = "execute rule createEntrance at " + str(vertex) +" new "+str(newVertex)
+#		print(msg)
+# end of collection transform rule =============================================
+
 # add new graph
 func _on_ButtonAddGraph_pressed():
 	#make graph
@@ -469,3 +489,6 @@ func _on_ButtonClearRecipe_pressed():
 func _on_ButtonExecuteRecipe_pressed():
 	for rule in recipe:
 		executeRule(rule, targetGraph)
+	var vertices = targetGraph.get_vertices()
+	for vertex in vertices:
+		_create_entrance(targetGraph, vertex)
