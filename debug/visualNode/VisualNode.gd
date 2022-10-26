@@ -19,7 +19,7 @@ func _ready():
 	var shape = colShape.get_shape()
 	set_process_input(true)
 	shapeNormal.radius = 150
-	shapeSmall.radius = 75
+	shapeSmall.radius = 70
 
 ## initiate vertex with name and type
 func initObject(_name: String = "", _type: String = "TASK"):

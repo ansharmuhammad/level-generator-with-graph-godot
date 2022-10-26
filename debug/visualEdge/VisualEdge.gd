@@ -6,6 +6,7 @@ var from: Node2D
 var to: Node2D
 export var weight: int = 1
 export var color: Color = Color.black
+export var lineSize: float = 10.0
 
 func _ready():
 	pass
@@ -20,6 +21,7 @@ func initObject(_from: Node2D = null, _to: Node2D = null, _type: String = "PATH"
 	to = _to
 	type = _type
 	color = Color.black if type == TYPE_EDGE.PATH else Color.yellow
+	lineSize = 10.0 if type == TYPE_EDGE.PATH else 5.0
 	weight = randi() % 3 + 1
 	var fromString = from.name if from != null else "null"
 	var toString = to.name if to != null else "null"
@@ -33,9 +35,9 @@ func _to_string() -> String:
 func _draw():
 	var fromPosition = from.position if from != null else to.position
 	var toPosition = to.position if to != null else from.position
-	draw_line(fromPosition, toPosition, color, 10)
-	draw_line(toPosition, toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(30)), color, 10)
-	draw_line(toPosition, toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-30)), color, 10)
+	draw_line(fromPosition, toPosition, color, lineSize)
+	draw_line(toPosition, toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(30)), color, lineSize)
+	draw_line(toPosition, toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-30)), color, lineSize)
 
 func _input(event):
 	if event is InputEventMouseButton:

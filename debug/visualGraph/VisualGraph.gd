@@ -72,6 +72,15 @@ func is_place(vertex: Node) -> bool:
 		return true
 	return false
 
+func is_element(vertex: Node) -> bool:
+	var element: Array = [
+		TYPE_VERTEX.KEY,
+		TYPE_VERTEX.LOCK,
+		TYPE_VERTEX.OBSTACLE,
+		TYPE_VERTEX.REWARD
+	]
+	return true if element.find(vertex.type) != -1 else false
+
 ## get list of outgoing edges on a vertex
 func get_outgoing_edges(vertex: Node, type: String = "") -> Array:
 	var listEdge: Array = []
@@ -82,6 +91,16 @@ func get_outgoing_edges(vertex: Node, type: String = "") -> Array:
 			elif edge.type == type:
 				listEdge.append(edge)
 	return listEdge
+
+## get list outgoing edges on a vertex
+func get_outgoing_vertex(vertex: Node, typeEdge: String = "") -> Array:
+	var listVertex: Array = []
+	var edges: Array = get_outgoing_edges(vertex, typeEdge)
+	for edge in edges:
+		var toVertex: Node = get_vertex(edge.to)
+		if listVertex.find(toVertex) == -1:
+			listVertex.append(toVertex)
+	return listVertex
 
 ## get sum of outgoing edges on a vertex
 func get_outdegree(vertex: Node, typeEdge: String = "") -> int:

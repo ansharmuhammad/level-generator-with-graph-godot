@@ -115,7 +115,7 @@ margin_bottom = 132.0
 [node name="SectionRecipe" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
 margin_top = 142.0
 margin_right = 193.0
-margin_bottom = 326.0
+margin_bottom = 356.0
 custom_constants/separation = 10
 
 [node name="Label" type="Label" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
@@ -179,15 +179,22 @@ margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "clear"
 
-[node name="HSeparator3" type="HSeparator" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
-margin_top = 336.0
+[node name="ButtonTransform" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe"]
+unique_name_in_owner = true
+margin_top = 194.0
 margin_right = 193.0
-margin_bottom = 340.0
+margin_bottom = 214.0
+text = "execute transform rule"
 
-[node name="SectionGeneral" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
-margin_top = 350.0
+[node name="HSeparator3" type="HSeparator" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 366.0
 margin_right = 193.0
 margin_bottom = 370.0
+
+[node name="SectionGeneral" type="VBoxContainer" parent="GUI/WindowDialog/MarginContainer/VBoxContainer"]
+margin_top = 380.0
+margin_right = 193.0
+margin_bottom = 400.0
 
 [node name="ButtonClearAll" type="Button" parent="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGeneral"]
 unique_name_in_owner = true
@@ -201,4 +208,5 @@ text = "clear all graph"
 [connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer/ButtonAddRule" to="." method="_on_ButtonAddRule_pressed"]
 [connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer2/ButtonExecuteRecipe" to="." method="_on_ButtonExecuteRecipe_pressed"]
 [connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/HBoxContainer2/ButtonClearRecipe" to="." method="_on_ButtonClearRecipe_pressed"]
+[connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionRecipe/ButtonTransform" to="." method="_on_ButtonTransform_pressed"]
 [connection signal="pressed" from="GUI/WindowDialog/MarginContainer/VBoxContainer/SectionGeneral/ButtonClearAll" to="." method="_on_ButtonClearAll_pressed"]
