@@ -7,6 +7,10 @@ onready var shapeNormal = CircleShape2D.new()
 onready var shapeSmall = CircleShape2D.new()
 
 export var type: String = "TASK"
+export var alwaysStatic: bool = false
+export var move: bool = false
+
+var newPos: Vector2
 
 ## var which contains info about which part of the node this node belongs to
 var subOf: Node
@@ -19,14 +23,13 @@ func _ready():
 	var shape = colShape.get_shape()
 	set_process_input(true)
 	shapeNormal.radius = 150
-	shapeSmall.radius = 70
+	shapeSmall.radius = 50
 
 ## initiate vertex with name and type
 func initObject(_name: String = "", _type: String = "TASK"):
 	name = _name
 	$Sprite/Label.text = _name
 	type = _type
-"resource_name"
 func changeLayer(layer: int):
 	if layer == 0:
 		set_collision_layer_bit(0, true)
@@ -85,7 +88,8 @@ func setColor(color: Color):
 
 func setScale(_scale: float):
 	$Sprite.scale = Vector2(_scale, _scale)
-	$CollisionShape2D.shape.radius = 150 * _scale
+#	$CollisionShape2D.shape.radius = 150 * _scale
+	$CollisionShape2D.set_shape(shapeSmall)
 
 func _to_string() -> String:
 	if subOfStr == "":
@@ -97,11 +101,18 @@ func _physics_process(delta):
 	if is_held:
 		global_position = lerp(global_position, get_global_mouse_position(), 25 * delta)
 
+func _integrate_forces(state):
+
+	if move:
+		state.transform.origin = newPos
+		move = false
+
 func _input(event):
 	if event is InputEventMouseButton:
 		if not event.pressed and event.button_index == BUTTON_LEFT:
 			is_held = false
-			mode = RigidBody2D.MODE_CHARACTER
+			if !alwaysStatic:
+				mode = RigidBody2D.MODE_CHARACTER
 
 func _on_VisualNode_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton:

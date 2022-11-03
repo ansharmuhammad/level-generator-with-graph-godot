@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://debug/visualNode/VisualNode.tscn" type="PackedScene" id=1]
+[ext_resource path="res://debug/test.gd" type="Script" id=2]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="VisualNode" parent="." instance=ExtResource( 1 )]
+position = Vector2( 190, 315 )
+
+[node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="VisualNode"]
+node_a = NodePath("..")
+node_b = NodePath("../../VisualNode2")
+disable_collision = false
+length = 25.0
+rest_length = 25.0
+stiffness = 64.0
+damping = 16.0
+
+[node name="DampedSpringJoint2D2" type="DampedSpringJoint2D" parent="VisualNode"]
+node_a = NodePath("..")
+node_b = NodePath("../../VisualNode3")
+
+[node name="DampedSpringJoint2D3" type="DampedSpringJoint2D" parent="VisualNode"]
+node_a = NodePath("..")
+node_b = NodePath("../../VisualNode4")
+
+[node name="DampedSpringJoint2D4" type="DampedSpringJoint2D" parent="VisualNode"]
+node_a = NodePath("..")
+node_b = NodePath("../../VisualNode5")
+
+[node name="VisualNode2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 686, 331 )
+mode = 0
+
+[node name="VisualNode3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 686, 331 )
+mode = 0
+
+[node name="VisualNode4" parent="." instance=ExtResource( 1 )]
+position = Vector2( 686, 331 )
+mode = 0
+
+[node name="VisualNode5" parent="." instance=ExtResource( 1 )]
+position = Vector2( 686, 331 )
+mode = 0

@@ -6,7 +6,7 @@ var from: Node2D
 var to: Node2D
 export var weight: int = 1
 export var color: Color = Color.black
-export var lineSize: float = 10.0
+export var lineSize: float = 5.0
 
 func _ready():
 	pass
@@ -35,9 +35,9 @@ func _to_string() -> String:
 func _draw():
 	var fromPosition = from.position if from != null else to.position
 	var toPosition = to.position if to != null else from.position
-	draw_line(fromPosition, toPosition, color, lineSize)
-	draw_line(toPosition, toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(30)), color, lineSize)
-	draw_line(toPosition, toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-30)), color, lineSize)
+	draw_line(fromPosition - Vector2(50,0).rotated(fromPosition.angle_to_point(toPosition)), toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition)), color, lineSize)
+	draw_line(toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(100,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(15)), color, lineSize)
+	draw_line(toPosition - Vector2(50,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(100,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-15)), color, lineSize)
 
 func _input(event):
 	if event is InputEventMouseButton:

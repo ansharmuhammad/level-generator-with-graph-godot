@@ -57,7 +57,7 @@ func ruleInit1(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is init vertex
-		var from = graph.get_vertex(edge.from)		
+		var from = graph.get_vertex(edge.from)
 		if from.type == TYPE_VERTEX.INIT and edge.to == null:
 			match_edge.append(edge)
 
@@ -374,15 +374,46 @@ func ruleKnL4(graph: Node):
 # end of collection of rules ===================================================
 
 # collection transform rule ====================================================
+func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
+	vertex.colShape.disabled = true
+	sub_vertex.colShape.disabled = true
+	
+	vertex.set_mode(RigidBody2D.MODE_STATIC)
+	vertex.alwaysStatic = true
+	
+	sub_vertex.set_mode(RigidBody2D.MODE_RIGID)
+	
+	sub_vertex.subOf = vertex
+	sub_vertex.changeLayer(2)
+	sub_vertex.setScale(0.5)
+	sub_vertex.move = true
+	sub_vertex.newPos = vertex.global_position
+	
+	
+#
+#	var pinjoint = PinJoint2D.new()
+#	vertex.add_child(pinjoint)
+#	pinjoint.global_position = vertex.global_position
+#	pinjoint.name = str(vertex.name)+"joint"+str(sub_vertex.name)
+	
+#	pinjoint.softness = 16
+#	pinjoint.bias = 0.9
+	sub_vertex.colShape.disabled = false
+#	pinjoint.node_a = vertex.get_path()
+#	pinjoint.node_b = sub_vertex.get_path()
+	vertex.colShape.disabled = false
+	
+
 func _create_entrance(graph: Node, vertex: Node):
 	#create entrance
 	if vertex.type == TYPE_VERTEX.START:
 		var newVertex: Node = graph.add_vertex()
-		vertex.subOf = newVertex
-		vertex.changeType(TYPE_VERTEX.ENTRANCE)
-		vertex.changeLayer(2)
-		vertex.setScale(0.5)
+#		vertex.subOf = newVertex
+#		vertex.changeLayer(2)
+#		vertex.setScale(0.5)
 		newVertex.position = vertex.position
+		vertex.changeType(TYPE_VERTEX.ENTRANCE)
+		_suboff(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -395,10 +426,11 @@ func _create_goal(graph: Node, vertex: Node):
 	#create goal
 	if vertex.type == TYPE_VERTEX.GOAL:
 		var newVertex: Node = graph.add_vertex()
-		vertex.subOf = newVertex
-		vertex.changeLayer(2)
-		vertex.setScale(0.5)
+#		vertex.subOf = newVertex
+#		vertex.changeLayer(2)
+#		vertex.setScale(0.5)
 		newVertex.position = vertex.position
+		_suboff(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -411,10 +443,11 @@ func _create_secret(graph: Node, vertex: Node):
 	#create secret
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node = graph.add_vertex()
-		vertex.subOf = newVertex
-		vertex.changeLayer(2)
-		vertex.setScale(0.5)
+#		vertex.subOf = newVertex
+#		vertex.changeLayer(2)
+#		vertex.setScale(0.5)
 		newVertex.position = vertex.position
+		_suboff(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -439,10 +472,11 @@ func _add_element_before_place(graph: Node):
 	if !matchVertices.empty():
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		choosenMatch[1].subOf = choosenMatch[0]
-		choosenMatch[1].changeLayer(2)
-		choosenMatch[1].setScale(0.5)
-		choosenMatch[1].position = choosenMatch[0].position
+#		choosenMatch[1].subOf = choosenMatch[0]
+#		choosenMatch[1].changeLayer(2)
+#		choosenMatch[1].setScale(0.5)
+#		choosenMatch[1].global_position = choosenMatch[0].global_position
+		_suboff(choosenMatch[0], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -473,10 +507,11 @@ func _add_lock_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		choosenMatch[0].subOf = choosenMatch[1]
-		choosenMatch[0].changeLayer(2)
-		choosenMatch[0].setScale(0.5)
-		choosenMatch[0].position = choosenMatch[1].position
+#		choosenMatch[0].subOf = choosenMatch[1]
+#		choosenMatch[0].changeLayer(2)
+#		choosenMatch[0].setScale(0.5)
+#		choosenMatch[0].position = choosenMatch[1].position
+		_suboff(choosenMatch[1], choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -508,10 +543,11 @@ func _place_key_element(graph: Node):
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node = graph.add_vertex()
-		choosenMatch[0].subOf = newVertex
-		choosenMatch[0].changeLayer(2)
-		choosenMatch[0].setScale(0.5)
-		newVertex.position = choosenMatch[0].position
+#		choosenMatch[0].subOf = newVertex
+#		choosenMatch[0].changeLayer(2)
+#		choosenMatch[0].setScale(0.5)
+#		newVertex.position = choosenMatch[0].position
+		_suboff(newVertex, choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0]:
 				var theVertex: Node = graph.get_vertex(edge.to)
@@ -541,10 +577,11 @@ func _add_element_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		choosenMatch[1].subOf = choosenMatch[2]
-		choosenMatch[1].changeLayer(2)
-		choosenMatch[1].setScale(0.5)
-		choosenMatch[1].position = choosenMatch[2].position
+#		choosenMatch[1].subOf = choosenMatch[2]
+#		choosenMatch[1].changeLayer(2)
+#		choosenMatch[1].setScale(0.5)
+#		choosenMatch[1].position = choosenMatch[2].position
+		_suboff(choosenMatch[2], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[1] and edge.to == choosenMatch[2]:
 				edge.queue_free()
@@ -586,7 +623,7 @@ func executeTransformRule(graph: Node):
 			1: _add_lock_after_place(graph)
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
-	
+#
 	_element_edges(graph)
 	#transformative rule
 
