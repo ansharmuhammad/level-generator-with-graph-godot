@@ -1,8 +1,10 @@
 extends Node2D
 
 onready var gui = $"%GUI"
-onready var popup = $"%WindowDialog"
+onready var popup = $"%WindowDialogGenerator"
+onready var popup2 = $"%WindowDialogGraph"
 onready var optionTargetGraph = $"%OptionTargetGraph"
+onready var optionTargetGraph2 = $"%OptionTargetGraph2"
 onready var graphs = $Graphs
 onready var optionSingleRule = $"%OptionSingleRule"
 onready var buttonExecuteSingleRule = $"%ButtonExecuteSingleRule"
@@ -38,7 +40,10 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_RIGHT:
 		var mouse = get_viewport().get_mouse_position()
-		popup.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
+		if !event.control:
+			popup.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
+		else:
+			popup2.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
 
 #disable for performance
 func _physics_process(delta):
@@ -384,23 +389,26 @@ func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	sub_vertex.set_mode(RigidBody2D.MODE_RIGID)
 	
 	sub_vertex.subOf = vertex
+	vertex.sub.append(sub_vertex.name)
 	sub_vertex.changeLayer(2)
-	sub_vertex.setScale(0.5)
+	sub_vertex.setScale(0.8)
+	sub_vertex.global_position = vertex.global_position + Vector2(vertex.colShape.shape.radius, vertex.colShape.shape.radius)
 	sub_vertex.move = true
-	sub_vertex.newPos = vertex.global_position
+	var _radius = vertex.colShape.shape.radius
+	sub_vertex.newPos = vertex.global_position + Vector2(_radius-50,_radius-50).rotated(deg2rad(30) * vertex.sub.size())
 	
-	
-#
-#	var pinjoint = PinJoint2D.new()
-#	vertex.add_child(pinjoint)
-#	pinjoint.global_position = vertex.global_position
-#	pinjoint.name = str(vertex.name)+"joint"+str(sub_vertex.name)
+	yield(get_tree(), "physics_frame")
+	var pinjoint = PinJoint2D.new()
+	vertex.add_child(pinjoint)
+	pinjoint.global_position = vertex.global_position
+	pinjoint.name = str(vertex.name)+"joint"+str(sub_vertex.name)
+#	pinjoint.disable_collision = false
 	
 #	pinjoint.softness = 16
 #	pinjoint.bias = 0.9
 	sub_vertex.colShape.disabled = false
-#	pinjoint.node_a = vertex.get_path()
-#	pinjoint.node_b = sub_vertex.get_path()
+	pinjoint.node_a = vertex.get_path()
+	pinjoint.node_b = sub_vertex.get_path()
 	vertex.colShape.disabled = false
 	
 
@@ -634,17 +642,26 @@ func _on_ButtonAddGraph_pressed():
 	#make graph
 	var graph = Graph.instance()
 	graph.initObject("graph"+str(indexGraph), indexGraph)
+	var pos = indexGraph * 4500
+	graph.global_position = graph.global_position + Vector2(pos, 0)
+	
 	#initiate vertex 
-	var vertexinit = Vertex.instance()
-	vertexinit.initObject("Node" + str(indexVertex), TYPE_VERTEX.INIT)
+#	var vertexinit = Vertex.instance()
+	var vertexinit = graph.add_vertex("",TYPE_VERTEX.INIT)
+#	vertexinit.initObject("Node" + str(graph.indexVertex), TYPE_VERTEX.INIT)
+	vertexinit.newPos = graph.global_position
+	vertexinit.move = true
+	yield(get_tree(), "physics_frame")
 	graph.get_node("Vertices").add_child(vertexinit)
-	indexVertex += 1
+#	graph.indexVertex += 1
 	graph.connect_vertex(vertexinit, null)
 	graphs.add_child(graph)
 	
 	#add to option
 	optionTargetGraph.add_item(graph.name, indexGraph)
 	optionTargetGraph.select(indexGraph)
+	optionTargetGraph2.add_item(graph.name, indexGraph)
+	optionTargetGraph2.select(indexGraph)
 	targetGraph = graph
 	indexGraph += 1
 
@@ -697,6 +714,9 @@ func executeRule(rule: String, graph: Node):
 				4: ruleKnL4(graph)
 
 func _on_OptionTargetGraph_item_selected(index):
+	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
+
+func _on_OptionTargetGraph2_item_selected(index):
 	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
 
 func _on_ButtonExecuteSingleRule_pressed():

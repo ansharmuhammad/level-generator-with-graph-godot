@@ -18,6 +18,8 @@ onready var standardShortPath: float = 0.0
 onready var weightDuration: float = 0.0
 onready var optionReplay: float = 0.0
 
+onready var indexVertex: int = 0
+
 # (1) generic method for a graph ===============================================
 
 ## fitness function value

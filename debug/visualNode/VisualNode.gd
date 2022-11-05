@@ -9,6 +9,7 @@ onready var shapeSmall = CircleShape2D.new()
 export var type: String = "TASK"
 export var alwaysStatic: bool = false
 export var move: bool = false
+export var sub: Array = []
 
 var newPos: Vector2
 
@@ -17,6 +18,7 @@ var subOf: Node
 export var subOfStr: String = ""
 
 var is_held = false
+var color = Color.black
 
 func _ready():
 	changeType(type)
@@ -50,38 +52,47 @@ func changeType(_type: String):
 			$Sprite.modulate = Color.white
 			$VisualNode/LabelType.text = "I"
 			$CollisionShape2D.set_shape(shapeNormal)
+			color = Color.white
 		TYPE_VERTEX.TASK:
 			$Sprite.modulate = Color.white
 			$VisualNode/LabelType.text = "T"
 			$CollisionShape2D.set_shape(shapeNormal)
+			color = Color.white
 		TYPE_VERTEX.START:
 			$Sprite.modulate = Color.white
 			$VisualNode/LabelType.text = "S"
 			$CollisionShape2D.set_shape(shapeNormal)
+			color = Color.green
 		TYPE_VERTEX.GOAL:
 			$Sprite.modulate = Color.white
 			$VisualNode/LabelType.text = "G"
 			$CollisionShape2D.set_shape(shapeNormal)
+			color = Color.green
 		TYPE_VERTEX.SECRET:
 			$Sprite.modulate = Color.white
 			$VisualNode/LabelType.text = "St"
 			$CollisionShape2D.set_shape(shapeNormal)
+			color = Color.green
 		TYPE_VERTEX.OBSTACLE:
 			$Sprite.modulate = Color.red
 			$VisualNode/LabelType.text = "O"
-			$CollisionShape2D.set_shape(shapeSmall)
+			color = Color.green
+#			$CollisionShape2D.set_shape(shapeSmall)
 		TYPE_VERTEX.REWARD:
 			$Sprite.modulate = Color.yellow
 			$VisualNode/LabelType.text = "R"
-			$CollisionShape2D.set_shape(shapeSmall)
+			color = Color.green
+#			$CollisionShape2D.set_shape(shapeSmall)
 		TYPE_VERTEX.KEY:
 			$Sprite.modulate = Color.greenyellow
 			$VisualNode/LabelType.text = "K"
-			$CollisionShape2D.set_shape(shapeSmall)
+			color = Color.green
+#			$CollisionShape2D.set_shape(shapeSmall)
 		TYPE_VERTEX.LOCK:
 			$Sprite.modulate = Color.aqua
 			$VisualNode/LabelType.text = "L"
-			$CollisionShape2D.set_shape(shapeSmall)
+			color = Color.green
+#			$CollisionShape2D.set_shape(shapeSmall)
 
 func setColor(color: Color):
 	sprite.modulate = color
@@ -96,17 +107,21 @@ func _to_string() -> String:
 		return "{%s %s}" %[name, type]
 	return "{%s %s ,%s}" %[name, type, subOf]
 
-# drag n drop function
+func _draw():
+#	draw_circle(position, colShape.shape.radius, color)
+	draw_arc($Sprite.position, colShape.shape.radius + 50, 0, PI*2, 100, color, 5)
+
 func _physics_process(delta):
+	update()
 	if is_held:
 		global_position = lerp(global_position, get_global_mouse_position(), 25 * delta)
 
 func _integrate_forces(state):
-
 	if move:
 		state.transform.origin = newPos
 		move = false
 
+# drag n drop function
 func _input(event):
 	if event is InputEventMouseButton:
 		if not event.pressed and event.button_index == BUTTON_LEFT:
