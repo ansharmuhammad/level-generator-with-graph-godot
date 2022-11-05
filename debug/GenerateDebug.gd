@@ -752,3 +752,10 @@ func _on_ButtonExecuteRecipe_pressed():
 
 func _on_ButtonTransform_pressed():
 	executeTransformRule(targetGraph)
+
+
+func _on_ButtonDeleteGraph_pressed():
+	optionTargetGraph.remove_item(optionTargetGraph.get_selected_id())
+	optionTargetGraph.select(-1)
+	targetGraph.queue_free()
+	targetGraph = null
