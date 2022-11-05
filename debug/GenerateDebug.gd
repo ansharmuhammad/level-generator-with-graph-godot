@@ -389,13 +389,14 @@ func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	sub_vertex.set_mode(RigidBody2D.MODE_RIGID)
 	
 	sub_vertex.subOf = vertex
-	vertex.sub.append(sub_vertex.name)
+	sub_vertex.colShape.set_shape(sub_vertex.shapeSmall)
 	sub_vertex.changeLayer(2)
-	sub_vertex.setScale(0.8)
+	sub_vertex.setScale(1)
 	sub_vertex.global_position = vertex.global_position + Vector2(vertex.colShape.shape.radius, vertex.colShape.shape.radius)
 	sub_vertex.move = true
 	var _radius = vertex.colShape.shape.radius
 	sub_vertex.newPos = vertex.global_position + Vector2(_radius-50,_radius-50).rotated(deg2rad(30) * vertex.sub.size())
+	vertex.sub.append(sub_vertex.name)
 	
 	yield(get_tree(), "physics_frame")
 	var pinjoint = PinJoint2D.new()
@@ -403,7 +404,6 @@ func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	pinjoint.global_position = vertex.global_position
 	pinjoint.name = str(vertex.name)+"joint"+str(sub_vertex.name)
 #	pinjoint.disable_collision = false
-	
 #	pinjoint.softness = 16
 #	pinjoint.bias = 0.9
 	sub_vertex.colShape.disabled = false
@@ -416,9 +416,6 @@ func _create_entrance(graph: Node, vertex: Node):
 	#create entrance
 	if vertex.type == TYPE_VERTEX.START:
 		var newVertex: Node = graph.add_vertex()
-#		vertex.subOf = newVertex
-#		vertex.changeLayer(2)
-#		vertex.setScale(0.5)
 		newVertex.position = vertex.position
 		vertex.changeType(TYPE_VERTEX.ENTRANCE)
 		_suboff(newVertex, vertex)
@@ -434,9 +431,6 @@ func _create_goal(graph: Node, vertex: Node):
 	#create goal
 	if vertex.type == TYPE_VERTEX.GOAL:
 		var newVertex: Node = graph.add_vertex()
-#		vertex.subOf = newVertex
-#		vertex.changeLayer(2)
-#		vertex.setScale(0.5)
 		newVertex.position = vertex.position
 		_suboff(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
@@ -451,9 +445,6 @@ func _create_secret(graph: Node, vertex: Node):
 	#create secret
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node = graph.add_vertex()
-#		vertex.subOf = newVertex
-#		vertex.changeLayer(2)
-#		vertex.setScale(0.5)
 		newVertex.position = vertex.position
 		_suboff(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
@@ -480,10 +471,6 @@ func _add_element_before_place(graph: Node):
 	if !matchVertices.empty():
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-#		choosenMatch[1].subOf = choosenMatch[0]
-#		choosenMatch[1].changeLayer(2)
-#		choosenMatch[1].setScale(0.5)
-#		choosenMatch[1].global_position = choosenMatch[0].global_position
 		_suboff(choosenMatch[0], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
@@ -515,10 +502,6 @@ func _add_lock_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-#		choosenMatch[0].subOf = choosenMatch[1]
-#		choosenMatch[0].changeLayer(2)
-#		choosenMatch[0].setScale(0.5)
-#		choosenMatch[0].position = choosenMatch[1].position
 		_suboff(choosenMatch[1], choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
@@ -551,10 +534,6 @@ func _place_key_element(graph: Node):
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node = graph.add_vertex()
-#		choosenMatch[0].subOf = newVertex
-#		choosenMatch[0].changeLayer(2)
-#		choosenMatch[0].setScale(0.5)
-#		newVertex.position = choosenMatch[0].position
 		_suboff(newVertex, choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0]:
@@ -585,10 +564,6 @@ func _add_element_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-#		choosenMatch[1].subOf = choosenMatch[2]
-#		choosenMatch[1].changeLayer(2)
-#		choosenMatch[1].setScale(0.5)
-#		choosenMatch[1].position = choosenMatch[2].position
 		_suboff(choosenMatch[2], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[1] and edge.to == choosenMatch[2]:
@@ -715,9 +690,11 @@ func executeRule(rule: String, graph: Node):
 
 func _on_OptionTargetGraph_item_selected(index):
 	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
+	optionTargetGraph2.select(optionTargetGraph.get_selected_id())
 
 func _on_OptionTargetGraph2_item_selected(index):
 	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
+	optionTargetGraph.select(optionTargetGraph2.get_selected_id())
 
 func _on_ButtonExecuteSingleRule_pressed():
 	var selectedRule = optionSingleRule.get_item_text(optionSingleRule.get_selected_id())
@@ -755,7 +732,21 @@ func _on_ButtonTransform_pressed():
 
 
 func _on_ButtonDeleteGraph_pressed():
-	optionTargetGraph.remove_item(optionTargetGraph.get_selected_id())
-	optionTargetGraph.select(-1)
 	targetGraph.queue_free()
 	targetGraph = null
+	optionTargetGraph.remove_item(optionTargetGraph.get_selected_id())
+	optionTargetGraph2.remove_item(optionTargetGraph.get_selected_id())
+	optionTargetGraph.select(-1)
+	optionTargetGraph2.select(-1)
+
+
+func _on_ButtonGetInfo_pressed():
+	if targetGraph != null:
+		var fitness = targetGraph.get_fitness()
+		$"%Labelvariation".text = "variation : " + str(targetGraph.variation)
+		$"%Labelexploration".text = "exploration : " + str(targetGraph.exploration)
+		$"%LabelshortesPathLength".text = "shortesPathLength : " + str(targetGraph.shortesPathLength)
+		$"%LabelstandardShortPath".text = "standardShortPath : " + str(targetGraph.standardShortPath)
+		$"%LabelweightDuration".text = "standardShortPath : " + str(targetGraph.weightDuration)
+		$"%LabeloptionReplay".text = "optionReplay : " + str(targetGraph.optionReplay)
+		$"%Labelfitness".text = "fitness : " + str(fitness)

@@ -8,7 +8,7 @@
 radius = 150.0
 
 [sub_resource type="DynamicFont" id=3]
-size = 75
+size = 35
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=4]
@@ -30,7 +30,7 @@ texture = ExtResource( 1 )
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -182.0
-margin_top = -263.0
+margin_top = -201.0
 margin_right = 117.0
 margin_bottom = 144.0
 custom_fonts/font = SubResource( 3 )
