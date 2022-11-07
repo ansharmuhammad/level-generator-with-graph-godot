@@ -10,6 +10,7 @@ export var type: String = "TASK"
 export var alwaysStatic: bool = false
 export var move: bool = false
 export var sub: Array = []
+export var gridSize: float = 64
 
 var newPos: Vector2
 
@@ -111,6 +112,7 @@ func _integrate_forces(state):
 	if move:
 		state.transform.origin = newPos
 		move = false
+	global_position = Vector2(stepify(global_position.x, gridSize), stepify(global_position.y, gridSize))
 
 # drag n drop function
 func _input(event):

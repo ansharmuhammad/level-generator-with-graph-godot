@@ -29,6 +29,7 @@ onready var recipe: Array = [
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
 
+export var gridSize: float = 64
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
