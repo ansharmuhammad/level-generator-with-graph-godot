@@ -10,9 +10,11 @@ export var type: String = "TASK"
 export var alwaysStatic: bool = false
 export var move: bool = false
 export var sub: Array = []
-export var gridSize: float = 64
+export var gridSize: float = 300
 
 var newPos: Vector2
+var isElement: bool = false
+var snap: bool = false
 
 ## var which contains info about which part of the node this node belongs to
 var subOf: Node
@@ -92,7 +94,6 @@ func setColor(color: Color):
 
 func setScale(_scale: float):
 	$Sprite.scale = Vector2(_scale, _scale)
-	print("scale "+str($Sprite.scale))
 
 func _to_string() -> String:
 	if subOfStr == "":
@@ -112,7 +113,9 @@ func _integrate_forces(state):
 	if move:
 		state.transform.origin = newPos
 		move = false
-	global_position = Vector2(stepify(global_position.x, gridSize), stepify(global_position.y, gridSize))
+#	if !isElement and get_colliding_bodies().size() < 1:
+	if !isElement and is_held == false:
+		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
 
 # drag n drop function
 func _input(event):

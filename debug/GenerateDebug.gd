@@ -29,7 +29,7 @@ onready var recipe: Array = [
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
 
-export var gridSize: float = 64
+export var gridSize: float = 300
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -75,11 +75,14 @@ func ruleInit1(graph: Node):
 		var rad = vertex1.colShape.get_shape().radius * 2
 
 		var vertex2 = graph.add_vertex()
-		vertex2.position = vertex1.position + (Vector2.RIGHT * rad)
+#		vertex2.position = vertex1.position + (Vector2.RIGHT * rad)
+		vertex2.position = vertex1.position + (Vector2(gridSize, 0))
 		var vertex3 = graph.add_vertex("",TYPE_VERTEX.GOAL)
-		vertex3.position = vertex2.position + (Vector2.DOWN * rad)
+#		vertex3.position = vertex2.position + (Vector2.DOWN * rad)
+		vertex3.position = vertex2.position + (Vector2(0, gridSize))
 		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex1.position + (Vector2.DOWN * rad)
+#		vertex4.position = vertex1.position + (Vector2.DOWN * rad)
+		vertex4.position = vertex1.position + (Vector2(0, gridSize))
 
 		chosenEdge.initObject(vertex1, vertex2)
 		graph.connect_vertex(vertex2, vertex3)
@@ -103,15 +106,15 @@ func ruleInit2(graph: Node):
 		var rad = vertex1.colShape.get_shape().radius * 2
 		
 		var vertex2 = graph.add_vertex()
-		vertex2.position = vertex1.position + (Vector2.RIGHT * rad)
+		vertex2.position = vertex1.position + (Vector2(gridSize, 0))
 		var vertex3 = graph.add_vertex()
-		vertex3.position = vertex2.position + (Vector2.RIGHT * rad)
+		vertex3.position = vertex2.position + (Vector2(gridSize, 0))
 		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex3.position + (Vector2.DOWN * rad)
+		vertex4.position = vertex3.position + (Vector2(0, gridSize))
 		var vertex5 = graph.add_vertex("",TYPE_VERTEX.GOAL)
-		vertex5.position = vertex4.position + (Vector2.RIGHT * rad)
+		vertex5.position = vertex4.position + (Vector2(gridSize, 0))
 		var vertex6 = graph.add_vertex()
-		vertex6.position = vertex4.position + (Vector2.LEFT * rad)
+		vertex6.position = vertex4.position + (Vector2.LEFT)
 		
 		chosenEdge.initObject(vertex1, vertex2)
 		graph.connect_vertex(vertex2, vertex3)
@@ -133,6 +136,7 @@ func ruleExtend1(graph: Node):
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex()
+		vertex2.position = vertex2.position - Vector2(gridSize,0).rotated(vertex2.position.angle_to_point(vertex1.position))
 		vertex3.position = (vertex1.position + vertex2.position)/2
 		
 		chosenEdge.initObject(vertex1, vertex3)
@@ -143,7 +147,7 @@ func ruleExtend2(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
-		if edge.type == TYPE_EDGE.PATH:
+		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
 			match_edge.append(edge)
 
 	if match_edge.size() > 0:
@@ -165,7 +169,9 @@ func ruleExtend3(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
-		if edge.type == TYPE_EDGE.PATH:
+		var vertex1 = graph.get_vertex(edge.from)
+		var vertex2 = graph.get_vertex(edge.to)
+		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(vertex1).size() < 4 and graph.get_edges_of(vertex2).size() < 4:
 			match_edge.append(edge)
 
 	if match_edge.size() > 0:
@@ -189,7 +195,7 @@ func ruleSecret(graph: Node):
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
-		if (from.type == TYPE_VERTEX.TASK or to.type == TYPE_VERTEX.TASK) and edge.type == TYPE_EDGE.PATH:
+		if ((from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4) or (to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 )) and edge.type == TYPE_EDGE.PATH:
 			match_edge.append(edge)
 	
 	if match_edge.size() > 0:
@@ -198,9 +204,9 @@ func ruleSecret(graph: Node):
 		var to = graph.get_vertex(chosenEdge.to)
 		
 		var arrayVertex: Array = []
-		if from.type == TYPE_VERTEX.TASK:
+		if from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4:
 			arrayVertex.append(from)
-		if to.type == TYPE_VERTEX.TASK:
+		if to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4:
 			arrayVertex.append(to)
 		
 		var idx = randi() % arrayVertex.size()
@@ -228,6 +234,7 @@ func ruleObstacle(graph: Node):
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
+#		vertex2.position = vertex2.position - Vector2(gridSize,0).rotated(vertex2.position.angle_to_point(vertex1.position))
 		vertex3.position = (vertex1.position + vertex2.position)/2
 		
 		chosenEdge.initObject(vertex1, vertex3)
@@ -288,7 +295,7 @@ func ruleKnL2(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
-		if edge.to != null:
+		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
 			match_edge.append(edge)
 	
 	if match_edge.size() > 0:
@@ -320,7 +327,7 @@ func ruleKnL3(graph: Node):
 	var match_edge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
-		if edge.to != null:
+		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
 			match_edge.append(edge)
 	
 	if match_edge.size() > 0:
@@ -390,6 +397,7 @@ func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	sub_vertex.set_mode(RigidBody2D.MODE_RIGID)
 	
 	sub_vertex.subOf = vertex
+	sub_vertex.isElement = true
 	sub_vertex.colShape.set_shape(sub_vertex.shapeSmall)
 	sub_vertex.changeLayer(2)
 	sub_vertex.setScale(1)
@@ -607,6 +615,9 @@ func executeTransformRule(graph: Node):
 			1: _add_lock_after_place(graph)
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
+	
+	for vertex in graph.get_vertices():
+		vertex.snap = true
 #
 	_element_edges(graph)
 	#transformative rule
@@ -751,3 +762,15 @@ func _on_ButtonGetInfo_pressed():
 		$"%LabelweightDuration".text = "standardShortPath : " + str(targetGraph.weightDuration)
 		$"%LabeloptionReplay".text = "optionReplay : " + str(targetGraph.optionReplay)
 		$"%Labelfitness".text = "fitness : " + str(fitness)
+
+
+func _on_ButtonToggleLineElement2_toggled(button_pressed):
+	for edge in targetGraph.get_edges():
+		if edge.type != TYPE_EDGE.PATH:
+			edge.showLine = button_pressed
+
+
+func _on_ButtonToggleNodeElement_toggled(button_pressed):
+	for vertex in targetGraph.get_vertices():
+		if vertex.isElement:
+			vertex.visible = button_pressed
