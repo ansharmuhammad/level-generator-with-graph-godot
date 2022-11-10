@@ -17,10 +17,10 @@ const Graph = preload("res://debug/visualGraph/VisualGraph.tscn")
 const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
 const Edge = preload("res://debug/visualEdge/VisualEdge.tscn")
 
-onready var targetGraph: Node2D = null
-onready var indexGraph: int = 0
-onready var indexVertex: int = 0
-onready var recipe: Array = [
+var targetGraph: Node2D = null
+var indexGraph: int = 0
+var indexVertex: int = 0
+var recipe: Array = [
 	"randomInit",
 	"randomExtend", "randomExtend", "randomExtend",
 	"secret",
@@ -29,7 +29,7 @@ onready var recipe: Array = [
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
 
-export var gridSize: float = 300
+var gridSize: float = 300
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -391,7 +391,7 @@ func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	vertex.colShape.disabled = true
 	sub_vertex.colShape.disabled = true
 	
-	vertex.set_mode(RigidBody2D.MODE_STATIC)
+	vertex.set_mode(RigidBody2D.MODE_KINEMATIC)
 	vertex.alwaysStatic = true
 	
 	sub_vertex.set_mode(RigidBody2D.MODE_RIGID)
@@ -413,7 +413,7 @@ func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	pinjoint.global_position = vertex.global_position
 	pinjoint.name = str(vertex.name)+"joint"+str(sub_vertex.name)
 #	pinjoint.disable_collision = false
-#	pinjoint.softness = 16
+	pinjoint.softness = 16
 #	pinjoint.bias = 0.9
 	sub_vertex.colShape.disabled = false
 	pinjoint.node_a = vertex.get_path()
@@ -615,9 +615,6 @@ func executeTransformRule(graph: Node):
 			1: _add_lock_after_place(graph)
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
-	
-	for vertex in graph.get_vertices():
-		vertex.snap = true
 #
 	_element_edges(graph)
 	#transformative rule
@@ -774,3 +771,9 @@ func _on_ButtonToggleNodeElement_toggled(button_pressed):
 	for vertex in targetGraph.get_vertices():
 		if vertex.isElement:
 			vertex.visible = button_pressed
+
+
+func _on_ButtonToggleSnap_toggled(button_pressed):
+	for vertex in targetGraph.get_vertices():
+		if !vertex.isElement:
+			vertex.snap = true

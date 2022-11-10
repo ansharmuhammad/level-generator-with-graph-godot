@@ -114,8 +114,8 @@ func _integrate_forces(state):
 		state.transform.origin = newPos
 		move = false
 #	if !isElement and get_colliding_bodies().size() < 1:
-	if !isElement and is_held == false:
-		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
+	if !isElement and !is_held and snap:
+		global_position = Vector2(stepify(global_position.x, gridSize), stepify(global_position.y, gridSize))
 
 # drag n drop function
 func _input(event):

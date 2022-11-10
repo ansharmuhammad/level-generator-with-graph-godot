@@ -329,7 +329,7 @@ margin_bottom = 210.0
 [node name="SectionTransform" type="VBoxContainer" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer"]
 margin_top = 220.0
 margin_right = 193.0
-margin_bottom = 328.0
+margin_bottom = 372.0
 
 [node name="ButtonTransform" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 unique_name_in_owner = true
@@ -353,6 +353,13 @@ margin_bottom = 108.0
 pressed = true
 text = "Toggle Element"
 
+[node name="ButtonToggleSnap" type="CheckButton" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+unique_name_in_owner = true
+margin_top = 112.0
+margin_right = 193.0
+margin_bottom = 152.0
+text = "Toggle Element"
+
 [connection signal="pressed" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGraph/ButtonAddGraph" to="." method="_on_ButtonAddGraph_pressed"]
 [connection signal="item_selected" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGraph/HBoxContainer/OptionTargetGraph" to="." method="_on_OptionTargetGraph_item_selected"]
 [connection signal="pressed" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGraph/ButtonDeleteGraph" to="." method="_on_ButtonDeleteGraph_pressed"]
@@ -366,3 +373,4 @@ text = "Toggle Element"
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTransform" to="." method="_on_ButtonTransform_pressed"]
 [connection signal="toggled" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonToggleLineElement2" to="." method="_on_ButtonToggleLineElement2_toggled"]
 [connection signal="toggled" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonToggleNodeElement" to="." method="_on_ButtonToggleNodeElement_toggled"]
+[connection signal="toggled" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonToggleSnap" to="." method="_on_ButtonToggleSnap_toggled"]
