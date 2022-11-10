@@ -5,7 +5,7 @@ onready var popup = $"%WindowDialogGenerator"
 onready var popup2 = $"%WindowDialogGraph"
 onready var optionTargetGraph = $"%OptionTargetGraph"
 onready var optionTargetGraph2 = $"%OptionTargetGraph2"
-onready var graphs = $Graphs
+onready var graphs = $"%Graphs"
 onready var optionSingleRule = $"%OptionSingleRule"
 onready var buttonExecuteSingleRule = $"%ButtonExecuteSingleRule"
 onready var optionRuleRecipe = $"%OptionRuleRecipe"
@@ -59,16 +59,16 @@ func _physics_process(delta):
 
 # collection of rules ==========================================================
 
-func ruleInit1(graph: Node):
-	var match_edge: Array = []
+func _rule_init_1(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)
 		if from.type == TYPE_VERTEX.INIT and edge.to == null:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		vertex1.type = TYPE_VERTEX.START
 		vertex1.labelType.text = "S"
@@ -90,16 +90,16 @@ func ruleInit1(graph: Node):
 		graph.connect_vertex(vertex4, vertex1)
 #		print("execute rule init1 at" + str(chosenEdge))
 
-func ruleInit2(graph: Node):
-	var match_edge: Array = []
+func _rule_init_2(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)		
 		if from.type == TYPE_VERTEX.INIT and edge.to == null:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		vertex1.type = TYPE_VERTEX.START
 		vertex1.labelType.text = "S"
@@ -124,15 +124,15 @@ func ruleInit2(graph: Node):
 		graph.connect_vertex(vertex6, vertex2)
 #		print("execute rule init2 at" + str(chosenEdge))
 
-func ruleExtend1(graph: Node):
-	var match_edge: Array = []
+func _rule_extend_1(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex()
@@ -143,15 +143,15 @@ func ruleExtend1(graph: Node):
 		graph.connect_vertex(vertex3, vertex2)
 #		print("execute rule Extend1 at" + str(chosenEdge))
 
-func ruleExtend2(graph: Node):
-	var match_edge: Array = []
+func _rule_extend_2(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var rad = vertex1.colShape.get_shape().radius * 2
 		var vertex2 = graph.get_vertex(chosenEdge.to)
@@ -165,17 +165,17 @@ func ruleExtend2(graph: Node):
 		graph.connect_vertex(vertex3, vertex2)
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
-func ruleExtend3(graph: Node):
-	var match_edge: Array = []
+func _rule_extend_3(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		var vertex1 = graph.get_vertex(edge.from)
 		var vertex2 = graph.get_vertex(edge.to)
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(vertex1).size() < 4 and graph.get_edges_of(vertex2).size() < 4:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var rad = vertex1.colShape.get_shape().radius * 2
 		var vertex2 = graph.get_vertex(chosenEdge.to)
@@ -189,17 +189,17 @@ func ruleExtend3(graph: Node):
 		graph.connect_vertex(vertex4, vertex1)
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
-func ruleSecret(graph: Node):
-	var match_edge: Array = []
+func _rule_secret(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
 		if ((from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4) or (to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 )) and edge.type == TYPE_EDGE.PATH:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var from = graph.get_vertex(chosenEdge.from)
 		var to = graph.get_vertex(chosenEdge.to)
 		
@@ -222,15 +222,15 @@ func ruleSecret(graph: Node):
 		graph.connect_vertex(vertex1, vertex2)
 #		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
 
-func ruleObstacle(graph: Node):
-	var match_edge: Array = []
+func _rule_obstacle(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		if edge.to != null:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
@@ -241,15 +241,15 @@ func ruleObstacle(graph: Node):
 		graph.connect_vertex(vertex3, vertex2)
 #		print("execute rule Obstacle at" + str(chosenEdge))
 
-func ruleReward(graph: Node):
-	var match_edge: Array = []
+func _rule_reward(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		if edge.to != null:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
@@ -262,17 +262,17 @@ func ruleReward(graph: Node):
 		graph.connect_vertex(vertex4, vertex2)
 #		print("execute rule Reward at" + str(chosenEdge))
 
-func ruleKnL1(graph: Node):
-	var match_edge: Array = []
+func _rule_knl_1(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 place vertex connected
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
 		if graph.is_place(from) and graph.is_place(to):
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		
@@ -291,15 +291,15 @@ func ruleKnL1(graph: Node):
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL1 at" + str(edge))
 
-func ruleKnL2(graph: Node):
-	var match_edge: Array = []
+func _rule_knl_2(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var rad = vertex1.colShape.get_shape().radius * 2
@@ -323,15 +323,15 @@ func ruleKnL2(graph: Node):
 		graph.connect_vertex(vertex5, vertex4, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL2 at" + str(chosenEdge))
 
-func ruleKnL3(graph: Node):
-	var match_edge: Array = []
+func _rule_knl_3(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var rad = vertex1.colShape.get_shape().radius * 2
 		var vertex2 = graph.get_vertex(chosenEdge.to)
@@ -355,17 +355,17 @@ func ruleKnL3(graph: Node):
 		graph.connect_vertex(vertex6, vertex4, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL3 at" + str(chosenEdge))
 
-func ruleKnL4(graph: Node):
-	var match_edge: Array = []
+func _rule_knl_4(graph: Node):
+	var matchEdge: Array = []
 	for edge in graph.get_node("Edges").get_children():
 		#check if there is 2 vertex connected and the secon vertex type is goal
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
 		if graph.is_place(from) and to.type == TYPE_VERTEX.GOAL:
-			match_edge.append(edge)
+			matchEdge.append(edge)
 	
-	if match_edge.size() > 0:
-		var chosenEdge = match_edge[randi() % match_edge.size()]
+	if matchEdge.size() > 0:
+		var chosenEdge = matchEdge[randi() % matchEdge.size()]
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		
@@ -387,7 +387,7 @@ func ruleKnL4(graph: Node):
 # end of collection of rules ===================================================
 
 # collection transform rule ====================================================
-func _suboff(vertex: RigidBody2D, sub_vertex: RigidBody2D):
+func _sub_off(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	vertex.colShape.disabled = true
 	sub_vertex.colShape.disabled = true
 	
@@ -427,7 +427,7 @@ func _create_entrance(graph: Node, vertex: Node):
 		var newVertex: Node = graph.add_vertex()
 		newVertex.position = vertex.position
 		vertex.changeType(TYPE_VERTEX.ENTRANCE)
-		_suboff(newVertex, vertex)
+		_sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -441,7 +441,7 @@ func _create_goal(graph: Node, vertex: Node):
 	if vertex.type == TYPE_VERTEX.GOAL:
 		var newVertex: Node = graph.add_vertex()
 		newVertex.position = vertex.position
-		_suboff(newVertex, vertex)
+		_sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -455,7 +455,7 @@ func _create_secret(graph: Node, vertex: Node):
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node = graph.add_vertex()
 		newVertex.position = vertex.position
-		_suboff(newVertex, vertex)
+		_sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -480,7 +480,7 @@ func _add_element_before_place(graph: Node):
 	if !matchVertices.empty():
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		_suboff(choosenMatch[0], choosenMatch[1])
+		_sub_off(choosenMatch[0], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -511,7 +511,7 @@ func _add_lock_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		_suboff(choosenMatch[1], choosenMatch[0])
+		_sub_off(choosenMatch[1], choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -543,7 +543,7 @@ func _place_key_element(graph: Node):
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node = graph.add_vertex()
-		_suboff(newVertex, choosenMatch[0])
+		_sub_off(newVertex, choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0]:
 				var theVertex: Node = graph.get_vertex(edge.to)
@@ -573,7 +573,7 @@ func _add_element_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		_suboff(choosenMatch[2], choosenMatch[1])
+		_sub_off(choosenMatch[2], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[1] and edge.to == choosenMatch[2]:
 				edge.queue_free()
@@ -600,7 +600,7 @@ func _element_edges(graph: Node):
 			if graph.is_element(graph.get_vertex(edge.from)) or graph.is_element(graph.get_vertex(edge.to)):
 				edge.type = TYPE_EDGE.ELEMENT
 
-func executeTransformRule(graph: Node):
+func _execute_transform_rule(graph: Node):
 	#create place rule
 	for vertex in graph.get_vertices():
 		_create_entrance(graph, vertex)
@@ -620,6 +620,54 @@ func executeTransformRule(graph: Node):
 	#transformative rule
 
 # end of collection transform rule =============================================
+func _execute_rule(rule: String, graph: Node):
+	match rule:
+		"init1":
+			_rule_init_1(graph)
+		"init2":
+			_rule_init_2(graph)
+		"extend1":
+			_rule_extend_1(graph)
+		"extend2":
+			_rule_extend_2(graph)
+		"extend3":
+			_rule_extend_3(graph)
+		"secret":
+			_rule_secret(graph)
+		"obstacle":
+			_rule_obstacle(graph)
+		"reward":
+			_rule_reward(graph)
+		"key&lock1":
+			_rule_knl_1(graph)
+		"key&lock2":
+			_rule_knl_2(graph)
+		"key&lock3":
+			_rule_knl_3(graph)
+		"key&lock4":
+			_rule_knl_4(graph)
+		"randomInit":
+			var chosenrule = randi() % 2 + 1
+			if chosenrule == 1:
+				_rule_init_1(graph)
+			else:
+				_rule_init_2(graph)
+		"randomExtend":
+			var chosenrule = randi() % 3 + 1
+			if chosenrule == 1:
+				_rule_extend_1(graph)
+			elif chosenrule == 2:
+				_rule_extend_2(graph)
+			else:
+				_rule_extend_3(graph)
+		"randomKeyLock":
+			var chosenrule = randi() % 4 + 1
+			match chosenrule:
+				1: _rule_knl_1(graph)
+				2: _rule_knl_2(graph)
+				3: _rule_knl_3(graph)
+				4: _rule_knl_4(graph)
+
 
 # add new graph
 func _on_ButtonAddGraph_pressed():
@@ -649,53 +697,6 @@ func _on_ButtonAddGraph_pressed():
 	targetGraph = graph
 	indexGraph += 1
 
-func executeRule(rule: String, graph: Node):
-	match rule:
-		"init1":
-			ruleInit1(graph)
-		"init2":
-			ruleInit2(graph)
-		"extend1":
-			ruleExtend1(graph)
-		"extend2":
-			ruleExtend2(graph)
-		"extend3":
-			ruleExtend3(graph)
-		"secret":
-			ruleSecret(graph)
-		"obstacle":
-			ruleObstacle(graph)
-		"reward":
-			ruleReward(graph)
-		"key&lock1":
-			ruleKnL1(graph)
-		"key&lock2":
-			ruleKnL2(graph)
-		"key&lock3":
-			ruleKnL3(graph)
-		"key&lock4":
-			ruleKnL4(graph)
-		"randomInit":
-			var chosenrule = randi() % 2 + 1
-			if chosenrule == 1:
-				ruleInit1(graph)
-			else:
-				ruleInit2(graph)
-		"randomExtend":
-			var chosenrule = randi() % 3 + 1
-			if chosenrule == 1:
-				ruleExtend1(graph)
-			elif chosenrule == 2:
-				ruleExtend2(graph)
-			else:
-				ruleExtend3(graph)
-		"randomKeyLock":
-			var chosenrule = randi() % 4 + 1
-			match chosenrule:
-				1: ruleKnL1(graph)
-				2: ruleKnL2(graph)
-				3: ruleKnL3(graph)
-				4: ruleKnL4(graph)
 
 func _on_OptionTargetGraph_item_selected(index):
 	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
@@ -707,7 +708,7 @@ func _on_OptionTargetGraph2_item_selected(index):
 
 func _on_ButtonExecuteSingleRule_pressed():
 	var selectedRule = optionSingleRule.get_item_text(optionSingleRule.get_selected_id())
-	executeRule(selectedRule, targetGraph)
+	_execute_rule(selectedRule, targetGraph)
 
 
 func _on_ButtonClearAll_pressed():
@@ -733,11 +734,11 @@ func _on_ButtonClearRecipe_pressed():
 
 func _on_ButtonExecuteRecipe_pressed():
 	for rule in recipe:
-		executeRule(rule, targetGraph)
+		_execute_rule(rule, targetGraph)
 
 
 func _on_ButtonTransform_pressed():
-	executeTransformRule(targetGraph)
+	_execute_transform_rule(targetGraph)
 
 
 func _on_ButtonDeleteGraph_pressed():

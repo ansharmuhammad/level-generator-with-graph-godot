@@ -8,6 +8,7 @@ script = ExtResource( 2 )
 
 [node name="VisualNode" parent="." instance=ExtResource( 1 )]
 position = Vector2( 190, 315 )
+mode = 3
 
 [node name="DampedSpringJoint2D" type="DampedSpringJoint2D" parent="VisualNode"]
 node_a = NodePath("..")
@@ -32,16 +33,12 @@ node_b = NodePath("../../VisualNode5")
 
 [node name="VisualNode2" parent="." instance=ExtResource( 1 )]
 position = Vector2( 686, 331 )
-mode = 0
 
 [node name="VisualNode3" parent="." instance=ExtResource( 1 )]
 position = Vector2( 686, 331 )
-mode = 0
 
 [node name="VisualNode4" parent="." instance=ExtResource( 1 )]
 position = Vector2( 686, 331 )
-mode = 0
 
 [node name="VisualNode5" parent="." instance=ExtResource( 1 )]
 position = Vector2( 686, 331 )
-mode = 0

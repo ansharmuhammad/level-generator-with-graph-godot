@@ -115,7 +115,7 @@ func _integrate_forces(state):
 		move = false
 #	if !isElement and get_colliding_bodies().size() < 1:
 	if !isElement and !is_held and snap:
-		global_position = Vector2(stepify(global_position.x, gridSize), stepify(global_position.y, gridSize))
+		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
 
 # drag n drop function
 func _input(event):
@@ -123,7 +123,11 @@ func _input(event):
 		if not event.pressed and event.button_index == BUTTON_LEFT:
 			is_held = false
 			if !alwaysStatic:
-				mode = RigidBody2D.MODE_CHARACTER
+				if isElement:
+					mode = RigidBody2D.MODE_RIGID
+				else:
+					mode = RigidBody2D.MODE_CHARACTER
+				
 
 func _on_VisualNode_input_event(viewport, event, shape_idx):
 	if event is InputEventMouseButton:

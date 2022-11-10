@@ -12,7 +12,8 @@ cell_size = Vector2( 300, 300 )
 format = 1
 script = ExtResource( 1 )
 
-[node name="Graphs" type="Node" parent="."]
+[node name="Graphs" type="Node" parent="TileMap"]
+unique_name_in_owner = true
 
 [node name="Camera2D" parent="." instance=ExtResource( 2 )]
 zoom = Vector2( 5, 5 )
