@@ -17,7 +17,7 @@ onready var fitness: float = 0.0
 
 var index: int
 
-func initObject(_name: String, _index: int):
+func init_object(_name: String, _index: int):
 	name = _name
 	$Label.text = _name
 	index = _index
@@ -48,7 +48,7 @@ func add_vertex(name: String = "", type: String = "") -> Node:
 	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name
 	var _type = TYPE_VERTEX.TASK if type == "" else type
 	var vertex = Vertex.instance()
-	vertex.initObject(_name, _type)
+	vertex.init_object(_name, _type)
 	$Vertices.add_child(vertex)
 	return vertex
 
@@ -56,7 +56,7 @@ func add_vertex(name: String = "", type: String = "") -> Node:
 func connect_vertex(from: Node, to: Node, type: String = ""):
 	var edge = Edge.instance()
 	var _type = type if type != "" else TYPE_EDGE.PATH
-	edge.initObject(from, to, _type)
+	edge.init_object(from, to, _type)
 	$Edges.add_child(edge)
 
 ## get vertex object by its name

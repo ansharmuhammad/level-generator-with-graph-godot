@@ -11,32 +11,40 @@ export var alwaysStatic: bool = false
 export var move: bool = false
 export var sub: Array = []
 export var gridSize: float = 300
+export var subOfStr: String = ""
 
 var newPos: Vector2
 var isElement: bool = false
 var snap: bool = false
-
+var color = Color.black
 ## var which contains info about which part of the node this node belongs to
 var subOf: Node
-export var subOfStr: String = ""
-
 var is_held = false
-var color = Color.black
+
 
 func _ready():
-	changeType(type)
+	change_type(type)
 	var shape = colShape.get_shape()
 	set_process_input(true)
-	setScale(2)
+	set_scale_node(2)
 	shapeNormal.radius = 150
 	shapeSmall.radius = 50
 
 ## initiate vertex with name and type
-func initObject(_name: String = "", _type: String = "TASK"):
+func init_object(_name: String = "", _type: String = "TASK"):
 	name = _name
 	$Sprite/Label.text = _name
 	type = _type
-func changeLayer(layer: int):
+
+#get all sub nodes (vertives)
+func get_subs()-> Array:
+	return $SubNode.get_children()
+
+#add to sub node
+func add_sub(vertex: RigidBody2D):
+	$SubNode.add_child(vertex)
+
+func change_layer(layer: int):
 	if layer == 0:
 		set_collision_layer_bit(0, true)
 		set_collision_mask_bit(0, true)
@@ -50,7 +58,7 @@ func changeLayer(layer: int):
 		set_collision_mask_bit(1, true)
 		$CollisionShape2D.modulate = Color.green
 
-func changeType(_type: String):
+func change_type(_type: String):
 	match _type:
 		TYPE_VERTEX.INIT:
 			$Sprite.modulate = Color.white
@@ -89,10 +97,10 @@ func changeType(_type: String):
 			$VisualNode/LabelType.text = "L"
 			color = Color.green
 
-func setColor(color: Color):
+func set_color(color: Color):
 	sprite.modulate = color
 
-func setScale(_scale: float):
+func set_scale_node(_scale: float):
 	$Sprite.scale = Vector2(_scale, _scale)
 
 func _to_string() -> String:

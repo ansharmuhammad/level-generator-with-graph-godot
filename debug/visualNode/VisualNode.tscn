@@ -55,4 +55,6 @@ text = "T"
 align = 1
 valign = 1
 
+[node name="SubNode" type="Node" parent="."]
+
 [connection signal="input_event" from="." to="." method="_on_VisualNode_input_event"]
