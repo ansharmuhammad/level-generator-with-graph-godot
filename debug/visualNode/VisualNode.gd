@@ -42,6 +42,8 @@ func get_subs()-> Array:
 
 #add to sub node
 func add_sub(vertex: RigidBody2D):
+	if vertex.get_parent():
+		vertex.get_parent().remove_child(vertex)
 	$SubNode.add_child(vertex)
 
 func change_layer(layer: int):
@@ -123,7 +125,8 @@ func _integrate_forces(state):
 		move = false
 #	if !isElement and get_colliding_bodies().size() < 1:
 	if !isElement and !is_held and snap:
-		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
+#		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
+		position = position.snapped(Vector2(gridSize,gridSize))
 
 # drag n drop function
 func _input(event):
