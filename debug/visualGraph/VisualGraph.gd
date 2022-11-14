@@ -165,7 +165,7 @@ func get_shortest_path() -> int:
 	
 	var prev: Dictionary = _solve_path(start)
 	
-	var shortesPath = _reconstruc_path(start, goal, prev)
+	var shortesPath = _reconstruct_path(start, goal, prev)
 	shortesPathLength = shortesPath.size()
 	return shortesPathLength
 
@@ -188,7 +188,7 @@ func _solve_path(startVertex: Node) -> Dictionary:
 				prevDict[edge.to.name] = vertex.name
 	return prevDict
 
-func _reconstruc_path(startVertex: Node, goalVertex: Node, prevDict: Dictionary) -> Array:
+func _reconstruct_path(startVertex: Node, goalVertex: Node, prevDict: Dictionary) -> Array:
 	var path: Array = []
 	var at = goalVertex.name
 	while at != null:

@@ -117,10 +117,10 @@ func _physics_process(delta):
 
 func _integrate_forces(state):
 	if move:
-		state.transform.origin = newPos
+#		state.transform.origin = newPos
+		position = newPos
 		move = false
-#	if !isElement and get_colliding_bodies().size() < 1:
-	if !isElement and !is_held and snap:
+	if !isElement and !is_held and snap and contacts_reported < 1:
 #		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
 		position = position.snapped(gridSize)
 
