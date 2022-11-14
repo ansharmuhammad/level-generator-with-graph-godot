@@ -4,7 +4,7 @@ onready var label = $Label
 const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
 const Edge = preload("res://debug/visualEdge/VisualEdge.tscn")
 
-## objec function value
+## object function value
 onready var variation: float = 0.0
 onready var exploration: int = 0 #???
 onready var shortesPathLength: int = 0
@@ -15,7 +15,8 @@ onready var optionReplay: float = 0.0
 ## fitness function value
 onready var fitness: float = 0.0
 
-var index: int
+var index: int = 0
+var indexNode: int = 0
 
 func init_object(_name: String, _index: int):
 	name = _name
@@ -45,7 +46,9 @@ func get_edges_of(vertex: Node, type: String = "") -> Array:
 
 ## add vertex to graph
 func add_vertex(name: String = "", type: String = "") -> Node:
-	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name
+#	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name
+	var _name = "Node" + str(indexNode) if name == "" else name
+	indexNode += 1
 	var _type = TYPE_VERTEX.TASK if type == "" else type
 	var vertex = Vertex.instance()
 	vertex.init_object(_name, _type)

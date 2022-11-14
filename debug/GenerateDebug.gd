@@ -1,17 +1,7 @@
 extends Node2D
 
 onready var gui = $"%GUI"
-onready var popup = $"%WindowDialogGenerator"
-onready var popup2 = $"%WindowDialogGraph"
-onready var optionTargetGraph = $"%OptionTargetGraph"
-onready var optionTargetGraph2 = $"%OptionTargetGraph2"
 onready var graphs = $"%Graphs"
-onready var optionSingleRule = $"%OptionSingleRule"
-onready var buttonExecuteSingleRule = $"%ButtonExecuteSingleRule"
-onready var optionRuleRecipe = $"%OptionRuleRecipe"
-onready var richTextRecipe = $"%RichTextRecipe"
-onready var butttonExecuteRecipe = $"%ButtonExecuteRecipe"
-onready var buttonTransformRule = $"%ButtonTransform"
 
 const Graph = preload("res://debug/visualGraph/VisualGraph.tscn")
 const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
@@ -34,28 +24,28 @@ var gridSize: float = 300
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	for rule in recipe:
-		richTextRecipe.add_text(rule)
-		richTextRecipe.newline()
+		$"%RichTextRecipe".add_text(rule)
+		$"%RichTextRecipe".newline()
 	randomize()
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_RIGHT:
 		var mouse = get_viewport().get_mouse_position()
 		if !event.control:
-			popup.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
+			$"%WindowDialogGenerator".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGenerator".rect_size.x, $"%WindowDialogGenerator".rect_size.y))
 		else:
-			popup2.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
+			$"%WindowDialogGraph".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGraph".rect_size.x, $"%WindowDialogGraph".rect_size.y))
 
 #disable for performance
 func _physics_process(delta):
 	if targetGraph == null:
-		buttonExecuteSingleRule.disabled = true
-		butttonExecuteRecipe.disabled = true
-		buttonTransformRule.disabled = true
+		$"%ButtonExecuteSingleRule".disabled = true
+		$"%ButtonExecuteRecipe".disabled = true
+		$"%ButtonTransform".disabled = true
 	else:
-		buttonExecuteSingleRule.disabled = false
-		butttonExecuteRecipe.disabled = false
-		buttonTransformRule.disabled = false
+		$"%ButtonExecuteSingleRule".disabled = false
+		$"%ButtonExecuteRecipe".disabled = false
+		$"%ButtonTransform".disabled = false
 
 # collection of rules ==========================================================
 
@@ -680,36 +670,33 @@ func _on_ButtonAddGraph_pressed():
 	graph.global_position = graph.global_position + Vector2(pos, 0)
 	
 	#initiate vertex 
-#	var vertexinit = Vertex.instance()
 	var vertexinit = graph.add_vertex("",TYPE_VERTEX.INIT)
-#	vertexinit.init_object("Node" + str(graph.indexVertex), TYPE_VERTEX.INIT)
 	vertexinit.newPos = graph.global_position
 	vertexinit.move = true
 	yield(get_tree(), "physics_frame")
 	graph.get_node("Vertices").add_child(vertexinit)
-#	graph.indexVertex += 1
 	graph.connect_vertex(vertexinit, null)
 	graphs.add_child(graph)
 	
 	#add to option
-	optionTargetGraph.add_item(graph.name, indexGraph)
-	optionTargetGraph.select(indexGraph)
-	optionTargetGraph2.add_item(graph.name, indexGraph)
-	optionTargetGraph2.select(indexGraph)
+	$"%OptionTargetGraph".add_item(graph.name, indexGraph)
+	$"%OptionTargetGraph".select(indexGraph)
+	$"%OptionTargetGraph2".add_item(graph.name, indexGraph)
+	$"%OptionTargetGraph2".select(indexGraph)
 	targetGraph = graph
 	indexGraph += 1
 
 
 func _on_OptionTargetGraph_item_selected(index):
-	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
-	optionTargetGraph2.select(optionTargetGraph.get_selected_id())
+	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
+	$"%OptionTargetGraph2".select($"%OptionTargetGraph".get_selected_id())
 
 func _on_OptionTargetGraph2_item_selected(index):
-	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
-	optionTargetGraph.select(optionTargetGraph2.get_selected_id())
+	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
+	$"%OptionTargetGraph".select($"%OptionTargetGraph2".get_selected_id())
 
 func _on_ButtonExecuteSingleRule_pressed():
-	var selectedRule = optionSingleRule.get_item_text(optionSingleRule.get_selected_id())
+	var selectedRule = $"%OptionSingleRule".get_item_text($"%OptionSingleRule".get_selected_id())
 	_execute_rule(selectedRule, targetGraph)
 
 
@@ -717,21 +704,21 @@ func _on_ButtonClearAll_pressed():
 	for graph in graphs.get_children():
 		graph.queue_free()
 	targetGraph = null
-	optionTargetGraph.clear()
+	$"%OptionTargetGraph".clear()
 	indexGraph = 0
 	indexVertex = 0
 
 
 func _on_ButtonAddRule_pressed():
-	var textItem = optionRuleRecipe.get_item_text(optionRuleRecipe.get_selected_id())
+	var textItem = $"%OptionRuleRecipe".get_item_text($"%OptionRuleRecipe".get_selected_id())
 	recipe.append(textItem)
-	richTextRecipe.add_text(textItem)
-	richTextRecipe.newline()
+	$"%RichTextRecipe".add_text(textItem)
+	$"%RichTextRecipe".newline()
 
 
 func _on_ButtonClearRecipe_pressed():
 	recipe.clear()
-	richTextRecipe.clear()
+	$"%RichTextRecipe".clear()
 
 
 func _on_ButtonExecuteRecipe_pressed():
@@ -746,10 +733,10 @@ func _on_ButtonTransform_pressed():
 func _on_ButtonDeleteGraph_pressed():
 	targetGraph.queue_free()
 	targetGraph = null
-	optionTargetGraph.remove_item(optionTargetGraph.get_selected_id())
-	optionTargetGraph2.remove_item(optionTargetGraph.get_selected_id())
-	optionTargetGraph.select(-1)
-	optionTargetGraph2.select(-1)
+	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph".select(-1)
+	$"%OptionTargetGraph2".select(-1)
 
 
 func _on_ButtonGetInfo_pressed():

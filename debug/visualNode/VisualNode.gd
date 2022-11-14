@@ -1,7 +1,6 @@
 extends RigidBody2D
 
 onready var colShape = $CollisionShape2D
-onready var sprite = $Sprite
 onready var labelType = $VisualNode/LabelType
 onready var shapeNormal = CircleShape2D.new()
 onready var shapeSmall = CircleShape2D.new()
@@ -9,17 +8,16 @@ onready var shapeSmall = CircleShape2D.new()
 export var type: String = "TASK"
 export var alwaysStatic: bool = false
 export var move: bool = false
-export var sub: Array = []
-export var gridSize: float = 300
-export var subOfStr: String = ""
+export var gridSize: Vector2 = Vector2(300,300)
 
 var newPos: Vector2
 var isElement: bool = false
-var snap: bool = false
+var snap: bool = true
 var color = Color.black
 ## var which contains info about which part of the node this node belongs to
-var subOf: Node
-var is_held = false
+var subOf: Node = null
+var sub: Array = []
+var is_held: bool = false
 
 
 func _ready():
@@ -98,15 +96,15 @@ func change_type(_type: String):
 			color = Color.green
 
 func set_color(color: Color):
-	sprite.modulate = color
+	$Sprite.modulate = color
 
 func set_scale_node(_scale: float):
 	$Sprite.scale = Vector2(_scale, _scale)
 
 func _to_string() -> String:
-	if subOfStr == "":
+	if subOf == null:
 		return "{%s %s}" %[name, type]
-	return "{%s %s ,%s}" %[name, type, subOf]
+	return "{%s %s ,sub of %s}" %[name, type, subOf]
 
 func _draw():
 #	draw_circle(position, colShape.shape.radius, color)
@@ -123,7 +121,8 @@ func _integrate_forces(state):
 		move = false
 #	if !isElement and get_colliding_bodies().size() < 1:
 	if !isElement and !is_held and snap:
-		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
+#		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
+		position = position.snapped(gridSize)
 
 # drag n drop function
 func _input(event):

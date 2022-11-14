@@ -359,6 +359,7 @@ unique_name_in_owner = true
 margin_top = 112.0
 margin_right = 193.0
 margin_bottom = 152.0
+pressed = true
 text = "Toggle Element"
 
 [connection signal="pressed" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGraph/ButtonAddGraph" to="." method="_on_ButtonAddGraph_pressed"]
