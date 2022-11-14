@@ -1,6 +1,17 @@
 extends Node2D
 
+onready var gui = $"%GUI"
+onready var popup = $"%WindowDialogGenerator"
+onready var popup2 = $"%WindowDialogGraph"
+onready var optionTargetGraph = $"%OptionTargetGraph"
+onready var optionTargetGraph2 = $"%OptionTargetGraph2"
 onready var graphs = $"%Graphs"
+onready var optionSingleRule = $"%OptionSingleRule"
+onready var buttonExecuteSingleRule = $"%ButtonExecuteSingleRule"
+onready var optionRuleRecipe = $"%OptionRuleRecipe"
+onready var richTextRecipe = $"%RichTextRecipe"
+onready var butttonExecuteRecipe = $"%ButtonExecuteRecipe"
+onready var buttonTransformRule = $"%ButtonTransform"
 
 const Graph = preload("res://debug/visualGraph/VisualGraph.tscn")
 const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
@@ -17,33 +28,34 @@ var recipe: Array = [
 	"reward", "reward", "reward",
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
+
 var gridSize: float = 300
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	for rule in recipe:
-		$"%RichTextRecipe".add_text(rule)
-		$"%RichTextRecipe".newline()
+		richTextRecipe.add_text(rule)
+		richTextRecipe.newline()
 	randomize()
 
 func _input(event):
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_RIGHT:
 		var mouse = get_viewport().get_mouse_position()
 		if !event.control:
-			$"%WindowDialogGenerator".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGenerator".rect_size.x, $"%WindowDialogGenerator".rect_size.y))
+			popup.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
 		else:
-			$"%WindowDialogGraph".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGenerator".rect_size.x, $"%WindowDialogGenerator".rect_size.y))
+			popup2.popup(Rect2(mouse.x, mouse.y, popup.rect_size.x, popup.rect_size.y))
 
 #disable for performance
 func _physics_process(delta):
 	if targetGraph == null:
-		$"%ButtonExecuteSingleRule".disabled = true
-		$"%ButtonExecuteRecipe".disabled = true
-		$"%ButtonTransform".disabled = true
+		buttonExecuteSingleRule.disabled = true
+		butttonExecuteRecipe.disabled = true
+		buttonTransformRule.disabled = true
 	else:
-		$"%ButtonExecuteSingleRule".disabled = false
-		$"%ButtonExecuteRecipe".disabled = false
-		$"%ButtonTransform".disabled = false
+		buttonExecuteSingleRule.disabled = false
+		butttonExecuteRecipe.disabled = false
+		buttonTransformRule.disabled = false
 
 # collection of rules ==========================================================
 
@@ -408,14 +420,8 @@ func _sub_off(vertex: RigidBody2D, sub_vertex: RigidBody2D):
 	pinjoint.node_b = sub_vertex.get_path()
 	vertex.colShape.disabled = false
 
-func _sub_off_alt(vertex: RigidBody2D, sub_vertex: RigidBody2D):
-	sub_vertex.change_layer(2)
-	sub_vertex.set_scale_node(1)
-	sub_vertex.subOf = vertex
-	sub_vertex.isElement = true
-	vertex.add_sub(sub_vertex)
-	var _radius = vertex.colShape.shape.radius
-	sub_vertex.position = vertex.global_position + Vector2(_radius-50,_radius-50).rotated(deg2rad(30) * vertex.sub.size())
+#func _sub_off_alt(vertex: RigidBody2D, sub_vertex: RigidBody2D):
+#
 
 func _create_entrance(graph: Node, vertex: Node):
 	#create entrance
@@ -423,7 +429,7 @@ func _create_entrance(graph: Node, vertex: Node):
 		var newVertex: Node = graph.add_vertex()
 		newVertex.position = vertex.position
 		vertex.change_type(TYPE_VERTEX.ENTRANCE)
-		_sub_off_alt(newVertex, vertex)
+		_sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -437,7 +443,7 @@ func _create_goal(graph: Node, vertex: Node):
 	if vertex.type == TYPE_VERTEX.GOAL:
 		var newVertex: Node = graph.add_vertex()
 		newVertex.position = vertex.position
-		_sub_off_alt(newVertex, vertex)
+		_sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -451,7 +457,7 @@ func _create_secret(graph: Node, vertex: Node):
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node = graph.add_vertex()
 		newVertex.position = vertex.position
-		_sub_off_alt(newVertex, vertex)
+		_sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -476,7 +482,7 @@ func _add_element_before_place(graph: Node):
 	if !matchVertices.empty():
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		_sub_off_alt(choosenMatch[0], choosenMatch[1])
+		_sub_off(choosenMatch[0], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -507,7 +513,7 @@ func _add_lock_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		_sub_off_alt(choosenMatch[1], choosenMatch[0])
+		_sub_off(choosenMatch[1], choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -539,7 +545,7 @@ func _place_key_element(graph: Node):
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node = graph.add_vertex()
-		_sub_off_alt(newVertex, choosenMatch[0])
+		_sub_off(newVertex, choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0]:
 				var theVertex: Node = graph.get_vertex(edge.to)
@@ -569,7 +575,7 @@ func _add_element_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		randomize()
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
-		_sub_off_alt(choosenMatch[2], choosenMatch[1])
+		_sub_off(choosenMatch[2], choosenMatch[1])
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[1] and edge.to == choosenMatch[2]:
 				edge.queue_free()
@@ -686,24 +692,24 @@ func _on_ButtonAddGraph_pressed():
 	graphs.add_child(graph)
 	
 	#add to option
-	$"%OptionTargetGraph".add_item(graph.name, indexGraph)
-	$"%OptionTargetGraph".select(indexGraph)
-	$"%OptionTargetGraph2".add_item(graph.name, indexGraph)
-	$"%OptionTargetGraph2".select(indexGraph)
+	optionTargetGraph.add_item(graph.name, indexGraph)
+	optionTargetGraph.select(indexGraph)
+	optionTargetGraph2.add_item(graph.name, indexGraph)
+	optionTargetGraph2.select(indexGraph)
 	targetGraph = graph
 	indexGraph += 1
 
 
 func _on_OptionTargetGraph_item_selected(index):
-	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
-	$"%OptionTargetGraph2".select($"%OptionTargetGraph".get_selected_id())
+	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
+	optionTargetGraph2.select(optionTargetGraph.get_selected_id())
 
 func _on_OptionTargetGraph2_item_selected(index):
-	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
-	$"%OptionTargetGraph".select($"%OptionTargetGraph2".get_selected_id())
+	targetGraph = get_node("Graphs/" + optionTargetGraph.get_item_text(index))
+	optionTargetGraph.select(optionTargetGraph2.get_selected_id())
 
 func _on_ButtonExecuteSingleRule_pressed():
-	var selectedRule = $"%OptionSingleRule".get_item_text($"%OptionSingleRule".get_selected_id())
+	var selectedRule = optionSingleRule.get_item_text(optionSingleRule.get_selected_id())
 	_execute_rule(selectedRule, targetGraph)
 
 
@@ -711,21 +717,21 @@ func _on_ButtonClearAll_pressed():
 	for graph in graphs.get_children():
 		graph.queue_free()
 	targetGraph = null
-	$"%OptionTargetGraph".clear()
+	optionTargetGraph.clear()
 	indexGraph = 0
 	indexVertex = 0
 
 
 func _on_ButtonAddRule_pressed():
-	var textItem = $"%OptionRuleRecipe".get_item_text($"%OptionRuleRecipe".get_selected_id())
+	var textItem = optionRuleRecipe.get_item_text(optionRuleRecipe.get_selected_id())
 	recipe.append(textItem)
-	$"%RichTextRecipe".add_text(textItem)
-	$"%RichTextRecipe".newline()
+	richTextRecipe.add_text(textItem)
+	richTextRecipe.newline()
 
 
 func _on_ButtonClearRecipe_pressed():
 	recipe.clear()
-	$"%RichTextRecipe".clear()
+	richTextRecipe.clear()
 
 
 func _on_ButtonExecuteRecipe_pressed():
@@ -740,10 +746,10 @@ func _on_ButtonTransform_pressed():
 func _on_ButtonDeleteGraph_pressed():
 	targetGraph.queue_free()
 	targetGraph = null
-	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
-	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph".get_selected_id())
-	$"%OptionTargetGraph".select(-1)
-	$"%OptionTargetGraph2".select(-1)
+	optionTargetGraph.remove_item(optionTargetGraph.get_selected_id())
+	optionTargetGraph2.remove_item(optionTargetGraph.get_selected_id())
+	optionTargetGraph.select(-1)
+	optionTargetGraph2.select(-1)
 
 
 func _on_ButtonGetInfo_pressed():
