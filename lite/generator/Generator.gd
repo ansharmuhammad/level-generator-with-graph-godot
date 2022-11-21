@@ -3,14 +3,15 @@ extends Node2D
 onready var gui = $"%GUI"
 onready var graphs = $"%Graphs"
 
-const Graph = preload("res://debug/visualGraph/VisualGraph.tscn")
-const Vertex = preload("res://debug/visualNode/VisualNode.tscn")
-const Edge = preload("res://debug/visualEdge/VisualEdge.tscn")
+const Graph = preload("res://lite/graph/Graph.tscn")
+const Vertex = preload("res://lite/vertex/Vertex.tscn")
+const Edge = preload("res://lite/edge/Edge.tscn")
 
 var targetGraph: Node2D = null
 var indexGraph: int = 0
 var indexVertex: int = 0
-var recipe: Array = [
+var recipe: Array = []
+const DEFAULT_RECIPE: Array = [
 	"randomInit",
 	"randomExtend", "randomExtend", "randomExtend",
 	"secret",
@@ -18,11 +19,13 @@ var recipe: Array = [
 	"reward", "reward", "reward",
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
+var gridSize: Vector2 = Vector2(256,256)
 
-var gridSize: Vector2 = Vector2(600,600)
+const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	recipe = DEFAULT_RECIPE
 	for rule in recipe:
 		$"%RichTextRecipe".add_text(rule)
 		$"%RichTextRecipe".newline()
@@ -37,7 +40,7 @@ func _input(event):
 			$"%WindowDialogGraph".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGraph".rect_size.x, $"%WindowDialogGraph".rect_size.y))
 
 #disable for performance
-func _physics_process(delta):
+func _process(delta):
 	if targetGraph == null:
 		$"%ButtonExecuteSingleRule".disabled = true
 		$"%ButtonExecuteRecipe".disabled = true
@@ -47,13 +50,61 @@ func _physics_process(delta):
 		$"%ButtonExecuteRecipe".disabled = false
 		$"%ButtonTransform".disabled = false
 
-
+func _create_graph():
+	#make graph
+	var graph = Graph.instance()
+	graph.init_object("graph"+str(indexGraph), indexGraph)
+	var pos = indexGraph * 1000
+	graph.position = graph.position + Vector2(pos, 0)
+	graph.gridSize = gridSize
+	graphs.add_child(graph)
+	
+	#initiate vertex
+	var vertexinit = graph.add_vertex("",TYPE_VERTEX.INIT)
+	vertexinit.position = graph.position
+	graph.posVertices[vertexinit.name] = vertexinit.position
+	graph.connect_vertex(vertexinit, null)
+	
+	#add to option
+	$"%OptionTargetGraph".add_item(graph.name, indexGraph)
+	$"%OptionTargetGraph".select(indexGraph)
+	$"%OptionTargetGraph2".add_item(graph.name, indexGraph)
+	$"%OptionTargetGraph2".select(indexGraph)
+	targetGraph = graph
+	indexGraph += 1
 
 # collection of rules ==========================================================
 
 func _rule_init_1(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
+		#check if there is init vertex
+		var from = graph.get_vertex(edge.from)
+		if from.type == TYPE_VERTEX.INIT and edge.to == null:
+			matchEdge.append(edge)
+
+	if matchEdge.size() > 0:
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.add_vertex()
+		var vertex3: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
+		var vertex4: Node2D = graph.add_vertex()
+		
+		vertex1.change_type(TYPE_VERTEX.START)
+		graph.change_vertex_pos(vertex2, vertex1.position + (Vector2.RIGHT * gridSize))
+		graph.change_vertex_pos(vertex3, vertex2.position + (Vector2.DOWN * gridSize))
+		graph.change_vertex_pos(vertex4, vertex1.position + (Vector2.DOWN * gridSize))
+		
+		chosenEdge.init_object(vertex1, vertex2, TYPE_EDGE.PATH, Vector2.RIGHT)
+		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, Vector2.DOWN)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, Vector2.LEFT)
+		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, Vector2.UP)
+		update()
+#		print("execute rule init1 at" + str(chosenEdge))
+
+func _rule_init_2(graph: Node):
+	var matchEdge: Array = []
+	for edge in graph.get_edges():
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)
 		if from.type == TYPE_VERTEX.INIT and edge.to == null:
@@ -61,135 +112,149 @@ func _rule_init_1(graph: Node):
 
 	if matchEdge.size() > 0:
 		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		vertex1.type = TYPE_VERTEX.START
-		vertex1.labelType.text = "S"
-#		var rad = vertex1.colShape.get_shape().radius * 2
-
-		var vertex2 = graph.add_vertex()
-#		vertex2.position = vertex1.position + (Vector2.RIGHT * rad)
-		vertex2.position = vertex1.position + (Vector2(gridSize.x, 0))
-		var vertex3 = graph.add_vertex("",TYPE_VERTEX.GOAL)
-#		vertex3.position = vertex2.position + (Vector2.DOWN * rad)
-		vertex3.position = vertex2.position + (Vector2(0, gridSize.y))
-		var vertex4 = graph.add_vertex()
-#		vertex4.position = vertex1.position + (Vector2.DOWN * rad)
-		vertex4.position = vertex1.position + (Vector2(0, gridSize.y))
-
-		chosenEdge.init_object(vertex1, vertex2)
-		graph.connect_vertex(vertex2, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex4, vertex1)
-#		print("execute rule init1 at" + str(chosenEdge))
-
-func _rule_init_2(graph: Node):
-	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
-		#check if there is init vertex
-		var from = graph.get_vertex(edge.from)		
-		if from.type == TYPE_VERTEX.INIT and edge.to == null:
-			matchEdge.append(edge)
-
-	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		vertex1.type = TYPE_VERTEX.START
-		vertex1.labelType.text = "S"
-#		var rad = vertex1.colShape.get_shape().radius * 2
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.add_vertex()
+		var vertex3: Node2D = graph.add_vertex()
+		var vertex4: Node2D = graph.add_vertex()
+		var vertex5: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
+		var vertex6: Node2D = graph.add_vertex()
 		
-		var vertex2 = graph.add_vertex()
-		vertex2.position = vertex1.position + (Vector2(gridSize.x, 0))
-		var vertex3 = graph.add_vertex()
-		vertex3.position = vertex2.position + (Vector2(gridSize.x, 0))
-		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex3.position + (Vector2(0, gridSize.y))
-		var vertex5 = graph.add_vertex("",TYPE_VERTEX.GOAL)
-		vertex5.position = vertex4.position + (Vector2(gridSize.x, 0))
-		var vertex6 = graph.add_vertex()
-		vertex6.position = vertex4.position + (Vector2.LEFT)
+		vertex1.change_type(TYPE_VERTEX.START)
+		graph.change_vertex_pos(vertex2, vertex1.position + Vector2.RIGHT * gridSize)
+		graph.change_vertex_pos(vertex3, vertex2.position + Vector2.RIGHT * gridSize)
+		graph.change_vertex_pos(vertex4, vertex3.position + Vector2.DOWN * gridSize)
+		graph.change_vertex_pos(vertex5, vertex4.position + Vector2.RIGHT * gridSize)
+		graph.change_vertex_pos(vertex6, vertex4.position + Vector2.LEFT * gridSize)
 		
-		chosenEdge.init_object(vertex1, vertex2)
-		graph.connect_vertex(vertex2, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex4, vertex5)
-		graph.connect_vertex(vertex4, vertex6)
-		graph.connect_vertex(vertex6, vertex2)
+		chosenEdge.init_object(vertex1, vertex2, TYPE_EDGE.PATH, Vector2.RIGHT)
+		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, Vector2.RIGHT)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, Vector2.DOWN)
+		graph.connect_vertex(vertex4, vertex5, TYPE_EDGE.PATH, Vector2.RIGHT)
+		graph.connect_vertex(vertex4, vertex6, TYPE_EDGE.PATH, Vector2.LEFT)
+		graph.connect_vertex(vertex6, vertex2, TYPE_EDGE.PATH, Vector2.UP)
+		update()
 #		print("execute rule init2 at" + str(chosenEdge))
 
 func _rule_extend_1(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH:
 			matchEdge.append(edge)
 
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		var vertex2 = graph.get_vertex(chosenEdge.to)
-		var vertex3 = graph.add_vertex()
-		var slidePos = vertex2.position + Vector2(gridSize.x ,0).rotated(vertex2.position.angle_to_point(vertex1.position))
-#		vertex2.move_to(slidePos)
-#		vertex2.global_transform.origin = vertex2.position + Vector2(gridSize.x * 2 ,0).rotated(vertex2.position.angle_to_point(vertex1.position))
-		vertex3.global_position = (vertex1.global_position + slidePos)/2
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex()
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex2)
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, direction)
+		
+		update()
 #		print("execute rule Extend1 at" + str(chosenEdge))
 
 func _rule_extend_2(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			matchEdge.append(edge)
+			#check if there is 2 vertex have same direction null
+			var from = graph.get_vertex(edge.from)
+			var to = graph.get_vertex(edge.to)
+			if (from.connections[Vector2.LEFT] == null and to.connections[Vector2.LEFT] == null) or (from.connections[Vector2.RIGHT] == null and to.connections[Vector2.RIGHT] == null) or (from.connections[Vector2.UP] == null and to.connections[Vector2.UP] == null) or (from.connections[Vector2.DOWN] == null and to.connections[Vector2.DOWN] == null):
+				matchEdge.append(edge)
 
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-#		var rad = vertex1.colShape.get_shape().radius * 2
-		var vertex2 = graph.get_vertex(chosenEdge.to)
-		var vertex3 = graph.add_vertex()
-		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
-		vertex3.position = vertex2.position + Vector2(gridSize.x, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex()
+		var vertex4: Node2D = graph.add_vertex()
 		
-		graph.connect_vertex(vertex1, vertex4)
-		graph.connect_vertex(vertex4, vertex3)
-		graph.connect_vertex(vertex3, vertex2)
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var directionOptions: Array = []
+		for option in DIRECTIONS:
+			if vertex1.connections[option] == null and vertex2.connections[option] == null:
+				directionOptions.append(option)
+		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
+		var mirror: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
+		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
+		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, chosenOption)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, chosenOption)
+		
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
+		
+		graph.connect_vertex(vertex1, vertex4, TYPE_EDGE.PATH, chosenOption)
+		graph.connect_vertex(vertex4, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, mirror)
+		update()
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
 func _rule_extend_3(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
-		var vertex1 = graph.get_vertex(edge.from)
-		var vertex2 = graph.get_vertex(edge.to)
-		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(vertex1).size() < 4 and graph.get_edges_of(vertex2).size() < 4:
-			matchEdge.append(edge)
+		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
+			#check if there is 2 vertex have same direction null
+			var from = graph.get_vertex(edge.from)
+			var to = graph.get_vertex(edge.to)
+			if (from.connections[Vector2.LEFT] == null and to.connections[Vector2.LEFT] == null) or (from.connections[Vector2.RIGHT] == null and to.connections[Vector2.RIGHT] == null) or (from.connections[Vector2.UP] == null and to.connections[Vector2.UP] == null) or (from.connections[Vector2.DOWN] == null and to.connections[Vector2.DOWN] == null):
+				matchEdge.append(edge)
 
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-#		var rad = vertex1.colShape.get_shape().radius * 2
-		var vertex2 = graph.get_vertex(chosenEdge.to)
-		var vertex3 = graph.add_vertex()
-		var vertex4 = graph.add_vertex()
-		vertex3.position = vertex2.position + Vector2(gridSize.x, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
-		vertex4.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex()
+		var vertex4: Node2D = graph.add_vertex()
 		
-		graph.connect_vertex(vertex2, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex4, vertex1)
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
+		var directionOptions: Array = []
+		for option in DIRECTIONS:
+			if vertex1.connections[option] == null and vertex2.connections[option] == null:
+				directionOptions.append(option)
+		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
+		var mirror: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
+		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
+		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, chosenOption)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, chosenOption)
+		
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
+		
+		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, chosenOption)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, mirrorDirection)
+		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, mirror)
+		update()
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
 func _rule_secret(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
-		if ((from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4) or (to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 )) and edge.type == TYPE_EDGE.PATH:
+		
+		if ((from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4) or (to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 )) and edge.type == TYPE_EDGE.PATH and from.connections.values().has(null) and to.connections.values().has(null):
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
@@ -198,67 +263,92 @@ func _rule_secret(graph: Node):
 		var to = graph.get_vertex(chosenEdge.to)
 		
 		var arrayVertex: Array = []
-		if from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4:
+		if from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4 and from.connections.values().has(null):
 			arrayVertex.append(from)
-		if to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4:
+		if to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 and to.connections.values().has(null):
 			arrayVertex.append(to)
 		
-		var idx = randi() % arrayVertex.size()
-		var vertex1 = arrayVertex[idx]
-#		var rad = vertex1.colShape.get_shape().radius * 2
-		var vertex2 = graph.add_vertex("",TYPE_VERTEX.SECRET)
+		var vertex1: Node2D = arrayVertex[randi() % arrayVertex.size()]
+		var vertex2: Node2D = graph.add_vertex("",TYPE_VERTEX.SECRET)
 		
-		if idx == 0:
-			vertex2.position = from.position + Vector2(gridSize.x, 0).rotated(from.position.angle_to_point(to.position) + deg2rad(-90))
-		else:
-			vertex2.position = to.position + Vector2(gridSize.x, 0).rotated(to.position.angle_to_point(from.position) + deg2rad(-90))
+		var directions: Array = []
+		for direction in vertex1.connections.keys():
+			if vertex1.connections[direction] == null:
+				directions.append(direction)
+		var direction: Vector2 = directions[randi() % directions.size()]
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		
-		graph.connect_vertex(vertex1, vertex2)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		graph.change_vertex_pos(vertex2, targetPos)
+		
+		graph.connect_vertex(vertex1, vertex2, TYPE_EDGE.PATH, direction)
+		update()
 #		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
 
 func _rule_obstacle(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.to != null:
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		var vertex2 = graph.get_vertex(chosenEdge.to)
-		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
-#		vertex2.position = vertex2.position - Vector2(gridSize,0).rotated(vertex2.position.angle_to_point(vertex1.position))
-		vertex3.position = (vertex1.position + vertex2.position)/2
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex2)
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, direction)
+		update()
 #		print("execute rule Obstacle at" + str(chosenEdge))
 
 func _rule_reward(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.to != null:
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		var vertex2 = graph.get_vertex(chosenEdge.to)
-		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
-		vertex3.position = (vertex1.position + vertex2.position)/2
-		var vertex4 = graph.add_vertex("", TYPE_VERTEX.REWARD)
-		vertex4.position = (vertex3.position + vertex2.position)/2
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		print("========")
+		print(chosenEdge)
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
+		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex4, vertex2)
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
+		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.ELEMENT, direction)
+		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
+		update()
 #		print("execute rule Reward at" + str(chosenEdge))
 
 func _rule_knl_1(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 place vertex connected
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
@@ -287,7 +377,7 @@ func _rule_knl_1(graph: Node):
 
 func _rule_knl_2(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
 			matchEdge.append(edge)
@@ -319,7 +409,7 @@ func _rule_knl_2(graph: Node):
 
 func _rule_knl_3(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
 			matchEdge.append(edge)
@@ -351,7 +441,7 @@ func _rule_knl_3(graph: Node):
 
 func _rule_knl_4(graph: Node):
 	var matchEdge: Array = []
-	for edge in graph.get_node("Edges").get_children():
+	for edge in graph.get_edges():
 		#check if there is 2 vertex connected and the secon vertex type is goal
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
@@ -661,46 +751,50 @@ func _execute_transform_rule(graph: Node):
 			1: _add_lock_after_place(graph)
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
-#
+	
 	_element_edges(graph)
 	#transformative rule
 
 
-# add new graph
+
 func _on_ButtonAddGraph_pressed():
-	#make graph
-	var graph = Graph.instance()
-	graph.init_object("graph"+str(indexGraph), indexGraph)
-	var pos = indexGraph * 4500
-	graph.position = graph.position + Vector2(pos, 0)
-	
-	#initiate vertex 
-	var vertexinit = graph.add_vertex("",TYPE_VERTEX.INIT)
-	vertexinit.move_to(graph.position)
-	yield(get_tree(), "physics_frame")
-	graph.connect_vertex(vertexinit, null)
-	graphs.add_child(graph)
-	
-	#add to option
-	$"%OptionTargetGraph".add_item(graph.name, indexGraph)
-	$"%OptionTargetGraph".select(indexGraph)
-	$"%OptionTargetGraph2".add_item(graph.name, indexGraph)
-	$"%OptionTargetGraph2".select(indexGraph)
-	targetGraph = graph
-	indexGraph += 1
+	_create_graph()
 
 
 func _on_OptionTargetGraph_item_selected(index):
 	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
 	$"%OptionTargetGraph2".select($"%OptionTargetGraph".get_selected_id())
 
-func _on_OptionTargetGraph2_item_selected(index):
-	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
-	$"%OptionTargetGraph".select($"%OptionTargetGraph2".get_selected_id())
+
+func _on_ButtonDeleteGraph_pressed():
+	targetGraph.queue_free()
+	targetGraph = null
+	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph".select(-1)
+	$"%OptionTargetGraph2".select(-1)
+
 
 func _on_ButtonExecuteSingleRule_pressed():
 	var selectedRule = $"%OptionSingleRule".get_item_text($"%OptionSingleRule".get_selected_id())
 	_execute_rule(selectedRule, targetGraph)
+
+
+func _on_ButtonAddRule_pressed():
+	var textItem = $"%OptionRuleRecipe".get_item_text($"%OptionRuleRecipe".get_selected_id())
+	recipe.append(textItem)
+	$"%RichTextRecipe".add_text(textItem)
+	$"%RichTextRecipe".newline()
+
+
+func _on_ButtonExecuteRecipe_pressed():
+	for rule in recipe:
+		_execute_rule(rule, targetGraph)
+
+
+func _on_ButtonClearRecipe_pressed():
+	recipe.clear()
+	$"%RichTextRecipe".clear()
 
 
 func _on_ButtonClearAll_pressed():
@@ -712,36 +806,9 @@ func _on_ButtonClearAll_pressed():
 	indexVertex = 0
 
 
-func _on_ButtonAddRule_pressed():
-	var textItem = $"%OptionRuleRecipe".get_item_text($"%OptionRuleRecipe".get_selected_id())
-	recipe.append(textItem)
-	$"%RichTextRecipe".add_text(textItem)
-	$"%RichTextRecipe".newline()
-
-
-func _on_ButtonClearRecipe_pressed():
-	recipe.clear()
-	$"%RichTextRecipe".clear()
-
-
-func _on_ButtonExecuteRecipe_pressed():
-	for rule in recipe:
-		_execute_rule(rule, targetGraph)
-	#wait for movement from physics stop
-	yield(get_tree().create_timer(1.1), "timeout")
-
-
-func _on_ButtonTransform_pressed():
-	_execute_transform_rule(targetGraph)
-
-
-func _on_ButtonDeleteGraph_pressed():
-	targetGraph.queue_free()
-	targetGraph = null
-	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
-	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph".get_selected_id())
-	$"%OptionTargetGraph".select(-1)
-	$"%OptionTargetGraph2".select(-1)
+func _on_OptionTargetGraph2_item_selected(index):
+	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
+	$"%OptionTargetGraph".select($"%OptionTargetGraph2".get_selected_id())
 
 
 func _on_ButtonGetInfo_pressed():
@@ -756,15 +823,19 @@ func _on_ButtonGetInfo_pressed():
 		$"%Labelfitness".text = "fitness : " + str(fitness)
 
 
+func _on_ButtonTransform_pressed():
+	_execute_transform_rule(targetGraph)
+
+
 func _on_ButtonToggleLineElement2_toggled(button_pressed):
-	var edges = get_tree().get_nodes_in_group("edges")
+	var edges = get_tree().get_nodes_in_group("edgesLite")
 	for edge in targetGraph.get_edges():
 		if edge.type != TYPE_EDGE.PATH:
 			edge.showLine = button_pressed
 
 
 func _on_ButtonToggleNodeElement_toggled(button_pressed):
-	var vertices = get_tree().get_nodes_in_group("vertices")
+	var vertices = get_tree().get_nodes_in_group("verticesLite")
 	for vertex in vertices:
 		if vertex.isElement:
 			vertex.visible = button_pressed

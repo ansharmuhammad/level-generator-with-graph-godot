@@ -5,6 +5,7 @@
 [ext_resource path="res://assets/seguihis.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="CircleShape2D" id=2]
+custom_solver_bias = 0.75
 radius = 150.0
 
 [sub_resource type="DynamicFont" id=3]
@@ -15,7 +16,7 @@ font_data = ExtResource( 3 )
 size = 100
 font_data = ExtResource( 3 )
 
-[node name="VisualNode" type="RigidBody2D"]
+[node name="VisualNode" type="RigidBody2D" groups=["vertices"]]
 input_pickable = true
 mode = 2
 contact_monitor = true

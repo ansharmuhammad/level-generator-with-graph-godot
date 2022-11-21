@@ -7,12 +7,12 @@ onready var shapeSmall = CircleShape2D.new()
 
 export var type: String = "TASK"
 export var alwaysStatic: bool = false
+export var newPos: Vector2
 export var move: bool = false
-export var gridSize: Vector2 = Vector2(300,300)
 
-var newPos: Vector2
-var isElement: bool = false
-var snap: bool = true
+export var isElement: bool = false
+export var gridSize: Vector2 = Vector2(300,300)
+export var snap: bool = false
 var color = Color.black
 ## var which contains info about which part of the node this node belongs to
 var subOf: Node = null
@@ -26,7 +26,9 @@ func _ready():
 	set_process_input(true)
 	set_scale_node(2)
 	shapeNormal.radius = 150
+	shapeNormal.custom_solver_bias = 0.75
 	shapeSmall.radius = 50
+	shapeSmall.custom_solver_bias = 0.75
 
 ## initiate vertex with name and type
 func init_object(_name: String = "", _type: String = "TASK"):
@@ -115,14 +117,18 @@ func _physics_process(delta):
 	if is_held:
 		global_position = lerp(global_position, get_global_mouse_position(), 25 * delta)
 
+func move_to(position: Vector2):
+	newPos = position
+	move = true
+
 func _integrate_forces(state):
 	if move:
-#		state.transform.origin = newPos
-		position = newPos
+		state.transform.origin = newPos
 		move = false
+#		$Sprite/Label.text = name + str(position)
 	if !isElement and !is_held and snap and contacts_reported < 1:
-#		position = Vector2(stepify(position.x, gridSize), stepify(position.y, gridSize))
 		position = position.snapped(gridSize)
+#		$Sprite/Label.text = name + str(position)
 
 # drag n drop function
 func _input(event):

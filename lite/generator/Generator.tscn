@@ -1,22 +1,13 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://debug/TileMap.gd" type="Script" id=1]
+[ext_resource path="res://lite/generator/Generator.gd" type="Script" id=1]
 [ext_resource path="res://SpanningCamera2D/SpanningCamera2D.tscn" type="PackedScene" id=2]
-[ext_resource path="res://debug/GenerateDebug.gd" type="Script" id=3]
 
-[node name="World" type="Node2D"]
-script = ExtResource( 3 )
-
-[node name="TileMap" type="TileMap" parent="."]
-cell_size = Vector2( 300, 300 )
-format = 1
+[node name="Generator" type="Node2D"]
 script = ExtResource( 1 )
 
-[node name="Graphs" type="Node" parent="TileMap"]
+[node name="Graphs" type="Node" parent="."]
 unique_name_in_owner = true
-
-[node name="Camera2D" parent="." instance=ExtResource( 2 )]
-zoom = Vector2( 5, 5 )
 
 [node name="GUI" type="CanvasLayer" parent="."]
 unique_name_in_owner = true
@@ -361,6 +352,9 @@ margin_right = 193.0
 margin_bottom = 152.0
 pressed = true
 text = "Toggle Snap"
+
+[node name="Camera2D" parent="." instance=ExtResource( 2 )]
+zoom = Vector2( 5, 5 )
 
 [connection signal="pressed" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGraph/ButtonAddGraph" to="." method="_on_ButtonAddGraph_pressed"]
 [connection signal="item_selected" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGraph/HBoxContainer/OptionTargetGraph" to="." method="_on_OptionTargetGraph_item_selected"]
