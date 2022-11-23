@@ -17,3 +17,6 @@ const KEY_LOCK: String = "KEY_LOCK"
 
 ## type edge which connecting between two element vertex
 const ELEMENT: String = "ELEMENT"
+
+## type edge which connecting between two place with hidden path
+const HIDDEN: String = "HIDDEN"

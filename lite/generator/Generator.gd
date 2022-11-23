@@ -99,7 +99,6 @@ func _rule_init_1(graph: Node):
 		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, Vector2.DOWN)
 		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, Vector2.LEFT)
 		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, Vector2.UP)
-		update()
 #		print("execute rule init1 at" + str(chosenEdge))
 
 func _rule_init_2(graph: Node):
@@ -132,7 +131,6 @@ func _rule_init_2(graph: Node):
 		graph.connect_vertex(vertex4, vertex5, TYPE_EDGE.PATH, Vector2.RIGHT)
 		graph.connect_vertex(vertex4, vertex6, TYPE_EDGE.PATH, Vector2.LEFT)
 		graph.connect_vertex(vertex6, vertex2, TYPE_EDGE.PATH, Vector2.UP)
-		update()
 #		print("execute rule init2 at" + str(chosenEdge))
 
 func _rule_extend_1(graph: Node):
@@ -158,8 +156,6 @@ func _rule_extend_1(graph: Node):
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, direction)
-		
-		update()
 #		print("execute rule Extend1 at" + str(chosenEdge))
 
 func _rule_extend_2(graph: Node):
@@ -186,7 +182,7 @@ func _rule_extend_2(graph: Node):
 			if vertex1.connections[option] == null and vertex2.connections[option] == null:
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
-		var mirror: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
+		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
 		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
 		#if that position has a vertex
@@ -200,8 +196,7 @@ func _rule_extend_2(graph: Node):
 		
 		graph.connect_vertex(vertex1, vertex4, TYPE_EDGE.PATH, chosenOption)
 		graph.connect_vertex(vertex4, vertex3, TYPE_EDGE.PATH, direction)
-		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, mirror)
-		update()
+		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, mirrorOption)
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
 func _rule_extend_3(graph: Node):
@@ -229,7 +224,7 @@ func _rule_extend_3(graph: Node):
 			if vertex1.connections[option] == null and vertex2.connections[option] == null:
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
-		var mirror: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
+		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
 		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
 		#if that position has a vertex
@@ -243,8 +238,7 @@ func _rule_extend_3(graph: Node):
 		
 		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, chosenOption)
 		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, mirrorDirection)
-		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, mirror)
-		update()
+		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, mirrorOption)
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
 func _rule_secret(graph: Node):
@@ -253,7 +247,6 @@ func _rule_secret(graph: Node):
 		#check if there is init vertex
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
-		
 		if ((from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4) or (to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 )) and edge.type == TYPE_EDGE.PATH and from.connections.values().has(null) and to.connections.values().has(null):
 			matchEdge.append(edge)
 	
@@ -284,7 +277,6 @@ func _rule_secret(graph: Node):
 		graph.change_vertex_pos(vertex2, targetPos)
 		
 		graph.connect_vertex(vertex1, vertex2, TYPE_EDGE.PATH, direction)
-		update()
 #		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
 
 func _rule_obstacle(graph: Node):
@@ -310,7 +302,6 @@ func _rule_obstacle(graph: Node):
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, direction)
-		update()
 #		print("execute rule Obstacle at" + str(chosenEdge))
 
 func _rule_reward(graph: Node):
@@ -322,8 +313,6 @@ func _rule_reward(graph: Node):
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
-		print("========")
-		print(chosenEdge)
 		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
 		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
@@ -343,7 +332,6 @@ func _rule_reward(graph: Node):
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.ELEMENT, direction)
 		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
-		update()
 #		print("execute rule Reward at" + str(chosenEdge))
 
 func _rule_knl_1(graph: Node):
@@ -356,22 +344,32 @@ func _rule_knl_1(graph: Node):
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
+		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
+		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		
-		var vertex3 = graph.add_vertex("", TYPE_VERTEX.KEY)
-		vertex3.position = (vertex1.position + vertex2.position)/2
-		var vertex4 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex4.position = (vertex3.position + vertex2.position)/2
-		var vertex5 = graph.add_vertex("", TYPE_VERTEX.LOCK)
-		vertex5.position = (vertex4.position + vertex2.position)/2
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		var targetPos3: Vector2 = targetPos2 + (direction * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, direction)
+		if graph.posVertices.values().has(targetPos3):
+			graph.slide_vertices(targetPos3, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
+		graph.change_vertex_pos(vertex5, targetPos3)
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex4, vertex5)
-		graph.connect_vertex(vertex5, vertex2)
-		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex4, vertex5, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex5, vertex2, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL1 at" + str(edge))
 
@@ -380,30 +378,54 @@ func _rule_knl_2(graph: Node):
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			matchEdge.append(edge)
+			#check if there is 2 vertex have same direction null
+			var from = graph.get_vertex(edge.from)
+			var to = graph.get_vertex(edge.to)
+			if (from.connections[Vector2.LEFT] == null and to.connections[Vector2.LEFT] == null) or (from.connections[Vector2.RIGHT] == null and to.connections[Vector2.RIGHT] == null) or (from.connections[Vector2.UP] == null and to.connections[Vector2.UP] == null) or (from.connections[Vector2.DOWN] == null and to.connections[Vector2.DOWN] == null):
+				matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		var vertex2 = graph.get_vertex(chosenEdge.to)
-#		var rad = vertex1.colShape.get_shape().radius * 2
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
+		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
+		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		
-		var vertex3 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex3.position = (vertex1.position + vertex2.position)/2
-		var vertex4 = graph.add_vertex("", TYPE_VERTEX.LOCK)
-		vertex4.position = (vertex3.position + vertex2.position)/2
-		var vertex5 = graph.add_vertex("", TYPE_VERTEX.KEY)
-		vertex5.position = vertex3.position + Vector2(gridSize.x, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
-		var vertex6 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex6.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex1, vertex6)
-		graph.connect_vertex(vertex6, vertex5)
-		graph.connect_vertex(vertex5, vertex3)
+		var directionOptions: Array = []
+		for option in DIRECTIONS:
+			if vertex1.connections[option] == null and vertex3.connections[option] == null:
+				directionOptions.append(option)
+		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
+		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
+		var targetPos3: Vector2 = vertex1.position + (chosenOption * gridSize)
+		var targetPos4: Vector2 = vertex3.position + (chosenOption * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos3):
+			graph.slide_vertices(targetPos3, chosenOption)
+		if graph.posVertices.values().has(targetPos4):
+			graph.slide_vertices(targetPos4, chosenOption)
+		graph.change_vertex_pos(vertex6, targetPos3)
+		graph.change_vertex_pos(vertex5, targetPos4)
 		
-		graph.connect_vertex(vertex4, vertex2)
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex1, vertex6, TYPE_EDGE.PATH, chosenOption)
+		graph.connect_vertex(vertex5, vertex3, TYPE_EDGE.PATH, mirrorOption)
+		graph.connect_vertex(vertex6, vertex5, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex5, vertex4, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL2 at" + str(chosenEdge))
 
@@ -412,30 +434,55 @@ func _rule_knl_3(graph: Node):
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			matchEdge.append(edge)
+			#check if there is 2 vertex have same direction null
+			var from = graph.get_vertex(edge.from)
+			var to = graph.get_vertex(edge.to)
+			if (from.connections[Vector2.LEFT] == null and to.connections[Vector2.LEFT] == null) or (from.connections[Vector2.RIGHT] == null and to.connections[Vector2.RIGHT] == null) or (from.connections[Vector2.UP] == null and to.connections[Vector2.UP] == null) or (from.connections[Vector2.DOWN] == null and to.connections[Vector2.DOWN] == null):
+				matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-#		var rad = vertex1.colShape.get_shape().radius * 2
-		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
+		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
+		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		
-		var vertex3 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex3.position = (vertex1.position + vertex2.position)/2
-		var vertex4 = graph.add_vertex("", TYPE_VERTEX.LOCK)
-		vertex4.position = (vertex3.position + vertex2.position)/2
-		var vertex5 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex5.position = vertex3.position + Vector2(gridSize.x, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
-		var vertex6 = graph.add_vertex("", TYPE_VERTEX.KEY)
-		vertex6.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex3, vertex5)
-		graph.connect_vertex(vertex5, vertex6)
-		graph.connect_vertex(vertex6, vertex1)
+		var directionOptions: Array = []
+		for option in DIRECTIONS:
+			if vertex1.connections[option] == null and vertex3.connections[option] == null:
+				directionOptions.append(option)
+		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
+		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
+		var targetPos3: Vector2 = vertex1.position + (chosenOption * gridSize)
+		var targetPos4: Vector2 = vertex3.position + (chosenOption * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos3):
+			graph.slide_vertices(targetPos3, chosenOption)
+		if graph.posVertices.values().has(targetPos4):
+			graph.slide_vertices(targetPos4, chosenOption)
+		graph.change_vertex_pos(vertex6, targetPos3)
+		graph.change_vertex_pos(vertex5, targetPos4)
 		
-		graph.connect_vertex(vertex4, vertex2)
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex6, vertex1, TYPE_EDGE.PATH, mirrorOption)
+		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.PATH, chosenOption)
+		graph.connect_vertex(vertex5, vertex6, TYPE_EDGE.PATH, mirrorDirection)
 		graph.connect_vertex(vertex6, vertex4, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL3 at" + str(chosenEdge))
 
@@ -449,24 +496,58 @@ func _rule_knl_4(graph: Node):
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
-		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var vertex1 = graph.get_vertex(chosenEdge.from)
-		var vertex2 = graph.get_vertex(chosenEdge.to)
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
+		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
+		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
+		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		
-		var vertex3 = graph.add_vertex("", TYPE_VERTEX.KEY)
-		vertex3.position = (vertex1.position + vertex2.position)/2
-		var vertex4 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex4.position = (vertex3.position + vertex2.position)/2
-		var vertex5 = graph.add_vertex("", TYPE_VERTEX.LOCK)
-		vertex5.position = (vertex4.position + vertex2.position)/2
+		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		var targetPos3: Vector2 = targetPos2 + (direction * gridSize)
+		#if that position has a vertex
+		if graph.posVertices.values().has(targetPos):
+			graph.slide_vertices(targetPos, direction)
+		if graph.posVertices.values().has(targetPos2):
+			graph.slide_vertices(targetPos2, direction)
+		if graph.posVertices.values().has(targetPos3):
+			graph.slide_vertices(targetPos3, direction)
+		graph.change_vertex_pos(vertex3, targetPos)
+		graph.change_vertex_pos(vertex4, targetPos2)
+		graph.change_vertex_pos(vertex5, targetPos3)
 		
-		chosenEdge.init_object(vertex1, vertex3)
-		graph.connect_vertex(vertex3, vertex4)
-		graph.connect_vertex(vertex4, vertex5)
-		graph.connect_vertex(vertex5, vertex2)
-		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex4, vertex5, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex5, vertex2, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL4 at" + str(chosenEdge))
+
+func _random_init(graph: Node):
+	var chosenrule = randi() % 2 + 1
+	if chosenrule == 1:
+		_rule_init_1(graph)
+	else:
+		_rule_init_2(graph)
+
+func _random_extend(graph: Node):
+	var chosenrule = randi() % 3 + 1
+	if chosenrule == 1:
+		_rule_extend_1(graph)
+	elif chosenrule == 2:
+		_rule_extend_2(graph)
+	else:
+		_rule_extend_3(graph)
+
+func _random_knl(graph: Node):
+	var chosenrule = randi() % 4 + 1
+	match chosenrule:
+		1: _rule_knl_1(graph)
+		2: _rule_knl_2(graph)
+		3: _rule_knl_3(graph)
+		4: _rule_knl_4(graph)
 
 # end of collection of rules ===================================================
 
@@ -548,6 +629,7 @@ func _create_secret(graph: Node, vertex: Node):
 				edge.from = newVertex
 			elif edge.to == vertex:
 				edge.to = newVertex
+			edge.type = TYPE_EDGE.HIDDEN
 #		var msg = "execute rule createSecret at" + str(vertex) +" new "+str(newVertex)
 #		print(msg)
 
@@ -715,26 +797,11 @@ func _execute_rule(rule: String, graph: Node):
 		"key&lock4":
 			_rule_knl_4(graph)
 		"randomInit":
-			var chosenrule = randi() % 2 + 1
-			if chosenrule == 1:
-				_rule_init_1(graph)
-			else:
-				_rule_init_2(graph)
+			_random_init(graph)
 		"randomExtend":
-			var chosenrule = randi() % 3 + 1
-			if chosenrule == 1:
-				_rule_extend_1(graph)
-			elif chosenrule == 2:
-				_rule_extend_2(graph)
-			else:
-				_rule_extend_3(graph)
+			_random_extend(graph)
 		"randomKeyLock":
-			var chosenrule = randi() % 4 + 1
-			match chosenrule:
-				1: _rule_knl_1(graph)
-				2: _rule_knl_2(graph)
-				3: _rule_knl_3(graph)
-				4: _rule_knl_4(graph)
+			_random_knl(graph)
 
 func _execute_transform_rule(graph: Node):
 	#create place rule
