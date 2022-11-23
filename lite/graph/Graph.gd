@@ -18,6 +18,7 @@ onready var fitness: float = 0.0
 var index: int = 0
 var indexNode: int = 0
 var posVertices: Dictionary = {}
+var posEdges: Dictionary = {}
 var gridSize: Vector2 = Vector2(300,300)
 
 func init_object(_name: String, _index: int):
@@ -64,7 +65,7 @@ func change_vertex_pos(vertex: Node2D, _position: Vector2):
 	update()
 
 ## connecting between two vertex in graph with an edge
-func connect_vertex(from: Node, to: Node, type: String = "", direction: Vector2 = Vector2.ZERO):
+func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vector2 = Vector2.ZERO):
 	var edge = Edge.instance()
 	var _type = type if type != "" else TYPE_EDGE.PATH
 	edge.init_object(from, to, _type)
@@ -73,6 +74,13 @@ func connect_vertex(from: Node, to: Node, type: String = "", direction: Vector2 
 		mirror = Vector2(mirror.x * -1, mirror.y) if mirror.x != 0 else Vector2(mirror.x, mirror.y * -1)
 		from.connections[direction] = to
 		to.connections[mirror] = from
+	if type != TYPE_EDGE.KEY_LOCK and from != null and to != null:
+		posVertices[edge.name] = {
+			"from": from.position,
+			"to": to.position
+		}
+	else:
+		posVertices.erase(edge.name)
 	$Edges.add_child(edge)
 
 ## get vertex object by its name
@@ -260,3 +268,19 @@ func slide_vertices(inserted_pos: Vector2, direction: Vector2):
 		vertex.position += (direction * gridSize)
 		posVertices[vertex.name] = vertex.position
 	update()
+
+func is_pos_has_placed(position: Vector2) -> bool:
+	if posVertices.values().has(position):
+		return true
+	return false
+
+func is_pos_crossed_line(position: Vector2) -> bool:
+	var lines: Array = posEdges.values()
+	for line in lines:
+		#crossing vertical
+		if line.from.x == line.to.x and (position.x == line.to.x or position.y == line.to.x):
+			return true
+		#crossing horizontal
+		elif line.from.y == line.to.y and (position.x == line.to.y or position.y == line.to.y):
+			return true
+	return false

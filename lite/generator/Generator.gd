@@ -150,7 +150,7 @@ func _rule_extend_1(graph: Node):
 		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		
@@ -186,9 +186,9 @@ func _rule_extend_2(graph: Node):
 		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos) and graph.is_pos_crossed_line(targetPos):
 			graph.slide_vertices(targetPos, chosenOption)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2) and graph.is_pos_crossed_line(targetPos2):
 			graph.slide_vertices(targetPos2, chosenOption)
 		
 		graph.change_vertex_pos(vertex3, targetPos)
@@ -228,9 +228,9 @@ func _rule_extend_3(graph: Node):
 		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos) and graph.is_pos_crossed_line(targetPos):
 			graph.slide_vertices(targetPos, chosenOption)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2) and graph.is_pos_crossed_line(targetPos2):
 			graph.slide_vertices(targetPos2, chosenOption)
 		
 		graph.change_vertex_pos(vertex3, targetPos)
@@ -272,7 +272,7 @@ func _rule_secret(graph: Node):
 		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos) and graph.is_pos_crossed_line(targetPos):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex2, targetPos)
 		
@@ -296,7 +296,7 @@ func _rule_obstacle(graph: Node):
 		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		
@@ -322,9 +322,9 @@ func _rule_reward(graph: Node):
 		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		var targetPos2: Vector2 = targetPos + (direction * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2):
 			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
@@ -356,11 +356,11 @@ func _rule_knl_1(graph: Node):
 		var targetPos2: Vector2 = targetPos + (direction * gridSize)
 		var targetPos3: Vector2 = targetPos2 + (direction * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2):
 			graph.slide_vertices(targetPos2, direction)
-		if graph.posVertices.values().has(targetPos3):
+		if graph.is_pos_has_placed(targetPos3):
 			graph.slide_vertices(targetPos3, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
@@ -397,9 +397,9 @@ func _rule_knl_2(graph: Node):
 		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		var targetPos2: Vector2 = targetPos + (direction * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2):
 			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
@@ -413,9 +413,9 @@ func _rule_knl_2(graph: Node):
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * gridSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos3):
+		if graph.is_pos_has_placed(targetPos3) and graph.is_pos_crossed_line(targetPos3):
 			graph.slide_vertices(targetPos3, chosenOption)
-		if graph.posVertices.values().has(targetPos4):
+		if graph.is_pos_has_placed(targetPos4) and graph.is_pos_crossed_line(targetPos4):
 			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex6, targetPos3)
 		graph.change_vertex_pos(vertex5, targetPos4)
@@ -454,9 +454,9 @@ func _rule_knl_3(graph: Node):
 		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
 		var targetPos2: Vector2 = targetPos + (direction * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2):
 			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
@@ -470,9 +470,9 @@ func _rule_knl_3(graph: Node):
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * gridSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos3):
+		if graph.is_pos_has_placed(targetPos3) and graph.is_pos_crossed_line(targetPos3):
 			graph.slide_vertices(targetPos3, chosenOption)
-		if graph.posVertices.values().has(targetPos4):
+		if graph.is_pos_has_placed(targetPos4) and graph.is_pos_crossed_line(targetPos4):
 			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex6, targetPos3)
 		graph.change_vertex_pos(vertex5, targetPos4)
@@ -508,11 +508,11 @@ func _rule_knl_4(graph: Node):
 		var targetPos2: Vector2 = targetPos + (direction * gridSize)
 		var targetPos3: Vector2 = targetPos2 + (direction * gridSize)
 		#if that position has a vertex
-		if graph.posVertices.values().has(targetPos):
+		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
-		if graph.posVertices.values().has(targetPos2):
+		if graph.is_pos_has_placed(targetPos2):
 			graph.slide_vertices(targetPos2, direction)
-		if graph.posVertices.values().has(targetPos3):
+		if graph.is_pos_has_placed(targetPos3):
 			graph.slide_vertices(targetPos3, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
