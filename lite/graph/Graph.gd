@@ -1,6 +1,5 @@
 extends Node2D
 
-onready var label = $Label
 const Vertex = preload("res://lite/vertex/Vertex.tscn")
 const Edge = preload("res://lite/edge/Edge.tscn")
 
@@ -19,7 +18,20 @@ var index: int = 0
 var indexNode: int = 0
 var posVertices: Dictionary = {}
 var posEdges: Dictionary = {}
-var gridSize: Vector2 = Vector2(300,300)
+
+# draw var
+export var gridSize: Vector2 = Vector2(300,300)
+var font
+export var vertexRadius: float = 32
+export var vertexOuterRadius: float = 64
+export var vertexSubRadius: float
+export var lineSize: float = 8
+
+
+func _ready():
+	font = DynamicFont.new()
+	font.font_data = load("res://assets/seguihis.ttf")
+	font.size = 32
 
 func init_object(_name: String, _index: int):
 	name = _name
@@ -82,6 +94,7 @@ func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vect
 	else:
 		posVertices.erase(edge.name)
 	$Edges.add_child(edge)
+	update()
 
 ## get vertex object by its name
 func get_vertex_by_name(vertexName: String) -> Node:
@@ -284,3 +297,66 @@ func is_pos_crossed_line(position: Vector2) -> bool:
 		elif line.from.y == line.to.y and (position.x == line.to.y or position.y == line.to.y):
 			return true
 	return false
+
+func _draw():
+	#draw vertices
+	for vertex in get_vertices():
+		var colorShape: Color = Color.white
+		var textSymbol: String = "T"
+		var halfSymbolSize: Vector2 = font.get_string_size(textSymbol)
+		var halfNameSize: Vector2 = font.get_string_size(vertex.name)
+		#update type
+		match vertex.type:
+			TYPE_VERTEX.INIT:
+				colorShape = Color.white
+				textSymbol = "I"
+			TYPE_VERTEX.TASK:
+				colorShape = Color.white
+				textSymbol = "T"
+			TYPE_VERTEX.START:
+				colorShape = Color.maroon
+				textSymbol = "S"
+			TYPE_VERTEX.GOAL:
+				colorShape = Color.maroon
+				textSymbol = "G"
+			TYPE_VERTEX.SECRET:
+				colorShape = Color.aliceblue
+				textSymbol = "St"
+			TYPE_VERTEX.OBSTACLE:
+				colorShape = Color.red
+				textSymbol = "O"
+			TYPE_VERTEX.REWARD:
+				colorShape = Color.yellow
+				textSymbol = "R"
+			TYPE_VERTEX.KEY:
+				colorShape = Color.greenyellow
+				textSymbol = "K"
+			TYPE_VERTEX.LOCK:
+				colorShape = Color.aqua
+				textSymbol = "L"
+		draw_circle(vertex.global_position, vertexRadius, colorShape)
+		draw_arc(vertex.global_position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)
+		draw_string(font, vertex.global_position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
+		draw_string(font, vertex.global_position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexOuterRadius), name, Color.black)
+	
+	#draw edges
+	var lines: PoolVector2Array = []
+	var colors: PoolColorArray = []
+	for edge in get_edges():
+		var fromPosition: Vector2 = edge.from.global_position if  edge.from != null else edge.to.global_position
+		var toPosition: Vector2 = edge.to.global_position if edge.to != null else edge.from.global_position
+		# line
+		lines.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
+		lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+		#arrow left
+		lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+		lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)))
+		#arrow right
+		lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+		lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)))
+		if edge.type != TYPE_EDGE.KEY_LOCK:
+			colors.append_array([Color.aliceblue, Color.aliceblue, Color.aliceblue, Color.aliceblue, Color.aliceblue, Color.aliceblue])
+		else:
+			colors.append_array([Color.aquamarine, Color.aquamarine, Color.aquamarine, Color.aquamarine, Color.aquamarine, Color.aquamarine])
+		draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+	draw_multiline_colors(lines, colors, 8, true)
