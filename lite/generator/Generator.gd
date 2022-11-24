@@ -19,7 +19,8 @@ const DEFAULT_RECIPE: Array = [
 	"reward", "reward", "reward",
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
-var gridSize: Vector2 = Vector2(256,256)
+var gridSize: Vector2 = Vector2(20,20)
+var cellSize: Vector2 = Vector2(256,256)
 
 const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
@@ -54,15 +55,15 @@ func _create_graph():
 	#make graph
 	var graph = Graph.instance()
 	graph.init_object("graph"+str(indexGraph), indexGraph)
-	var pos = indexGraph * 1000
-	graph.position = graph.position + Vector2(pos, 0)
+	var posx = indexGraph * gridSize.x * cellSize.x
 	graph.gridSize = gridSize
+	graph.cellSize = cellSize
+	graph.position = Vector2(posx, 0)
+	graph.update()
 	graphs.add_child(graph)
 	
 	#initiate vertex
 	var vertexinit = graph.add_vertex("",TYPE_VERTEX.INIT)
-	vertexinit.position = graph.position
-	graph.posVertices[vertexinit.name] = vertexinit.position
 	graph.connect_vertex(vertexinit, null)
 	
 	#add to option
@@ -91,9 +92,9 @@ func _rule_init_1(graph: Node):
 		var vertex4: Node2D = graph.add_vertex()
 		
 		vertex1.change_type(TYPE_VERTEX.START)
-		graph.change_vertex_pos(vertex2, vertex1.position + (Vector2.RIGHT * gridSize))
-		graph.change_vertex_pos(vertex3, vertex2.position + (Vector2.DOWN * gridSize))
-		graph.change_vertex_pos(vertex4, vertex1.position + (Vector2.DOWN * gridSize))
+		graph.change_vertex_pos(vertex2, vertex1.position + (Vector2.RIGHT * cellSize))
+		graph.change_vertex_pos(vertex3, vertex2.position + (Vector2.DOWN * cellSize))
+		graph.change_vertex_pos(vertex4, vertex1.position + (Vector2.DOWN * cellSize))
 		
 		chosenEdge.init_object(vertex1, vertex2, TYPE_EDGE.PATH, Vector2.RIGHT)
 		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, Vector2.DOWN)
@@ -119,11 +120,11 @@ func _rule_init_2(graph: Node):
 		var vertex6: Node2D = graph.add_vertex()
 		
 		vertex1.change_type(TYPE_VERTEX.START)
-		graph.change_vertex_pos(vertex2, vertex1.position + Vector2.RIGHT * gridSize)
-		graph.change_vertex_pos(vertex3, vertex2.position + Vector2.RIGHT * gridSize)
-		graph.change_vertex_pos(vertex4, vertex3.position + Vector2.DOWN * gridSize)
-		graph.change_vertex_pos(vertex5, vertex4.position + Vector2.RIGHT * gridSize)
-		graph.change_vertex_pos(vertex6, vertex4.position + Vector2.LEFT * gridSize)
+		graph.change_vertex_pos(vertex2, vertex1.position + Vector2.RIGHT * cellSize)
+		graph.change_vertex_pos(vertex3, vertex2.position + Vector2.RIGHT * cellSize)
+		graph.change_vertex_pos(vertex4, vertex3.position + Vector2.DOWN * cellSize)
+		graph.change_vertex_pos(vertex5, vertex4.position + Vector2.RIGHT * cellSize)
+		graph.change_vertex_pos(vertex6, vertex4.position + Vector2.LEFT * cellSize)
 		
 		chosenEdge.init_object(vertex1, vertex2, TYPE_EDGE.PATH, Vector2.RIGHT)
 		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, Vector2.RIGHT)
@@ -147,7 +148,7 @@ func _rule_extend_1(graph: Node):
 		var vertex3: Node2D = graph.add_vertex()
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
@@ -183,8 +184,8 @@ func _rule_extend_2(graph: Node):
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
-		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
-		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
+		var targetPos: Vector2 = vertex2.position + (chosenOption * cellSize)
+		var targetPos2: Vector2 = vertex1.position + (chosenOption * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos) and graph.is_pos_crossed_line(targetPos):
 			graph.slide_vertices(targetPos, chosenOption)
@@ -225,8 +226,8 @@ func _rule_extend_3(graph: Node):
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
-		var targetPos: Vector2 = vertex2.position + (chosenOption * gridSize)
-		var targetPos2: Vector2 = vertex1.position + (chosenOption * gridSize)
+		var targetPos: Vector2 = vertex2.position + (chosenOption * cellSize)
+		var targetPos2: Vector2 = vertex1.position + (chosenOption * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos) and graph.is_pos_crossed_line(targetPos):
 			graph.slide_vertices(targetPos, chosenOption)
@@ -269,7 +270,7 @@ func _rule_secret(graph: Node):
 			if vertex1.connections[direction] == null:
 				directions.append(direction)
 		var direction: Vector2 = directions[randi() % directions.size()]
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos) and graph.is_pos_crossed_line(targetPos):
@@ -293,7 +294,7 @@ func _rule_obstacle(graph: Node):
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
@@ -319,8 +320,8 @@ func _rule_reward(graph: Node):
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
-		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
+		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
@@ -352,9 +353,9 @@ func _rule_knl_1(graph: Node):
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
-		var targetPos2: Vector2 = targetPos + (direction * gridSize)
-		var targetPos3: Vector2 = targetPos2 + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
+		var targetPos2: Vector2 = targetPos + (direction * cellSize)
+		var targetPos3: Vector2 = targetPos2 + (direction * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
@@ -394,8 +395,8 @@ func _rule_knl_2(graph: Node):
 		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
-		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
+		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
@@ -410,8 +411,8 @@ func _rule_knl_2(graph: Node):
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
-		var targetPos3: Vector2 = vertex1.position + (chosenOption * gridSize)
-		var targetPos4: Vector2 = vertex3.position + (chosenOption * gridSize)
+		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
+		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos3) and graph.is_pos_crossed_line(targetPos3):
 			graph.slide_vertices(targetPos3, chosenOption)
@@ -451,8 +452,8 @@ func _rule_knl_3(graph: Node):
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
-		var targetPos2: Vector2 = targetPos + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
+		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)
@@ -467,8 +468,8 @@ func _rule_knl_3(graph: Node):
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
-		var targetPos3: Vector2 = vertex1.position + (chosenOption * gridSize)
-		var targetPos4: Vector2 = vertex3.position + (chosenOption * gridSize)
+		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
+		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos3) and graph.is_pos_crossed_line(targetPos3):
 			graph.slide_vertices(targetPos3, chosenOption)
@@ -504,9 +505,9 @@ func _rule_knl_4(graph: Node):
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
-		var targetPos: Vector2 = vertex1.position + (direction * gridSize)
-		var targetPos2: Vector2 = targetPos + (direction * gridSize)
-		var targetPos3: Vector2 = targetPos2 + (direction * gridSize)
+		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
+		var targetPos2: Vector2 = targetPos + (direction * cellSize)
+		var targetPos3: Vector2 = targetPos2 + (direction * cellSize)
 		#if that position has a vertex
 		if graph.is_pos_has_placed(targetPos):
 			graph.slide_vertices(targetPos, direction)

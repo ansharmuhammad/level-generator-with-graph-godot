@@ -20,7 +20,8 @@ var posVertices: Dictionary = {}
 var posEdges: Dictionary = {}
 
 # draw var
-export var gridSize: Vector2 = Vector2(300,300)
+export var gridSize: Vector2 = Vector2(20,20)
+var cellSize: Vector2 = Vector2(256,256)
 var font
 export var vertexRadius: float = 32
 export var vertexOuterRadius: float = 64
@@ -278,7 +279,7 @@ func slide_vertices(inserted_pos: Vector2, direction: Vector2):
 				if vertex.position.x >= inserted_pos.x:
 					slideVertices.append(vertex)
 	for vertex in slideVertices:
-		vertex.position += (direction * gridSize)
+		vertex.position += (direction * cellSize)
 		posVertices[vertex.name] = vertex.position
 	update()
 
@@ -299,6 +300,19 @@ func is_pos_crossed_line(position: Vector2) -> bool:
 	return false
 
 func _draw():
+	#draw tile
+	var LINE_COLOR = Color(0.2, 1.0, 0.7, 0.2)
+	var LINE_WIDTH = 5
+	var window_size = OS.get_window_size()
+	for x in range((gridSize.x * 2) + 1):
+		var col_pos = (x - gridSize.x) * cellSize.x
+		var limit = gridSize.y * cellSize.y
+		draw_line(Vector2(col_pos, 0 - (gridSize.y * cellSize.y)), Vector2(col_pos, limit), LINE_COLOR, LINE_WIDTH)
+	for y in range((gridSize.y * 2) + 1):
+		var row_pos = (y - gridSize.y) * cellSize.y
+		var limit = gridSize.x * cellSize.x
+		draw_line(Vector2((0 - gridSize.x * cellSize.x), row_pos), Vector2(limit, row_pos), LINE_COLOR, LINE_WIDTH)
+	
 	#draw vertices
 	for vertex in get_vertices():
 		var colorShape: Color = Color.white
@@ -334,29 +348,36 @@ func _draw():
 			TYPE_VERTEX.LOCK:
 				colorShape = Color.aqua
 				textSymbol = "L"
-		draw_circle(vertex.global_position, vertexRadius, colorShape)
-		draw_arc(vertex.global_position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)
-		draw_string(font, vertex.global_position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
-		draw_string(font, vertex.global_position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexOuterRadius), name, Color.black)
+		draw_circle(vertex.position, vertexRadius, colorShape)
+		draw_arc(vertex.position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)
+		draw_string(font, vertex.position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
+		draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexOuterRadius), name, Color.black)
 	
 	#draw edges
 	var lines: PoolVector2Array = []
-	var colors: PoolColorArray = []
+	var linesKl: PoolVector2Array = []
 	for edge in get_edges():
-		var fromPosition: Vector2 = edge.from.global_position if  edge.from != null else edge.to.global_position
-		var toPosition: Vector2 = edge.to.global_position if edge.to != null else edge.from.global_position
-		# line
-		lines.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
-		lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-		#arrow left
-		lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-		lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)))
-		#arrow right
-		lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-		lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)))
+		var fromPosition: Vector2 = edge.from.position if  edge.from != null else edge.to.position
+		var toPosition: Vector2 = edge.to.position if edge.to != null else edge.from.position
 		if edge.type != TYPE_EDGE.KEY_LOCK:
-			colors.append_array([Color.aliceblue, Color.aliceblue, Color.aliceblue, Color.aliceblue, Color.aliceblue, Color.aliceblue])
+			# line
+			lines.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
+			lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+			#arrow left
+			lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+			lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)))
+			#arrow right
+			lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+			lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)))
+			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
 		else:
-			colors.append_array([Color.aquamarine, Color.aquamarine, Color.aquamarine, Color.aquamarine, Color.aquamarine, Color.aquamarine])
-		draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
-	draw_multiline_colors(lines, colors, 8, true)
+			var direction: Vector2 = (toPosition - fromPosition).normalized()
+			var mid: Vector2 = (toPosition + fromPosition)/2
+			mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
+			linesKl.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
+			linesKl.append(mid)
+			linesKl.append(mid)
+			linesKl.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+			draw_string(font, mid, str(edge.weight), Color.aqua)
+	draw_multiline(lines, Color.aliceblue, lineSize, true)
+	draw_multiline(linesKl, Color.aquamarine, lineSize)

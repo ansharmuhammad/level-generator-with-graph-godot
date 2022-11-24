@@ -19,7 +19,7 @@ var recipe: Array = [
 	"randomKeyLock", "randomKeyLock", "randomKeyLock"
 ]
 
-var gridSize: Vector2 = Vector2(600,600)
+var cellSize: Vector2 = Vector2(600,600)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -68,13 +68,13 @@ func _rule_init_1(graph: Node):
 
 		var vertex2 = graph.add_vertex()
 #		vertex2.position = vertex1.position + (Vector2.RIGHT * rad)
-		vertex2.position = vertex1.position + (Vector2(gridSize.x, 0))
+		vertex2.position = vertex1.position + (Vector2(cellSize.x, 0))
 		var vertex3 = graph.add_vertex("",TYPE_VERTEX.GOAL)
 #		vertex3.position = vertex2.position + (Vector2.DOWN * rad)
-		vertex3.position = vertex2.position + (Vector2(0, gridSize.y))
+		vertex3.position = vertex2.position + (Vector2(0, cellSize.y))
 		var vertex4 = graph.add_vertex()
 #		vertex4.position = vertex1.position + (Vector2.DOWN * rad)
-		vertex4.position = vertex1.position + (Vector2(0, gridSize.y))
+		vertex4.position = vertex1.position + (Vector2(0, cellSize.y))
 
 		chosenEdge.init_object(vertex1, vertex2)
 		graph.connect_vertex(vertex2, vertex3)
@@ -98,13 +98,13 @@ func _rule_init_2(graph: Node):
 #		var rad = vertex1.colShape.get_shape().radius * 2
 		
 		var vertex2 = graph.add_vertex()
-		vertex2.position = vertex1.position + (Vector2(gridSize.x, 0))
+		vertex2.position = vertex1.position + (Vector2(cellSize.x, 0))
 		var vertex3 = graph.add_vertex()
-		vertex3.position = vertex2.position + (Vector2(gridSize.x, 0))
+		vertex3.position = vertex2.position + (Vector2(cellSize.x, 0))
 		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex3.position + (Vector2(0, gridSize.y))
+		vertex4.position = vertex3.position + (Vector2(0, cellSize.y))
 		var vertex5 = graph.add_vertex("",TYPE_VERTEX.GOAL)
-		vertex5.position = vertex4.position + (Vector2(gridSize.x, 0))
+		vertex5.position = vertex4.position + (Vector2(cellSize.x, 0))
 		var vertex6 = graph.add_vertex()
 		vertex6.position = vertex4.position + (Vector2.LEFT)
 		
@@ -128,9 +128,9 @@ func _rule_extend_1(graph: Node):
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex()
-		var slidePos = vertex2.position + Vector2(gridSize.x ,0).rotated(vertex2.position.angle_to_point(vertex1.position))
+		var slidePos = vertex2.position + Vector2(cellSize.x ,0).rotated(vertex2.position.angle_to_point(vertex1.position))
 #		vertex2.move_to(slidePos)
-#		vertex2.global_transform.origin = vertex2.position + Vector2(gridSize.x * 2 ,0).rotated(vertex2.position.angle_to_point(vertex1.position))
+#		vertex2.global_transform.origin = vertex2.position + Vector2(cellSize.x * 2 ,0).rotated(vertex2.position.angle_to_point(vertex1.position))
 		vertex3.global_position = (vertex1.global_position + slidePos)/2
 		
 		chosenEdge.init_object(vertex1, vertex3)
@@ -151,8 +151,8 @@ func _rule_extend_2(graph: Node):
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex()
 		var vertex4 = graph.add_vertex()
-		vertex4.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
-		vertex3.position = vertex2.position + Vector2(gridSize.x, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		vertex4.position = vertex1.position + Vector2(cellSize.x, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
+		vertex3.position = vertex2.position + Vector2(cellSize.x, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
 		
 		graph.connect_vertex(vertex1, vertex4)
 		graph.connect_vertex(vertex4, vertex3)
@@ -175,8 +175,8 @@ func _rule_extend_3(graph: Node):
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex()
 		var vertex4 = graph.add_vertex()
-		vertex3.position = vertex2.position + Vector2(gridSize.x, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
-		vertex4.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
+		vertex3.position = vertex2.position + Vector2(cellSize.x, 0).rotated(vertex2.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		vertex4.position = vertex1.position + Vector2(cellSize.x, 0).rotated(vertex1.position.angle_to_point(vertex2.position) + deg2rad(90))
 		
 		graph.connect_vertex(vertex2, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
@@ -209,9 +209,9 @@ func _rule_secret(graph: Node):
 		var vertex2 = graph.add_vertex("",TYPE_VERTEX.SECRET)
 		
 		if idx == 0:
-			vertex2.position = from.position + Vector2(gridSize.x, 0).rotated(from.position.angle_to_point(to.position) + deg2rad(-90))
+			vertex2.position = from.position + Vector2(cellSize.x, 0).rotated(from.position.angle_to_point(to.position) + deg2rad(-90))
 		else:
-			vertex2.position = to.position + Vector2(gridSize.x, 0).rotated(to.position.angle_to_point(from.position) + deg2rad(-90))
+			vertex2.position = to.position + Vector2(cellSize.x, 0).rotated(to.position.angle_to_point(from.position) + deg2rad(-90))
 		
 		graph.connect_vertex(vertex1, vertex2)
 #		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
@@ -228,7 +228,7 @@ func _rule_obstacle(graph: Node):
 		var vertex1 = graph.get_vertex(chosenEdge.from)
 		var vertex2 = graph.get_vertex(chosenEdge.to)
 		var vertex3 = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
-#		vertex2.position = vertex2.position - Vector2(gridSize,0).rotated(vertex2.position.angle_to_point(vertex1.position))
+#		vertex2.position = vertex2.position - Vector2(cellSize,0).rotated(vertex2.position.angle_to_point(vertex1.position))
 		vertex3.position = (vertex1.position + vertex2.position)/2
 		
 		chosenEdge.init_object(vertex1, vertex3)
@@ -303,9 +303,9 @@ func _rule_knl_2(graph: Node):
 		var vertex4 = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		vertex4.position = (vertex3.position + vertex2.position)/2
 		var vertex5 = graph.add_vertex("", TYPE_VERTEX.KEY)
-		vertex5.position = vertex3.position + Vector2(gridSize.x, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		vertex5.position = vertex3.position + Vector2(cellSize.x, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
 		var vertex6 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex6.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
+		vertex6.position = vertex1.position + Vector2(cellSize.x, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
 		
 		chosenEdge.init_object(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
@@ -335,9 +335,9 @@ func _rule_knl_3(graph: Node):
 		var vertex4 = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		vertex4.position = (vertex3.position + vertex2.position)/2
 		var vertex5 = graph.add_vertex("", TYPE_VERTEX.TASK)
-		vertex5.position = vertex3.position + Vector2(gridSize.x, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
+		vertex5.position = vertex3.position + Vector2(cellSize.x, 0).rotated(vertex3.position.angle_to_point(vertex1.position) + deg2rad(-90))
 		var vertex6 = graph.add_vertex("", TYPE_VERTEX.KEY)
-		vertex6.position = vertex1.position + Vector2(gridSize.x, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
+		vertex6.position = vertex1.position + Vector2(cellSize.x, 0).rotated(vertex1.position.angle_to_point(vertex3.position) + deg2rad(90))
 		
 		chosenEdge.init_object(vertex1, vertex3)
 		graph.connect_vertex(vertex3, vertex4)
