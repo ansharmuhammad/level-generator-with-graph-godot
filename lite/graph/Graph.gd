@@ -303,14 +303,40 @@ func _draw():
 	#draw tile
 	var LINE_COLOR = Color(0.2, 1.0, 0.7, 0.2)
 	var LINE_WIDTH = 5
+	var gridPoints: PoolVector2Array = []
 	for x in range((gridSize.x * 2) + 1):
 		var col_pos = (x - gridSize.x) * cellSize.x
 		var limit = gridSize.y * cellSize.y
-		draw_line(Vector2(col_pos, 0 - (gridSize.y * cellSize.y)), Vector2(col_pos, limit), LINE_COLOR, LINE_WIDTH)
+#		draw_line(Vector2(col_pos, 0 - (gridSize.y * cellSize.y)), Vector2(col_pos, limit), LINE_COLOR, LINE_WIDTH)
+		gridPoints.append_array([Vector2(col_pos, 0 - (gridSize.y * cellSize.y)), Vector2(col_pos, limit)])
 	for y in range((gridSize.y * 2) + 1):
 		var row_pos = (y - gridSize.y) * cellSize.y
 		var limit = gridSize.x * cellSize.x
-		draw_line(Vector2((0 - gridSize.x * cellSize.x), row_pos), Vector2(limit, row_pos), LINE_COLOR, LINE_WIDTH)
+#		draw_line(Vector2((0 - gridSize.x * cellSize.x), row_pos), Vector2(limit, row_pos), LINE_COLOR, LINE_WIDTH)
+		gridPoints.append_array([Vector2((0 - gridSize.x * cellSize.x), row_pos), Vector2(limit, row_pos)])
+	draw_multiline(gridPoints, LINE_COLOR, LINE_WIDTH, true)
+	
+	#draw edges
+	var lines: PoolVector2Array = []
+	var linesKl: PoolVector2Array = []
+	for edge in get_edges():
+		var fromPosition: Vector2 = edge.from.position if  edge.from != null else edge.to.position
+		var toPosition: Vector2 = edge.to.position if edge.to != null else edge.from.position
+		if edge.type != TYPE_EDGE.KEY_LOCK and edge.type != TYPE_EDGE.ELEMENT:
+			# line
+			draw_line(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)), toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), Color.aliceblue, lineSize)
+			#arrow left
+			draw_line(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)), Color.aliceblue, lineSize)
+			#arrow right
+			draw_line(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)), Color.aliceblue, lineSize)
+			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+		elif edge.type != TYPE_EDGE.ELEMENT:
+			var direction: Vector2 = (toPosition - fromPosition).normalized()
+			var mid: Vector2 = (toPosition + fromPosition)/2
+			mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
+			draw_line(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)), mid, Color.aquamarine, lineSize)
+			draw_line(mid, toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), Color.aquamarine, lineSize)
+			draw_string(font, mid, str(edge.weight), Color.aqua)
 	
 	#draw vertices
 	for vertex in get_vertices():
@@ -347,38 +373,22 @@ func _draw():
 			TYPE_VERTEX.LOCK:
 				colorShape = Color.aqua
 				textSymbol = "L"
+			TYPE_VERTEX.ENTRANCE:
+				colorShape = Color.maroon
+				textSymbol = "E"
+			TYPE_VERTEX.ROOM:
+				colorShape = Color.mediumpurple
+				textSymbol = "RM"
+			TYPE_VERTEX.CAVE:
+				colorShape = Color.purple
+				textSymbol = "CA"
 		if vertex.subOf == null:
 			draw_circle(vertex.position, vertexRadius, colorShape)
 			draw_arc(vertex.position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)
 			draw_string(font, vertex.position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
 			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexOuterRadius), vertex.name, Color.black)
+		else:
+			draw_circle(vertex.position, vertexRadius/2, colorShape)
+			draw_string(font, vertex.position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
+#			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexRadius/2), vertex.name, Color.black)
 	
-	#draw edges
-	var lines: PoolVector2Array = []
-	var linesKl: PoolVector2Array = []
-	for edge in get_edges():
-		if edge.type != TYPE_EDGE.ELEMENT: #delete recently
-			var fromPosition: Vector2 = edge.from.position if  edge.from != null else edge.to.position
-			var toPosition: Vector2 = edge.to.position if edge.to != null else edge.from.position
-			if edge.type != TYPE_EDGE.KEY_LOCK:
-				# line
-				lines.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
-				lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-				#arrow left
-				lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-				lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)))
-				#arrow right
-				lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-				lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)))
-				draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
-			else:
-				var direction: Vector2 = (toPosition - fromPosition).normalized()
-				var mid: Vector2 = (toPosition + fromPosition)/2
-				mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
-				linesKl.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
-				linesKl.append(mid)
-				linesKl.append(mid)
-				linesKl.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-				draw_string(font, mid, str(edge.weight), Color.aqua)
-	draw_multiline(lines, Color.aliceblue, lineSize, true)
-	draw_multiline(linesKl, Color.aquamarine, lineSize)
