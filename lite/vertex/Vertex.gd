@@ -29,9 +29,6 @@ func init_object(_name: String = "", _type: String = "TASK"):
 	name = _name
 	type = _type
 
-func change_type(_type: String):
-	type = _type
-
 func is_element() -> bool:
 	if type == TYPE_VERTEX.TASK:
 		return false
@@ -91,6 +88,6 @@ func add_sub(vertex: Node2D):
 	$subs.add_child(vertex)
 
 func _to_string() -> String:
-	if get_subs().size() < 1:
+	if subOf == null :
 		return "{%s %s}" %[name, type]
 	return "{%s %s ,sub of %s}" %[name, type, subOf.name]

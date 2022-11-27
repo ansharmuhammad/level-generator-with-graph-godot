@@ -30,11 +30,11 @@ func init_object(_from: Node2D = null, _to: Node2D = null, _type: String = "PATH
 	name = str(fromString) + "to" + str(toString)
 
 #disable for performance
-func _process(delta):
+#func _process(delta):
 #	var fromPosition = from.position if from != null else to.position
 #	var toPosition = to.position if to != null else from.position
 #	$Line2D.points = [fromPosition, toPosition]
-	update()
+#	update()
 #	pass
 
 #func _draw():

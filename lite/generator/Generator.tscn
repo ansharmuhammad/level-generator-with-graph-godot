@@ -14,7 +14,6 @@ unique_name_in_owner = true
 
 [node name="WindowDialogGenerator" type="WindowDialog" parent="GUI"]
 unique_name_in_owner = true
-visible = true
 margin_top = -5.0
 margin_right = 221.0
 margin_bottom = 446.0
@@ -202,6 +201,7 @@ text = "clear all graph"
 
 [node name="WindowDialogGraph" type="WindowDialog" parent="GUI"]
 unique_name_in_owner = true
+visible = true
 margin_top = -5.0
 margin_right = 221.0
 margin_bottom = 446.0
@@ -321,35 +321,47 @@ margin_bottom = 210.0
 [node name="SectionTransform" type="VBoxContainer" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer"]
 margin_top = 220.0
 margin_right = 193.0
-margin_bottom = 372.0
+margin_bottom = 420.0
+
+[node name="ButtonInitSingleTransform" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+margin_right = 193.0
+margin_bottom = 20.0
+text = "init single transform rule"
+
+[node name="ButtonSingleTransform" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+margin_top = 24.0
+margin_right = 193.0
+margin_bottom = 44.0
+text = "execute single rule"
 
 [node name="ButtonTransform" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 unique_name_in_owner = true
+margin_top = 48.0
 margin_right = 193.0
-margin_bottom = 20.0
+margin_bottom = 68.0
 text = "execute transform rule"
 
 [node name="ButtonToggleLineElement2" type="CheckButton" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 unique_name_in_owner = true
-margin_top = 24.0
+margin_top = 72.0
 margin_right = 193.0
-margin_bottom = 64.0
+margin_bottom = 112.0
 pressed = true
 text = "Toggle Line"
 
 [node name="ButtonToggleNodeElement" type="CheckButton" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 unique_name_in_owner = true
-margin_top = 68.0
+margin_top = 116.0
 margin_right = 193.0
-margin_bottom = 108.0
+margin_bottom = 156.0
 pressed = true
 text = "Toggle Element"
 
 [node name="ButtonToggleSnap" type="CheckButton" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 unique_name_in_owner = true
-margin_top = 112.0
+margin_top = 160.0
 margin_right = 193.0
-margin_bottom = 152.0
+margin_bottom = 200.0
 pressed = true
 text = "Toggle Snap"
 
@@ -366,6 +378,8 @@ zoom = Vector2( 5, 5 )
 [connection signal="pressed" from="GUI/WindowDialogGenerator/MarginContainer/VBoxContainer/SectionGeneral/ButtonClearAll" to="." method="_on_ButtonClearAll_pressed"]
 [connection signal="item_selected" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGraph/HBoxContainer/OptionTargetGraph2" to="." method="_on_OptionTargetGraph2_item_selected"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGraph/ButtonGetInfo" to="." method="_on_ButtonGetInfo_pressed"]
+[connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonInitSingleTransform" to="." method="_on_ButtonInitSingleTransform_pressed"]
+[connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonSingleTransform" to="." method="_on_ButtonSingleTransform_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTransform" to="." method="_on_ButtonTransform_pressed"]
 [connection signal="toggled" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonToggleLineElement2" to="." method="_on_ButtonToggleLineElement2_toggled"]
 [connection signal="toggled" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonToggleNodeElement" to="." method="_on_ButtonToggleNodeElement_toggled"]

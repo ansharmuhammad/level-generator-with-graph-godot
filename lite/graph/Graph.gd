@@ -61,7 +61,7 @@ func get_edges_of(vertex: Node, type: String = "") -> Array:
 	return listEdge
 
 ## add vertex to graph
-func add_vertex(name: String = "", type: String = "") -> Node:
+func add_vertex(name: String = "", type: String = "") -> Node2D:
 #	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name
 	var _name = "Node" + str(indexNode) if name == "" else name
 	indexNode += 1
@@ -246,11 +246,11 @@ func get_standard_short_path() -> float:
 	return result
 
 func get_fitness() -> float:
-	var variation = get_variation()
-	var exploration = get_exploration()
+	variation = get_variation()
+	exploration = get_exploration()
 	var weighDuration = get_weight_duration()
-	var optionReplay = get_option_replay()
-	var standardShortPath = get_standard_short_path()
+	optionReplay = get_option_replay()
+	standardShortPath = get_standard_short_path()
 	
 	var result: float = (variation + weighDuration + optionReplay + standardShortPath)/4
 	
@@ -303,7 +303,6 @@ func _draw():
 	#draw tile
 	var LINE_COLOR = Color(0.2, 1.0, 0.7, 0.2)
 	var LINE_WIDTH = 5
-	var window_size = OS.get_window_size()
 	for x in range((gridSize.x * 2) + 1):
 		var col_pos = (x - gridSize.x) * cellSize.x
 		var limit = gridSize.y * cellSize.y
@@ -348,36 +347,38 @@ func _draw():
 			TYPE_VERTEX.LOCK:
 				colorShape = Color.aqua
 				textSymbol = "L"
-		draw_circle(vertex.position, vertexRadius, colorShape)
-		draw_arc(vertex.position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)
-		draw_string(font, vertex.position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
-		draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexOuterRadius), name, Color.black)
+		if vertex.subOf == null:
+			draw_circle(vertex.position, vertexRadius, colorShape)
+			draw_arc(vertex.position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)
+			draw_string(font, vertex.position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
+			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexOuterRadius), vertex.name, Color.black)
 	
 	#draw edges
 	var lines: PoolVector2Array = []
 	var linesKl: PoolVector2Array = []
 	for edge in get_edges():
-		var fromPosition: Vector2 = edge.from.position if  edge.from != null else edge.to.position
-		var toPosition: Vector2 = edge.to.position if edge.to != null else edge.from.position
-		if edge.type != TYPE_EDGE.KEY_LOCK:
-			# line
-			lines.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
-			lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-			#arrow left
-			lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-			lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)))
-			#arrow right
-			lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-			lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)))
-			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
-		else:
-			var direction: Vector2 = (toPosition - fromPosition).normalized()
-			var mid: Vector2 = (toPosition + fromPosition)/2
-			mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
-			linesKl.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
-			linesKl.append(mid)
-			linesKl.append(mid)
-			linesKl.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
-			draw_string(font, mid, str(edge.weight), Color.aqua)
+		if edge.type != TYPE_EDGE.ELEMENT: #delete recently
+			var fromPosition: Vector2 = edge.from.position if  edge.from != null else edge.to.position
+			var toPosition: Vector2 = edge.to.position if edge.to != null else edge.from.position
+			if edge.type != TYPE_EDGE.KEY_LOCK:
+				# line
+				lines.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
+				lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+				#arrow left
+				lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+				lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)))
+				#arrow right
+				lines.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+				lines.append(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)))
+				draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+			else:
+				var direction: Vector2 = (toPosition - fromPosition).normalized()
+				var mid: Vector2 = (toPosition + fromPosition)/2
+				mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
+				linesKl.append(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)))
+				linesKl.append(mid)
+				linesKl.append(mid)
+				linesKl.append(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)))
+				draw_string(font, mid, str(edge.weight), Color.aqua)
 	draw_multiline(lines, Color.aliceblue, lineSize, true)
 	draw_multiline(linesKl, Color.aquamarine, lineSize)
