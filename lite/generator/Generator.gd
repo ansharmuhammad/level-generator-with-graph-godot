@@ -162,9 +162,7 @@ func _rule_extend_1(graph: Node):
 func _rule_extend_2(graph: Node):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
-		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			#check if there is 2 vertex have same direction null
 			var from = graph.get_vertex(edge.from)
 			var to = graph.get_vertex(edge.to)
 			if (from.connections[Vector2.LEFT] == null and to.connections[Vector2.LEFT] == null) or (from.connections[Vector2.RIGHT] == null and to.connections[Vector2.RIGHT] == null) or (from.connections[Vector2.UP] == null and to.connections[Vector2.UP] == null) or (from.connections[Vector2.DOWN] == null and to.connections[Vector2.DOWN] == null):
@@ -341,7 +339,7 @@ func _rule_knl_1(graph: Node):
 		#check if there is 2 place vertex connected
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
-		if graph.is_place(from) and graph.is_place(to):
+		if !from.is_element() and !to.is_element() and edge.type != TYPE_EDGE.KEY_LOCK:
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
@@ -378,7 +376,7 @@ func _rule_knl_2(graph: Node):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
-		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
+		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4 and edge.type != TYPE_EDGE.KEY_LOCK:
 			#check if there is 2 vertex have same direction null
 			var from = graph.get_vertex(edge.from)
 			var to = graph.get_vertex(edge.to)
@@ -387,6 +385,8 @@ func _rule_knl_2(graph: Node):
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		print("knl2")
+		print(chosenEdge)
 		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
 		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
@@ -405,11 +405,16 @@ func _rule_knl_2(graph: Node):
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
+		
 		var directionOptions: Array = []
 		for option in DIRECTIONS:
 			if vertex1.connections[option] == null and vertex3.connections[option] == null:
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
+		print(chosenOption)
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
@@ -421,9 +426,6 @@ func _rule_knl_2(graph: Node):
 		graph.change_vertex_pos(vertex6, targetPos3)
 		graph.change_vertex_pos(vertex5, targetPos4)
 		
-		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
-		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
-		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex1, vertex6, TYPE_EDGE.PATH, chosenOption)
 		graph.connect_vertex(vertex5, vertex3, TYPE_EDGE.PATH, mirrorOption)
 		graph.connect_vertex(vertex6, vertex5, TYPE_EDGE.PATH, direction)
@@ -433,16 +435,16 @@ func _rule_knl_2(graph: Node):
 func _rule_knl_3(graph: Node):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
-		#check if there is 2 vertex connected
-		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			#check if there is 2 vertex have same direction null
+		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4 and edge.type != TYPE_EDGE.KEY_LOCK:
 			var from = graph.get_vertex(edge.from)
 			var to = graph.get_vertex(edge.to)
 			if (from.connections[Vector2.LEFT] == null and to.connections[Vector2.LEFT] == null) or (from.connections[Vector2.RIGHT] == null and to.connections[Vector2.RIGHT] == null) or (from.connections[Vector2.UP] == null and to.connections[Vector2.UP] == null) or (from.connections[Vector2.DOWN] == null and to.connections[Vector2.DOWN] == null):
 				matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
+		print("knl3")
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		print(chosenEdge)
 		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
 		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
@@ -462,11 +464,16 @@ func _rule_knl_3(graph: Node):
 		graph.change_vertex_pos(vertex3, targetPos)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
+		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
+		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
+		
 		var directionOptions: Array = []
 		for option in DIRECTIONS:
 			if vertex1.connections[option] == null and vertex3.connections[option] == null:
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
+		print(chosenOption)
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
@@ -478,9 +485,6 @@ func _rule_knl_3(graph: Node):
 		graph.change_vertex_pos(vertex6, targetPos3)
 		graph.change_vertex_pos(vertex5, targetPos4)
 		
-		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
-		graph.connect_vertex(vertex3, vertex4, TYPE_EDGE.PATH, direction)
-		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
 		graph.connect_vertex(vertex6, vertex1, TYPE_EDGE.PATH, mirrorOption)
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.PATH, chosenOption)
 		graph.connect_vertex(vertex5, vertex6, TYPE_EDGE.PATH, mirrorDirection)
@@ -493,7 +497,7 @@ func _rule_knl_4(graph: Node):
 		#check if there is 2 vertex connected and the secon vertex type is goal
 		var from = graph.get_vertex(edge.from)
 		var to = graph.get_vertex(edge.to)
-		if graph.is_place(from) and to.type == TYPE_VERTEX.GOAL:
+		if !from.is_element() and to.type == TYPE_VERTEX.GOAL and edge.type != TYPE_EDGE.KEY_LOCK:
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
