@@ -88,12 +88,12 @@ func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vect
 		from.connections[direction] = to
 		to.connections[mirror] = from
 	if type != TYPE_EDGE.KEY_LOCK and from != null and to != null:
-		posVertices[edge.name] = {
+		posEdges[edge.name] = {
 			"from": from.position,
 			"to": to.position
 		}
 	else:
-		posVertices.erase(edge.name)
+		posEdges.erase(edge.name)
 	$Edges.add_child(edge)
 	update()
 

@@ -21,6 +21,12 @@ func _ready():
 	print(rad2deg(b.angle()))
 	print(move)
 	print(betweenSnap)
+	var diagonalDir: Vector2 = (Vector2(1,1) - Vector2(0,0)).normalized()
+	print(diagonalDir)
+	var limit = 10
+	for i in range(limit):
+		print(i)
+		limit -=1
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

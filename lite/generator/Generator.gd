@@ -560,8 +560,8 @@ func _random_knl(graph: Node):
 func _sub_off(vertex: Node2D, sub_vertex: Node2D):
 	sub_vertex.subOf = vertex
 	sub_vertex.add_to_group("subVertices")
+	sub_vertex.connection_reset()
 	vertex.subs.append(sub_vertex)
-#	sub_vertex.position = vertex.position #delete recently
 	#positioning sub vertices
 	for i in range(vertex.subs.size()):
 		var sub: Node2D = vertex.subs[i]
@@ -571,9 +571,10 @@ func _create_entrance(graph: Node2D, vertex: Node2D):
 	#create entrance
 	if vertex.type == TYPE_VERTEX.START:
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.position = vertex.position
+		graph.change_vertex_pos(newVertex, vertex.position)
 		vertex.type = TYPE_VERTEX.ENTRANCE
 		_sub_off(newVertex, vertex)
+		graph.posVertices.erase(vertex.name)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -588,8 +589,9 @@ func _create_goal(graph: Node2D, vertex: Node2D):
 	#create goal
 	if vertex.type == TYPE_VERTEX.GOAL:
 		var newVertex: Node = graph.add_vertex()
-		newVertex.position = vertex.position
+		graph.change_vertex_pos(newVertex, vertex.position)
 		_sub_off(newVertex, vertex)
+		graph.posVertices.erase(vertex.name)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -604,8 +606,9 @@ func _create_secret(graph: Node2D, vertex: Node2D):
 	#create secret
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.position = vertex.position
+		graph.change_vertex_pos(newVertex, vertex.position)
 		_sub_off(newVertex, vertex)
+		graph.posVertices.erase(vertex.name)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -633,6 +636,7 @@ func _add_element_before_place(graph: Node):
 	if !matchVertices.empty():
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		_sub_off(choosenMatch[0], choosenMatch[1])
+		graph.posVertices.erase(choosenMatch[1].name)
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -650,7 +654,6 @@ func _add_element_before_place(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[0])
-		print("_add_element_before_place sub off" + str(choosenMatch[0]) + ":" + str(choosenMatch[1]))
 		graph.update()
 #		var msg = "execute rule addElementBeforePlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
 #		print(msg)
@@ -665,6 +668,7 @@ func _add_lock_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		_sub_off(choosenMatch[1], choosenMatch[0])
+		graph.posVertices.erase(choosenMatch[0].name)
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -682,7 +686,6 @@ func _add_lock_after_place(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[1])
-		print("_add_lock_after_place sub off" + str(choosenMatch[1]) + ":" + str(choosenMatch[0]))
 		graph.update()
 #		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
 #		print(msg)
@@ -697,8 +700,9 @@ func _place_key_element(graph: Node):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.position = choosenMatch[0].position
+		graph.change_vertex_pos(newVertex, choosenMatch[0].position)
 		_sub_off(newVertex, choosenMatch[0])
+		graph.posVertices.erase(choosenMatch[0].name)
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0]:
 				var theVertex: Node2D = edge.to
@@ -714,7 +718,6 @@ func _place_key_element(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, newVertex)
-		print("_place_key_element sub off" + str(newVertex) + ":" + str(choosenMatch[0]))
 		graph.update()
 #		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
 #		print(msg)
@@ -730,6 +733,7 @@ func _add_element_after_place(graph: Node):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		_sub_off(choosenMatch[2], choosenMatch[1])
+		graph.posVertices.erase(choosenMatch[1].name)
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[1] and edge.to == choosenMatch[2]:
 				edge.queue_free()
@@ -747,7 +751,6 @@ func _add_element_after_place(graph: Node):
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[2])
-		print("_add_element_after_place sub off" + str(choosenMatch[2]) + ":" + str(choosenMatch[1]))
 		graph.update()
 #		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1]) + str(choosenMatch[2])
 #		print(msg)
@@ -786,23 +789,24 @@ func _execute_rule(rule: String, graph: Node):
 		"randomKeyLock":
 			_random_knl(graph)
 
-func _execute_transform_rule(graph: Node):
+func _execute_create_place_rule(graph: Node2D):
 	#create place rule
 	for vertex in graph.get_vertices():
 		_create_entrance(graph, vertex)
 		_create_goal(graph, vertex)
 		_create_secret(graph, vertex)
-	
+
+func _execute_clean_outside_element_rule(graph: Node2D):
 	#clean outside element rule
 	while _outside_element_exist(graph):
 		var execute: int = randi() % 4
-		print(execute)
 		match execute:
 			0: _add_element_before_place(graph)
 			1: _add_lock_after_place(graph)
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
-	
+
+func _execute_trim_position_vertices(graph: Node2D):
 	#make element edge
 	for edge in graph.get_edges():
 		var from: Node2D = edge.from
@@ -810,29 +814,105 @@ func _execute_transform_rule(graph: Node):
 		if from.type != TYPE_VERTEX.KEY and to.type != TYPE_VERTEX.LOCK:
 			if from.is_element() or to.is_element():
 				edge.type = TYPE_EDGE.ELEMENT
+				edge.add_to_group("elementEdges")
 	
-	#change task to room or cave
+	var verticesPos: PoolVector2Array = graph.posVertices.values()
+	print("=============before=============")
+	print("=============graph.posVertices=============")
+	for obj in graph.posVertices:
+		print(obj + str(graph.posVertices[obj]))
+	print("=============verticesPos=============")
+	for pos in verticesPos:
+		print(pos)
+	print("==========================")
+	
+	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
+	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
 	for vertex in graph.get_vertices():
 		if vertex.subOf == null:
+			#change task to room or cave
 			var percent = randf()
 			if (percent > 0.5):
 				vertex.type = TYPE_VERTEX.ROOM
 			else:
 				vertex.type = TYPE_VERTEX.CAVE
+			
+			#get lowest x and y
+			if vertex.position.x < lowestPos.x:
+				lowestPos.x = vertex.position.x
+			if vertex.position.y < lowestPos.y:
+				lowestPos.y = vertex.position.y
+			#get highest x and y
+			if vertex.position.x > highestPos.x:
+				highestPos.x = vertex.position.x
+			if vertex.position.y > highestPos.y:
+				highestPos.y = vertex.position.y
+	print("lowestPos " + str(lowestPos))
+	print("highestPos " + str(highestPos))
+	
+	#rearrange position
+	#x position
+	while lowestPos.x <= highestPos.x:
+		var found: bool = true
+		for pos in verticesPos:
+			if lowestPos.x == pos.x:
+				found = false
+				break
+		if found:
+			for i in range(verticesPos.size()):
+				if verticesPos[i].x > lowestPos.x:
+					verticesPos[i].x -= (1 * cellSize.x)
+			highestPos.x -= (1 * cellSize.x)
+		else:
+			lowestPos.x += (1 * cellSize.x)
+		print("lowestPos.x now " + str(lowestPos.x))
+		print("highestPos.x now " + str(highestPos.x))
+	#y position
+	while lowestPos.y <= highestPos.y:
+		var found: bool = true
+		for pos in verticesPos:
+			if lowestPos.y != pos.y:
+				found = false
+				break
+		if found:
+			for i in range(verticesPos.size()):
+				if verticesPos[i].y > lowestPos.y:
+					verticesPos[i].y -= (1 * cellSize.y)
+			highestPos.y -= (1 * cellSize.y)
+		else:
+			lowestPos.y += (1 * cellSize.y)
+	
+	#update position
+	var verticesName: PoolStringArray = graph.posVertices.keys()
+	for i in range(verticesName.size()):
+		graph.posVertices[verticesName[i]] = verticesPos[i]
+	
+	for vertex in graph.get_vertices():
+		if vertex.subOf == null:
+			print(str(vertex)+str(vertex.position)+" <- "+str(graph.posVertices.get(vertex.name)))
+			graph.change_vertex_pos(vertex, graph.posVertices.get(vertex.name))
+			print(str(vertex)+str(vertex.position))
+	for subVertex in get_tree().get_nodes_in_group("subVertices"):
+		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.size() * 36))
+	
+	#re-connections vertex
+	for edge in graph.get_edges():
+		if edge.type == TYPE_EDGE.PATH and edge.from != null and edge.to != null:
+			#non diagonal direction
+			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
+			if DIRECTIONS.has(direction):
+				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
+				edge.from.connections[direction] = edge.to
+				edge.to.connections[mirror] = edge.from
+
+func _execute_transform_rule(graph: Node2D):
+	_execute_create_place_rule(graph)
+	_execute_clean_outside_element_rule(graph)
+	_execute_trim_position_vertices(graph)
 	
 	graph.update()
-	#transformative rule
 
-
-func _execute_init_single_transform_rule(graph: Node):
-	#create place rule
-	for vertex in graph.get_vertices():
-		_create_entrance(graph, vertex)
-		_create_goal(graph, vertex)
-		_create_secret(graph, vertex)
-
-
-func _execute_single_transform_rule(graph: Node):
+func _execute_single_transform_rule(graph: Node2D):
 	if _outside_element_exist(graph):
 		var execute: int = randi() % 4
 		print(execute)
@@ -912,30 +992,10 @@ func _on_ButtonTransform_pressed():
 	_execute_transform_rule(targetGraph)
 
 func _on_ButtonInitSingleTransform_pressed():
-	_execute_init_single_transform_rule(targetGraph)
-
+	_execute_create_place_rule(targetGraph)
 
 func _on_ButtonSingleTransform_pressed():
 	_execute_single_transform_rule(targetGraph)
 
-
-func _on_ButtonToggleLineElement2_toggled(button_pressed):
-#	var edges = get_tree().get_nodes_in_group("edgesLite")
-#	for edge in targetGraph.get_edges():
-#		if edge.type != TYPE_EDGE.PATH:
-#			edge.showLine = button_pressed
-	pass
-
-
-func _on_ButtonToggleNodeElement_toggled(button_pressed):
-	var vertices = get_tree().get_nodes_in_group("verticesLite")
-	for vertex in vertices:
-		if vertex.isElement:
-			vertex.visible = button_pressed
-
-
-func _on_ButtonToggleSnap_toggled(button_pressed):
-	var vertices = get_tree().get_nodes_in_group("vertices")
-	for vertex in vertices:
-		if !vertex.isElement:
-			vertex.snap = button_pressed
+func _on_ButtonTrimPosition_pressed():
+	_execute_trim_position_vertices(targetGraph)
