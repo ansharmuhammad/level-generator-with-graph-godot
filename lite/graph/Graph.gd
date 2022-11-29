@@ -17,7 +17,9 @@ onready var fitness: float = 0.0
 var index: int = 0
 var indexNode: int = 0
 var posVertices: Dictionary = {}
-var posEdges: Dictionary = {}
+#{
+#	vertexName: position,
+#}
 
 # draw var
 export var gridSize: Vector2 = Vector2(20,20)
@@ -87,19 +89,21 @@ func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vect
 		mirror = Vector2(mirror.x * -1, mirror.y) if mirror.x != 0 else Vector2(mirror.x, mirror.y * -1)
 		from.connections[direction] = to
 		to.connections[mirror] = from
-	if type != TYPE_EDGE.KEY_LOCK and from != null and to != null:
-		posEdges[edge.name] = {
-			"from": from.position,
-			"to": to.position
-		}
-	else:
-		posEdges.erase(edge.name)
 	$Edges.add_child(edge)
 	update()
 
 ## get vertex object by its name
 func get_vertex_by_name(vertexName: String) -> Node:
 	return $Vertices.get_node(vertexName)
+
+func get_vertex_by_position(_position: Vector2) -> Node:
+	
+	$RayCast2D.position = _position - Vector2(0,16)
+	$RayCast2D.force_raycast_update()
+	if $RayCast2D.is_colliding():
+		return $RayCast2D.get_collider().get_parent()
+	else:
+		 return null
 
 ## get vertex object by its name
 func get_vertex(vertex: Node2D) -> Node:
@@ -283,28 +287,51 @@ func slide_vertices(inserted_pos: Vector2, direction: Vector2):
 		posVertices[vertex.name] = vertex.position
 	update()
 
-func is_pos_has_placed(position: Vector2) -> bool:
-	if posVertices.values().has(position):
+func is_pos_has_placed(_position: Vector2) -> bool:
+	if posVertices.values().has(_position):
 		return true
 	return false
 
-func is_pos_crossed_line(_position: Vector2) -> bool:
-	var lines: Array = posEdges.values()
-	for line in lines:
-		var direction: Vector2 = (line.to - line.from).normalized()
+func is_pos_crossed_line(_position: Vector2, _direction: Vector2) -> bool:
+	for edge in get_edges():
+		var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
 		#crossing vertical
-		if line.from.x == line.to.x and _position.x == line.from.x:
-			if direction == Vector2.UP and _position.y <= line.from.y and _position.y >= line.to.y:
+		if edge.from.position.x == edge.from.position.x and _position.x == edge.from.position.x and _direction.x != 0:
+			if direction == Vector2.UP and _position.y <= edge.from.position.y and _position.y >= edge.from.position.y:
 				return true
-			elif direction == Vector2.DOWN and _position.y >= line.from.y and _position.y <= line.to.y:
+			elif direction == Vector2.DOWN and _position.y >= edge.from.position.y and _position.y <= edge.from.position.y:
 				return true
 		#crossing horizontal
-		elif line.from.y == line.to.y and _position.y == line.from.y:
-			if direction == Vector2.RIGHT and _position.x >= line.from.x and _position.x <= line.to.x:
+		elif edge.from.position.y == edge.from.position.y and _position.y == edge.from.position.y and _direction.y != 0:
+			if direction == Vector2.LEFT and _position.x <= edge.from.position.x and _position.x >= edge.from.position.x:
 				return true
-			elif direction == Vector2.LEFT and _position.x <= line.from.x and _position.x >= line.to.x:
+			elif direction == Vector2.RIGHT and _position.x >= edge.from.position.x and _position.x <= edge.from.position.x:
 				return true
 	return false
+
+func _draw_dashed_line(from, to, color, width, dash_length = 5, cap_end = false, antialiased = false):
+	var length = (to - from).length()
+	var normal = (to - from).normalized()
+	var dash_step = normal * dash_length
+	
+	if length < dash_length: #not long enough to dash
+		draw_line(from, to, color, width, antialiased)
+		return
+
+	else:
+		var draw_flag = true
+		var segment_start = from
+		var steps = length/dash_length
+		for start_length in range(0, steps + 1):
+			var segment_end = segment_start + dash_step
+			if draw_flag:
+				draw_line(segment_start, segment_end, color, width, antialiased)
+
+			segment_start = segment_end
+			draw_flag = !draw_flag
+		
+		if cap_end:
+			draw_line(segment_start, to, color, width, antialiased)
 
 func _draw():
 	#draw tile
@@ -336,6 +363,19 @@ func _draw():
 			draw_line(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)), Color.aliceblue, lineSize)
 			#arrow right
 			draw_line(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)), Color.aliceblue, lineSize)
+			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+		if edge.type == TYPE_EDGE.HIDDEN:
+			# dashed line
+			var startPoint: Vector2 = fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition))
+			var endPoint: Vector2 = toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition))
+			_draw_dashed_line(startPoint, endPoint, Color.aliceblue, lineSize)
+			draw_line(toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(10)), toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)), Color.aliceblue, lineSize)
+			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+		if edge.type == TYPE_EDGE.WINDOW:
+			# dashed line
+			var startPoint: Vector2 = fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition))
+			var endPoint: Vector2 = toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition))
+			_draw_dashed_line(startPoint, endPoint, Color.aliceblue, lineSize)
 			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
 		elif edge.type == TYPE_EDGE.KEY_LOCK:
 			var direction: Vector2 = (toPosition - fromPosition).normalized()
@@ -398,4 +438,4 @@ func _draw():
 			draw_circle(vertex.position, vertexRadius/2, colorShape)
 			draw_string(font, vertex.position + Vector2(-halfSymbolSize.x/2, halfSymbolSize.x/2), textSymbol, Color.black)
 #			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexRadius/2), vertex.name, Color.black)
-	
+

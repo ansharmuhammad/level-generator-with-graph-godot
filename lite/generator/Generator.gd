@@ -26,7 +26,7 @@ const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	recipe = DEFAULT_RECIPE
+	recipe.append_array(DEFAULT_RECIPE)
 	for rule in recipe:
 		$"%RichTextRecipe".add_text(rule)
 		$"%RichTextRecipe".newline()
@@ -195,9 +195,9 @@ func _rule_extend_2(graph: Node2D):
 		var targetPos: Vector2 = vertex2.position + (chosenOption * cellSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos):
+		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos, chosenOption):
 			graph.slide_vertices(targetPos, chosenOption)
-		if graph.is_pos_has_placed(targetPos2) or graph.is_pos_crossed_line(targetPos2):
+		if graph.is_pos_has_placed(targetPos2) or graph.is_pos_crossed_line(targetPos2, chosenOption):
 			graph.slide_vertices(targetPos2, chosenOption)
 		
 		graph.change_vertex_pos(vertex3, targetPos)
@@ -239,9 +239,9 @@ func _rule_extend_3(graph: Node2D):
 		var targetPos: Vector2 = vertex2.position + (chosenOption * cellSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos):
+		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos, chosenOption):
 			graph.slide_vertices(targetPos, chosenOption)
-		if graph.is_pos_has_placed(targetPos2) or graph.is_pos_crossed_line(targetPos2):
+		if graph.is_pos_has_placed(targetPos2) or graph.is_pos_crossed_line(targetPos2, chosenOption):
 			graph.slide_vertices(targetPos2, chosenOption)
 		
 		graph.change_vertex_pos(vertex3, targetPos)
@@ -256,21 +256,19 @@ func _rule_secret(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is init vertex
-		var from = graph.get_vertex(edge.from)
-		var to = graph.get_vertex(edge.to)
-		if ((from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4) or (to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 )) and edge.type == TYPE_EDGE.PATH and from.connections.values().has(null) and to.connections.values().has(null):
+		var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
+		if ((allowVertex.has(edge.from.type) and graph.get_edges_of(edge.from).size() < 4) or (allowVertex.has(edge.to.type) and graph.get_edges_of(edge.to).size() < 4 )) and edge.type == TYPE_EDGE.PATH and edge.from.connections.values().has(null) and edge.to.connections.values().has(null):
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
 		var chosenEdge = matchEdge[randi() % matchEdge.size()]
-		var from = graph.get_vertex(chosenEdge.from)
-		var to = graph.get_vertex(chosenEdge.to)
 		
 		var arrayVertex: Array = []
-		if from.type == TYPE_VERTEX.TASK and graph.get_edges_of(from).size() < 4 and from.connections.values().has(null):
-			arrayVertex.append(from)
-		if to.type == TYPE_VERTEX.TASK and graph.get_edges_of(to).size() < 4 and to.connections.values().has(null):
-			arrayVertex.append(to)
+		var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
+		if allowVertex.has(chosenEdge.from.type) and graph.get_edges_of(chosenEdge.from).size() < 4 and chosenEdge.from.connections.values().has(null):
+			arrayVertex.append(chosenEdge.from)
+		if allowVertex.has(chosenEdge.to.type) and graph.get_edges_of(chosenEdge.to).size() < 4 and chosenEdge.to.connections.values().has(null):
+			arrayVertex.append(chosenEdge.to)
 		
 		var vertex1: Node2D = arrayVertex[randi() % arrayVertex.size()]
 		var vertex2: Node2D = graph.add_vertex("",TYPE_VERTEX.SECRET)
@@ -283,7 +281,7 @@ func _rule_secret(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos):
+		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos, direction):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex2, targetPos)
 		
@@ -299,8 +297,8 @@ func _rule_obstacle(graph: Node2D):
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
-		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
-		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex1: Node2D = chosenEdge.from
+		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
@@ -324,8 +322,8 @@ func _rule_reward(graph: Node2D):
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
-		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
-		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex1: Node2D = chosenEdge.from
+		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		
@@ -349,15 +347,13 @@ func _rule_knl_1(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 place vertex connected
-		var from = graph.get_vertex(edge.from)
-		var to = graph.get_vertex(edge.to)
-		if !from.is_element() and !to.is_element() and edge.type != TYPE_EDGE.KEY_LOCK:
+		if !edge.from.is_element() and !edge.to.is_element() and edge.type != TYPE_EDGE.KEY_LOCK:
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
-		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
-		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex1: Node2D = chosenEdge.from
+		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
@@ -398,9 +394,8 @@ func _rule_knl_2(graph: Node2D):
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
-		print(chosenEdge)
-		var vertex1: Node2D = graph.get_vertex(chosenEdge.from)
-		var vertex2: Node2D = graph.get_vertex(chosenEdge.to)
+		var vertex1: Node2D = chosenEdge.from
+		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
@@ -429,14 +424,13 @@ func _rule_knl_2(graph: Node2D):
 			if vertex1.connections[option] == null and vertex3.connections[option] == null:
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
-		print(chosenOption)
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos3) or graph.is_pos_crossed_line(targetPos3):
+		if graph.is_pos_has_placed(targetPos3) or graph.is_pos_crossed_line(targetPos3, chosenOption):
 			graph.slide_vertices(targetPos3, chosenOption)
-		if graph.is_pos_has_placed(targetPos4) or graph.is_pos_crossed_line(targetPos4):
+		if graph.is_pos_has_placed(targetPos4) or graph.is_pos_crossed_line(targetPos4, chosenOption):
 			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex6, targetPos3)
 		graph.change_vertex_pos(vertex5, targetPos4)
@@ -457,7 +451,6 @@ func _rule_knl_3(graph: Node2D):
 	
 	if matchEdge.size() > 0:
 		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
-		print(chosenEdge)
 		var vertex1: Node2D = chosenEdge.from
 		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
@@ -489,14 +482,13 @@ func _rule_knl_3(graph: Node2D):
 			if vertex1.connections[option] == null and vertex3.connections[option] == null:
 				directionOptions.append(option)
 		var chosenOption: Vector2 = directionOptions[randi() % directionOptions.size()]
-		print(chosenOption)
 		var mirrorOption: Vector2 = Vector2(chosenOption.x * -1, chosenOption.y) if chosenOption.x != 0 else Vector2(chosenOption.x, chosenOption.y * -1)
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos3) or graph.is_pos_crossed_line(targetPos3):
+		if graph.is_pos_has_placed(targetPos3) or graph.is_pos_crossed_line(targetPos3, chosenOption):
 			graph.slide_vertices(targetPos3, chosenOption)
-		if graph.is_pos_has_placed(targetPos4) or graph.is_pos_crossed_line(targetPos4):
+		if graph.is_pos_has_placed(targetPos4) or graph.is_pos_crossed_line(targetPos4, chosenOption):
 			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex6, targetPos3)
 		graph.change_vertex_pos(vertex5, targetPos4)
@@ -1055,7 +1047,26 @@ func _execute_transform_rule(graph: Node2D):
 	_execute_clean_outside_element_rule(graph)
 	_execute_trim_position_vertices(graph)
 	
-	
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
+	print(placeVertices)
+	for placeVertex in placeVertices:
+		#make edge hidden
+		for sub in placeVertex.subs:
+			if sub.type == TYPE_VERTEX.SECRET:
+				for edge in graph.get_edges_of(placeVertex):
+					edge.type = TYPE_EDGE.HIDDEN
+		
+		#make edge window
+		for directionUnconnected in placeVertex.connections.keys():
+			var targetVertex: Node = graph.get_vertex_by_position(placeVertex.position + (directionUnconnected * cellSize))
+			if placeVertex.connections[directionUnconnected] == null and targetVertex != null:
+				var mirror: Vector2 = Vector2(directionUnconnected.x * -1, directionUnconnected.y) if directionUnconnected.x != 0 else Vector2(directionUnconnected.x, directionUnconnected.y * -1)
+				if targetVertex.connections[mirror] == null and !targetVertex.is_element():
+					print("window=========================")
+					print("placeVertex " + str(placeVertex) + " :direction " + str(directionUnconnected))
+					print("targetVertex " + str(targetVertex) + " :mirror " + str(mirror))
+					print("=========================")
+					graph.connect_vertex(targetVertex, placeVertex, TYPE_EDGE.WINDOW, mirror)
 	
 	graph.update()
 
@@ -1115,6 +1126,12 @@ func _on_ButtonClearAll_pressed():
 	$"%OptionTargetGraph".clear()
 	indexGraph = 0
 	indexVertex = 0
+	recipe.clear()
+	recipe.append_array(DEFAULT_RECIPE)
+	$"%RichTextRecipe".clear()
+	for rule in recipe:
+		$"%RichTextRecipe".add_text(rule)
+		$"%RichTextRecipe".newline()
 
 
 func _on_OptionTargetGraph2_item_selected(index):

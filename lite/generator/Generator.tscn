@@ -14,6 +14,7 @@ unique_name_in_owner = true
 
 [node name="WindowDialogGenerator" type="WindowDialog" parent="GUI"]
 unique_name_in_owner = true
+visible = true
 margin_top = -5.0
 margin_right = 221.0
 margin_bottom = 446.0
@@ -197,11 +198,10 @@ margin_bottom = 400.0
 unique_name_in_owner = true
 margin_right = 193.0
 margin_bottom = 20.0
-text = "clear all graph"
+text = "Reset"
 
 [node name="WindowDialogGraph" type="WindowDialog" parent="GUI"]
 unique_name_in_owner = true
-visible = true
 margin_top = -5.0
 margin_right = 221.0
 margin_bottom = 446.0
