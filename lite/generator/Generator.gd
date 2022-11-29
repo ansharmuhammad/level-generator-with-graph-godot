@@ -806,7 +806,7 @@ func _execute_clean_outside_element_rule(graph: Node2D):
 			2: _place_key_element(graph)
 			3: _add_lock_after_place(graph)
 
-func _execute_trim_position_vertices(graph: Node2D):
+func _make_edges_element(graph: Node2D):
 	#make element edge
 	for edge in graph.get_edges():
 		var from: Node2D = edge.from
@@ -815,7 +815,8 @@ func _execute_trim_position_vertices(graph: Node2D):
 			if from.is_element() or to.is_element():
 				edge.type = TYPE_EDGE.ELEMENT
 				edge.add_to_group("elementEdges")
-	
+
+func _execute_trim_x(graph: Node2D):
 	var verticesPos: PoolVector2Array = graph.posVertices.values()
 	print("=============before=============")
 	print("=============graph.posVertices=============")
@@ -863,26 +864,13 @@ func _execute_trim_position_vertices(graph: Node2D):
 				if verticesPos[i].x > lowestPos.x:
 					verticesPos[i].x -= (1 * cellSize.x)
 			highestPos.x -= (1 * cellSize.x)
+			break
 		else:
 			lowestPos.x += (1 * cellSize.x)
 		print("lowestPos.x now " + str(lowestPos.x))
 		print("highestPos.x now " + str(highestPos.x))
-	#y position
-	while lowestPos.y <= highestPos.y:
-		var found: bool = true
-		for pos in verticesPos:
-			if lowestPos.y != pos.y:
-				found = false
-				break
-		if found:
-			for i in range(verticesPos.size()):
-				if verticesPos[i].y > lowestPos.y:
-					verticesPos[i].y -= (1 * cellSize.y)
-			highestPos.y -= (1 * cellSize.y)
-		else:
-			lowestPos.y += (1 * cellSize.y)
 	
-	#update position
+	#sync vertices pos
 	var verticesName: PoolStringArray = graph.posVertices.keys()
 	for i in range(verticesName.size()):
 		graph.posVertices[verticesName[i]] = verticesPos[i]
@@ -904,6 +892,182 @@ func _execute_trim_position_vertices(graph: Node2D):
 				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
 				edge.from.connections[direction] = edge.to
 				edge.to.connections[mirror] = edge.from
+	
+	graph.update()
+
+func _execute_trim_y(graph: Node2D):
+	var verticesPos: PoolVector2Array = graph.posVertices.values()
+	print("=============before=============")
+	print("=============graph.posVertices=============")
+	for obj in graph.posVertices:
+		print(obj + str(graph.posVertices[obj]))
+	print("=============verticesPos=============")
+	for pos in verticesPos:
+		print(pos)
+	print("==========================")
+	
+	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
+	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
+	for vertex in graph.get_vertices():
+		if vertex.subOf == null:
+			#change task to room or cave
+			var percent = randf()
+			if (percent > 0.5):
+				vertex.type = TYPE_VERTEX.ROOM
+			else:
+				vertex.type = TYPE_VERTEX.CAVE
+			
+			#get lowest x and y
+			if vertex.position.x < lowestPos.x:
+				lowestPos.x = vertex.position.x
+			if vertex.position.y < lowestPos.y:
+				lowestPos.y = vertex.position.y
+			#get highest x and y
+			if vertex.position.x > highestPos.x:
+				highestPos.x = vertex.position.x
+			if vertex.position.y > highestPos.y:
+				highestPos.y = vertex.position.y
+	print("lowestPos " + str(lowestPos))
+	print("highestPos " + str(highestPos))
+	
+	#rearrange position
+	#y position
+	while lowestPos.y <= highestPos.y:
+		var found: bool = true
+		for pos in verticesPos:
+			if lowestPos.y != pos.y:
+				found = false
+				break
+		if found:
+			for i in range(verticesPos.size()):
+				if verticesPos[i].y > lowestPos.y:
+					verticesPos[i].y -= (1 * cellSize.y)
+			highestPos.y -= (1 * cellSize.y)
+			break
+		else:
+			lowestPos.y += (1 * cellSize.y)
+	
+	#sync vertices pos
+	var verticesName: PoolStringArray = graph.posVertices.keys()
+	for i in range(verticesName.size()):
+		graph.posVertices[verticesName[i]] = verticesPos[i]
+	
+	for vertex in graph.get_vertices():
+		if vertex.subOf == null:
+			print(str(vertex)+str(vertex.position)+" <- "+str(graph.posVertices.get(vertex.name)))
+			graph.change_vertex_pos(vertex, graph.posVertices.get(vertex.name))
+			print(str(vertex)+str(vertex.position))
+	for subVertex in get_tree().get_nodes_in_group("subVertices"):
+		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.size() * 36))
+	
+	#re-connections vertex
+	for edge in graph.get_edges():
+		if edge.type == TYPE_EDGE.PATH and edge.from != null and edge.to != null:
+			#non diagonal direction
+			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
+			if DIRECTIONS.has(direction):
+				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
+				edge.from.connections[direction] = edge.to
+				edge.to.connections[mirror] = edge.from
+	
+	graph.update()
+
+func _execute_trim_position_vertices(graph: Node2D):
+	#make element edge
+	for edge in graph.get_edges():
+		var from: Node2D = edge.from
+		var to: Node2D = edge.to
+		if from.type != TYPE_VERTEX.KEY and to.type != TYPE_VERTEX.LOCK:
+			if from.is_element() or to.is_element():
+				edge.type = TYPE_EDGE.ELEMENT
+				edge.add_to_group("elementEdges")
+	
+	var verticesPos: PoolVector2Array = graph.posVertices.values()
+	print("=============before=============")
+	print("=============graph.posVertices=============")
+	for obj in graph.posVertices:
+		print(obj + str(graph.posVertices[obj]))
+	print("=============verticesPos=============")
+	for pos in verticesPos:
+		print(pos)
+	print("==========================")
+	
+	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
+	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
+	for vertex in graph.get_vertices():
+		if vertex.subOf == null:
+			#change task to room or cave
+			var percent = randf()
+			if (percent > 0.5):
+				vertex.type = TYPE_VERTEX.ROOM
+			else:
+				vertex.type = TYPE_VERTEX.CAVE
+			
+			#get lowest x and y
+			if vertex.position.x < lowestPos.x:
+				lowestPos.x = vertex.position.x
+			if vertex.position.y < lowestPos.y:
+				lowestPos.y = vertex.position.y
+			#get highest x and y
+			if vertex.position.x > highestPos.x:
+				highestPos.x = vertex.position.x
+			if vertex.position.y > highestPos.y:
+				highestPos.y = vertex.position.y
+	print("lowestPos " + str(lowestPos))
+	print("highestPos " + str(highestPos))
+	
+	#rearrange position
+	#x position
+	while highestPos.x >= lowestPos.x:
+		var found: bool = true
+		for pos in verticesPos:
+			if highestPos.x == pos.x:
+				found = false
+				break
+		if found:
+			for i in range(verticesPos.size()):
+				if verticesPos[i].x > highestPos.x:
+					verticesPos[i].x -= (1 * cellSize.x)
+		highestPos.x -= (1 * cellSize.x)
+		print("lowestPos.x now " + str(lowestPos.x))
+		print("highestPos.x now " + str(highestPos.x))
+	#y position
+	while highestPos.y >= lowestPos.y:
+		var found: bool = true
+		for pos in verticesPos:
+			if highestPos.y == pos.y:
+				found = false
+				break
+		if found:
+			for i in range(verticesPos.size()):
+				if verticesPos[i].y > highestPos.y:
+					verticesPos[i].y -= (1 * cellSize.y)
+		highestPos.y -= (1 * cellSize.y)
+	
+	#sync vertices pos
+	var verticesName: PoolStringArray = graph.posVertices.keys()
+	for i in range(verticesName.size()):
+		graph.posVertices[verticesName[i]] = verticesPos[i]
+	
+	for vertex in graph.get_vertices():
+		if vertex.subOf == null:
+			print(str(vertex)+str(vertex.position)+" <- "+str(graph.posVertices.get(vertex.name)))
+			graph.change_vertex_pos(vertex, graph.posVertices.get(vertex.name))
+			print(str(vertex)+str(vertex.position))
+	for subVertex in get_tree().get_nodes_in_group("subVertices"):
+		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.size() * 36))
+	
+	#re-connections vertex
+	for edge in graph.get_edges():
+		if edge.type == TYPE_EDGE.PATH and edge.from != null and edge.to != null:
+			#non diagonal direction
+			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
+			if DIRECTIONS.has(direction):
+				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
+				edge.from.connections[direction] = edge.to
+				edge.to.connections[mirror] = edge.from
+	
+	graph.update()
 
 func _execute_transform_rule(graph: Node2D):
 	_execute_create_place_rule(graph)
@@ -999,3 +1163,14 @@ func _on_ButtonSingleTransform_pressed():
 
 func _on_ButtonTrimPosition_pressed():
 	_execute_trim_position_vertices(targetGraph)
+
+
+func _on_ButtonEdgesElement_pressed():
+	_make_edges_element(targetGraph)
+
+func _on_ButtonTrimX_pressed():
+	_execute_trim_x(targetGraph)
+
+
+func _on_ButtonTrimY_pressed():
+	_execute_trim_y(targetGraph)

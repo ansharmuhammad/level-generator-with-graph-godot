@@ -321,7 +321,7 @@ margin_bottom = 210.0
 [node name="SectionTransform" type="VBoxContainer" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer"]
 margin_top = 220.0
 margin_right = 193.0
-margin_bottom = 312.0
+margin_bottom = 408.0
 
 [node name="ButtonInitSingleTransform" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 margin_right = 193.0
@@ -334,17 +334,41 @@ margin_right = 193.0
 margin_bottom = 44.0
 text = "execute single rule"
 
-[node name="ButtonTrimPosition" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+[node name="ButtonEdgesElement" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 margin_top = 48.0
 margin_right = 193.0
 margin_bottom = 68.0
+text = "make edges element"
+
+[node name="ButtonTransformRuleOnly" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+margin_top = 72.0
+margin_right = 193.0
+margin_bottom = 92.0
+text = "clean element"
+
+[node name="ButtonTrimX" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+margin_top = 96.0
+margin_right = 193.0
+margin_bottom = 116.0
+text = "Trim X"
+
+[node name="ButtonTrimY" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+margin_top = 120.0
+margin_right = 193.0
+margin_bottom = 140.0
+text = "Trim Y"
+
+[node name="ButtonTrimPosition" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
+margin_top = 144.0
+margin_right = 193.0
+margin_bottom = 164.0
 text = "trim position"
 
 [node name="ButtonTransform" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform"]
 unique_name_in_owner = true
-margin_top = 72.0
+margin_top = 168.0
 margin_right = 193.0
-margin_bottom = 92.0
+margin_bottom = 188.0
 text = "execute transform rule"
 
 [node name="Camera2D" parent="." instance=ExtResource( 2 )]
@@ -362,5 +386,8 @@ zoom = Vector2( 5, 5 )
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGraph/ButtonGetInfo" to="." method="_on_ButtonGetInfo_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonInitSingleTransform" to="." method="_on_ButtonInitSingleTransform_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonSingleTransform" to="." method="_on_ButtonSingleTransform_pressed"]
+[connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonEdgesElement" to="." method="_on_ButtonEdgesElement_pressed"]
+[connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTrimX" to="." method="_on_ButtonTrimX_pressed"]
+[connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTrimY" to="." method="_on_ButtonTrimY_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTrimPosition" to="." method="_on_ButtonTrimPosition_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTransform" to="." method="_on_ButtonTransform_pressed"]
