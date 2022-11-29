@@ -20,3 +20,9 @@ const ELEMENT: String = "ELEMENT"
 
 ## type edge which connecting between two place with hidden path
 const HIDDEN: String = "HIDDEN"
+
+## type edge which connecting between two adjacent place unconnected
+const WINDOW: String = "WINDOW"
+
+## type edge which connecting between two vertex with one way direction
+const GATE: String = "GATE"

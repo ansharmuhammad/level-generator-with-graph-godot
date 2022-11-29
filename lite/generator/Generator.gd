@@ -76,7 +76,7 @@ func _create_graph():
 
 # collection of rules ==========================================================
 
-func _rule_init_1(graph: Node):
+func _rule_init_1(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is init vertex
@@ -90,6 +90,9 @@ func _rule_init_1(graph: Node):
 		var vertex3: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
 		var vertex4: Node2D = graph.add_vertex()
 		
+		vertex2.add_to_group("placeVertices")
+		vertex4.add_to_group("placeVertices")
+		
 		vertex1.type = TYPE_VERTEX.START
 		graph.change_vertex_pos(vertex2, vertex1.position + (Vector2.RIGHT * cellSize))
 		graph.change_vertex_pos(vertex3, vertex2.position + (Vector2.DOWN * cellSize))
@@ -101,7 +104,7 @@ func _rule_init_1(graph: Node):
 		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, Vector2.UP)
 #		print("execute rule init1 at" + str(chosenEdge))
 
-func _rule_init_2(graph: Node):
+func _rule_init_2(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is init vertex
@@ -116,6 +119,11 @@ func _rule_init_2(graph: Node):
 		var vertex4: Node2D = graph.add_vertex()
 		var vertex5: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
 		var vertex6: Node2D = graph.add_vertex()
+		
+		vertex2.add_to_group("placeVertices")
+		vertex3.add_to_group("placeVertices")
+		vertex4.add_to_group("placeVertices")
+		vertex6.add_to_group("placeVertices")
 		
 		vertex1.type = TYPE_VERTEX.START
 		graph.change_vertex_pos(vertex2, vertex1.position + Vector2.RIGHT * cellSize)
@@ -132,7 +140,7 @@ func _rule_init_2(graph: Node):
 		graph.connect_vertex(vertex6, vertex2, TYPE_EDGE.PATH, Vector2.UP)
 #		print("execute rule init2 at" + str(chosenEdge))
 
-func _rule_extend_1(graph: Node):
+func _rule_extend_1(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
@@ -144,6 +152,8 @@ func _rule_extend_1(graph: Node):
 		var vertex1: Node2D = chosenEdge.from
 		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex()
+		
+		vertex3.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -157,7 +167,7 @@ func _rule_extend_1(graph: Node):
 		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, direction)
 #		print("execute rule Extend1 at" + str(chosenEdge))
 
-func _rule_extend_2(graph: Node):
+func _rule_extend_2(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
@@ -171,6 +181,9 @@ func _rule_extend_2(graph: Node):
 		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex()
 		var vertex4: Node2D = graph.add_vertex()
+		
+		vertex3.add_to_group("placeVertices")
+		vertex4.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var directionOptions: Array = []
@@ -195,7 +208,7 @@ func _rule_extend_2(graph: Node):
 		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, mirrorOption)
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
-func _rule_extend_3(graph: Node):
+func _rule_extend_3(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
@@ -211,6 +224,9 @@ func _rule_extend_3(graph: Node):
 		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex()
 		var vertex4: Node2D = graph.add_vertex()
+		
+		vertex3.add_to_group("placeVertices")
+		vertex4.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
@@ -236,7 +252,7 @@ func _rule_extend_3(graph: Node):
 		graph.connect_vertex(vertex4, vertex1, TYPE_EDGE.PATH, mirrorOption)
 #		print("execute rule Extend2 at" + str(chosenEdge))
 
-func _rule_secret(graph: Node):
+func _rule_secret(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is init vertex
@@ -274,7 +290,7 @@ func _rule_secret(graph: Node):
 		graph.connect_vertex(vertex1, vertex2, TYPE_EDGE.PATH, direction)
 #		print("execute rule Secret at" + str(chosenEdge) + "detail : " + vertex1.name)
 
-func _rule_obstacle(graph: Node):
+func _rule_obstacle(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
@@ -299,7 +315,7 @@ func _rule_obstacle(graph: Node):
 		graph.connect_vertex(vertex3, vertex2, TYPE_EDGE.PATH, direction)
 #		print("execute rule Obstacle at" + str(chosenEdge))
 
-func _rule_reward(graph: Node):
+func _rule_reward(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
@@ -329,7 +345,7 @@ func _rule_reward(graph: Node):
 		graph.connect_vertex(vertex4, vertex2, TYPE_EDGE.PATH, direction)
 #		print("execute rule Reward at" + str(chosenEdge))
 
-func _rule_knl_1(graph: Node):
+func _rule_knl_1(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 place vertex connected
@@ -345,6 +361,8 @@ func _rule_knl_1(graph: Node):
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		
+		vertex4.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -368,7 +386,7 @@ func _rule_knl_1(graph: Node):
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL1 at" + str(edge))
 
-func _rule_knl_2(graph: Node):
+func _rule_knl_2(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected
@@ -387,6 +405,9 @@ func _rule_knl_2(graph: Node):
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
+		
+		vertex3.add_to_group("placeVertices")
+		vertex6.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -426,7 +447,7 @@ func _rule_knl_2(graph: Node):
 		graph.connect_vertex(vertex5, vertex4, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL2 at" + str(chosenEdge))
 
-func _rule_knl_3(graph: Node):
+func _rule_knl_3(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4 and edge.type != TYPE_EDGE.KEY_LOCK:
@@ -443,6 +464,9 @@ func _rule_knl_3(graph: Node):
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
+		
+		vertex3.add_to_group("placeVertices")
+		vertex5.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
@@ -483,7 +507,7 @@ func _rule_knl_3(graph: Node):
 		graph.connect_vertex(vertex6, vertex4, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL3 at" + str(chosenEdge))
 
-func _rule_knl_4(graph: Node):
+func _rule_knl_4(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		#check if there is 2 vertex connected and the secon vertex type is goal
@@ -497,6 +521,8 @@ func _rule_knl_4(graph: Node):
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
+		
+		vertex4.add_to_group("placeVertices")
 		
 		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -520,14 +546,14 @@ func _rule_knl_4(graph: Node):
 		graph.connect_vertex(vertex3, vertex5, TYPE_EDGE.KEY_LOCK)
 #		print("execute rule KL4 at" + str(chosenEdge))
 
-func _random_init(graph: Node):
+func _random_init(graph: Node2D):
 	var chosenrule = randi() % 2 + 1
 	if chosenrule == 1:
 		_rule_init_1(graph)
 	else:
 		_rule_init_2(graph)
 
-func _random_extend(graph: Node):
+func _random_extend(graph: Node2D):
 	var chosenrule = randi() % 3 + 1
 	if chosenrule == 1:
 		_rule_extend_1(graph)
@@ -536,7 +562,7 @@ func _random_extend(graph: Node):
 	else:
 		_rule_extend_3(graph)
 
-func _random_knl(graph: Node):
+func _random_knl(graph: Node2D):
 	var chosenrule = randi() % 4 + 1
 	match chosenrule:
 		1: _rule_knl_1(graph)
@@ -552,6 +578,7 @@ func _sub_off(vertex: Node2D, sub_vertex: Node2D):
 	sub_vertex.add_to_group("subVertices")
 	sub_vertex.connection_reset()
 	vertex.subs.append(sub_vertex)
+	vertex.add_to_group("placeVertices")
 	#positioning sub vertices
 	for i in range(vertex.subs.size()):
 		var sub: Node2D = vertex.subs[i]
@@ -561,6 +588,7 @@ func _create_entrance(graph: Node2D, vertex: Node2D):
 	#create entrance
 	if vertex.type == TYPE_VERTEX.START:
 		var newVertex: Node2D = graph.add_vertex()
+		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, vertex.position)
 		vertex.type = TYPE_VERTEX.ENTRANCE
 		_sub_off(newVertex, vertex)
@@ -578,7 +606,8 @@ func _create_entrance(graph: Node2D, vertex: Node2D):
 func _create_goal(graph: Node2D, vertex: Node2D):
 	#create goal
 	if vertex.type == TYPE_VERTEX.GOAL:
-		var newVertex: Node = graph.add_vertex()
+		var newVertex: Node2D = graph.add_vertex()
+		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, vertex.position)
 		_sub_off(newVertex, vertex)
 		graph.posVertices.erase(vertex.name)
@@ -596,6 +625,7 @@ func _create_secret(graph: Node2D, vertex: Node2D):
 	#create secret
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node2D = graph.add_vertex()
+		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, vertex.position)
 		_sub_off(newVertex, vertex)
 		graph.posVertices.erase(vertex.name)
@@ -610,13 +640,13 @@ func _create_secret(graph: Node2D, vertex: Node2D):
 #		var msg = "execute rule createSecret at" + str(vertex) +" new "+str(newVertex)
 #		print(msg)
 
-func _outside_element_exist(graph: Node) -> bool:
+func _outside_element_exist(graph: Node2D) -> bool:
 	for vertex in graph.get_vertices():
 		if vertex.is_element() and vertex.subOf == null:
 			return true
 	return false
 
-func _add_element_before_place(graph: Node):
+func _add_element_before_place(graph: Node2D):
 	var matchVertices: Array = []
 	for vertex0 in graph.get_vertices():
 		for vertex1 in graph.get_outgoing_vertex(vertex0, TYPE_EDGE.PATH):
@@ -648,7 +678,7 @@ func _add_element_before_place(graph: Node):
 #		var msg = "execute rule addElementBeforePlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
 #		print(msg)
 
-func _add_lock_after_place(graph: Node):
+func _add_lock_after_place(graph: Node2D):
 	var matchVertices: Array = []
 	for vertex0 in graph.get_vertices():
 		for vertex1 in graph.get_outgoing_vertex(vertex0, TYPE_EDGE.PATH):
@@ -680,7 +710,7 @@ func _add_lock_after_place(graph: Node):
 #		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
 #		print(msg)
 
-func _place_key_element(graph: Node):
+func _place_key_element(graph: Node2D):
 	var matchVertices: Array = []
 	for vertex0 in graph.get_vertices():
 		for vertex1 in graph.get_outgoing_vertex(vertex0, TYPE_EDGE.PATH):
@@ -690,6 +720,7 @@ func _place_key_element(graph: Node):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node2D = graph.add_vertex()
+		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, choosenMatch[0].position)
 		_sub_off(newVertex, choosenMatch[0])
 		graph.posVertices.erase(choosenMatch[0].name)
@@ -712,7 +743,7 @@ func _place_key_element(graph: Node):
 #		var msg = "execute rule addLockAfterPlace at" + str(choosenMatch[0]) + str(choosenMatch[1])
 #		print(msg)
 
-func _add_element_after_place(graph: Node):
+func _add_element_after_place(graph: Node2D):
 	var matchVertices: Array = []
 	for vertex0 in graph.get_vertices():
 		for vertex1 in graph.get_outgoing_vertex(vertex0, TYPE_EDGE.PATH):
@@ -746,7 +777,7 @@ func _add_element_after_place(graph: Node):
 #		print(msg)
 
 # end of collection transform rule =============================================
-func _execute_rule(rule: String, graph: Node):
+func _execute_rule(rule: String, graph: Node2D):
 	match rule:
 		"init1":
 			_rule_init_1(graph)
@@ -1023,6 +1054,8 @@ func _execute_transform_rule(graph: Node2D):
 	_execute_create_place_rule(graph)
 	_execute_clean_outside_element_rule(graph)
 	_execute_trim_position_vertices(graph)
+	
+	
 	
 	graph.update()
 

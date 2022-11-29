@@ -50,7 +50,7 @@ func get_edges() -> Array:
 	return $Edges.get_children()
 
 ## get list edges on a vertex
-func get_edges_of(vertex: Node, type: String = "") -> Array:
+func get_edges_of(vertex: Node2D, type: String = "") -> Array:
 	var listEdge: Array = []
 	for edge in $Edges.get_children():
 		if edge.from == vertex or edge.to == vertex:

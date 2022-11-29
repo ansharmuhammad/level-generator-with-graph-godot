@@ -15,23 +15,17 @@ _global_script_classes=[ {
 "path": "res://SpanningCamera2D/SpanningCamera2D.gd"
 }, {
 "base": "Node",
-"class": "Rule",
-"language": "GDScript",
-"path": "res://generator/rules/Rule.gd"
-}, {
-"base": "Node",
 "class": "TYPE_EDGE",
 "language": "GDScript",
-"path": "res://generator/graph/edge/TYPE_EDGE.gd"
+"path": "res://lite/object/TYPE_EDGE.gd"
 }, {
 "base": "Node",
 "class": "TYPE_VERTEX",
 "language": "GDScript",
-"path": "res://generator/graph/vertex/TYPE_VERTEX.gd"
+"path": "res://lite/object/TYPE_VERTEX.gd"
 } ]
 _global_script_class_icons={
 "PanningCamera2D": "",
-"Rule": "",
 "TYPE_EDGE": "",
 "TYPE_VERTEX": ""
 }
