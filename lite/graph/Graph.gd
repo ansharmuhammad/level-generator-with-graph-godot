@@ -288,15 +288,22 @@ func is_pos_has_placed(position: Vector2) -> bool:
 		return true
 	return false
 
-func is_pos_crossed_line(position: Vector2) -> bool:
+func is_pos_crossed_line(_position: Vector2) -> bool:
 	var lines: Array = posEdges.values()
 	for line in lines:
+		var direction: Vector2 = (line.to - line.from).normalized()
 		#crossing vertical
-		if line.from.x == line.to.x and (position.x == line.to.x or position.y == line.to.x):
-			return true
+		if line.from.x == line.to.x and _position.x == line.from.x:
+			if direction == Vector2.UP and _position.y <= line.from.y and _position.y >= line.to.y:
+				return true
+			elif direction == Vector2.DOWN and _position.y >= line.from.y and _position.y <= line.to.y:
+				return true
 		#crossing horizontal
-		elif line.from.y == line.to.y and (position.x == line.to.y or position.y == line.to.y):
-			return true
+		elif line.from.y == line.to.y and _position.y == line.from.y:
+			if direction == Vector2.RIGHT and _position.x >= line.from.x and _position.x <= line.to.x:
+				return true
+			elif direction == Vector2.LEFT and _position.x <= line.from.x and _position.x >= line.to.x:
+				return true
 	return false
 
 func _draw():
