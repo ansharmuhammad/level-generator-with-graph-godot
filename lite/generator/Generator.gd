@@ -161,7 +161,8 @@ func _rule_extend_2(graph: Node):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
-			if edge.from.type == TYPE_VERTEX.TASK and edge.to.type == TYPE_VERTEX.TASK and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
+			var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
+			if allowVertex.has(edge.from.type) and allowVertex.has(edge.to.type) and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
 				matchEdge.append(edge)
 
 	if matchEdge.size() > 0:
@@ -200,7 +201,8 @@ func _rule_extend_3(graph: Node):
 		#check if there is 2 vertex connected
 		if edge.type == TYPE_EDGE.PATH and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4:
 			#check if there is 2 vertex have same direction null
-			if edge.from.type == TYPE_VERTEX.TASK and edge.to.type == TYPE_VERTEX.TASK and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
+			var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
+			if allowVertex.has(edge.from.type) and allowVertex.has(edge.to.type) and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
 				matchEdge.append(edge)
 
 	if matchEdge.size() > 0:
@@ -372,7 +374,8 @@ func _rule_knl_2(graph: Node):
 		#check if there is 2 vertex connected
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4 and edge.type != TYPE_EDGE.KEY_LOCK:
 			#check if there is 2 vertex have same direction null
-			if edge.from.type == TYPE_VERTEX.TASK and edge.to.type == TYPE_VERTEX.TASK and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
+			var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
+			if allowVertex.has(edge.from.type) and allowVertex.has(edge.to.type) and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
 				matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
@@ -427,7 +430,8 @@ func _rule_knl_3(graph: Node):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
 		if edge.to != null and graph.get_edges_of(edge.from).size() < 4 and graph.get_edges_of(edge.to).size() < 4 and edge.type != TYPE_EDGE.KEY_LOCK:
-			if edge.from.type == TYPE_VERTEX.TASK and edge.to.type == TYPE_VERTEX.TASK and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
+			var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
+			if allowVertex.has(edge.from.type) and allowVertex.has(edge.to.type) and ((edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.LEFT] == null) or (edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.RIGHT] == null) or (edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.UP] == null) or (edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.DOWN] == null)):
 				matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
@@ -1025,7 +1029,6 @@ func _execute_transform_rule(graph: Node2D):
 func _execute_single_transform_rule(graph: Node2D):
 	if _outside_element_exist(graph):
 		var execute: int = randi() % 4
-		print(execute)
 		match execute:
 			0: _add_element_before_place(graph)
 			1: _add_lock_after_place(graph)

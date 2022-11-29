@@ -329,7 +329,7 @@ func _draw():
 	for edge in get_edges():
 		var fromPosition: Vector2 = edge.from.position if  edge.from != null else edge.to.position
 		var toPosition: Vector2 = edge.to.position if edge.to != null else edge.from.position
-		if edge.type != TYPE_EDGE.KEY_LOCK and edge.type != TYPE_EDGE.ELEMENT:
+		if edge.type == TYPE_EDGE.PATH:
 			# line
 			draw_line(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)), toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), Color.aliceblue, lineSize)
 			#arrow left
@@ -337,12 +337,12 @@ func _draw():
 			#arrow right
 			draw_line(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(vertexOuterRadius + 20,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)), Color.aliceblue, lineSize)
 			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
-		elif edge.type != TYPE_EDGE.ELEMENT:
+		elif edge.type == TYPE_EDGE.KEY_LOCK:
 			var direction: Vector2 = (toPosition - fromPosition).normalized()
 			var mid: Vector2 = (toPosition + fromPosition)/2
 			mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
-			draw_line(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)), mid, Color.aquamarine, lineSize)
-			draw_line(mid, toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), Color.aquamarine, lineSize)
+			draw_line(fromPosition - Vector2(0,0).rotated(fromPosition.angle_to_point(toPosition)), mid, Color.aquamarine, lineSize)
+			draw_line(mid, toPosition - Vector2(0,0).rotated(toPosition.angle_to_point(fromPosition)), Color.aquamarine, lineSize)
 			draw_string(font, mid, str(edge.weight), Color.aqua)
 	
 	#draw vertices
