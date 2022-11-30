@@ -8,6 +8,7 @@ size = 75
 font_data = ExtResource( 2 )
 
 [sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 32, 31 )
 
 [node name="Graph" type="Node2D"]
 script = ExtResource( 1 )
@@ -30,11 +31,12 @@ valign = 1
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 enabled = true
-cast_to = Vector2( 0, 32 )
+cast_to = Vector2( 0, 20 )
 collide_with_areas = true
 
 [node name="Area2D" type="Area2D" parent="RayCast2D"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RayCast2D/Area2D"]
+position = Vector2( 0, -29 )
 shape = SubResource( 2 )
 disabled = true

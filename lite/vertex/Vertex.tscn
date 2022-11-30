@@ -3,6 +3,7 @@
 [ext_resource path="res://lite/vertex/Vertex.gd" type="Script" id=1]
 
 [sub_resource type="CircleShape2D" id=1]
+radius = 16.0
 
 [node name="Vertex" type="Node2D" groups=["verticesLite"]]
 script = ExtResource( 1 )

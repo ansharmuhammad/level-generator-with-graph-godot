@@ -39,6 +39,9 @@ func _input(event):
 			$"%WindowDialogGenerator".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGenerator".rect_size.x, $"%WindowDialogGenerator".rect_size.y))
 		else:
 			$"%WindowDialogGraph".popup(Rect2(mouse.x, mouse.y, $"%WindowDialogGraph".rect_size.x, $"%WindowDialogGraph".rect_size.y))
+#	if event is InputEventMouseButton and event.is_pressed() and event.button_index == BUTTON_LEFT:
+#		if targetGraph != null:
+#			print(targetGraph.get_vertex_by_position(get_global_mouse_position()))
 
 #disable for performance
 func _process(delta):
@@ -159,7 +162,7 @@ func _rule_extend_1(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		
@@ -195,12 +198,11 @@ func _rule_extend_2(graph: Node2D):
 		var targetPos: Vector2 = vertex2.position + (chosenOption * cellSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos, chosenOption):
+		if graph.is_pos_has_placed(targetPos, vertex3) or graph.is_pos_crossed_line(targetPos, chosenOption):
 			graph.slide_vertices(targetPos, chosenOption)
-		if graph.is_pos_has_placed(targetPos2) or graph.is_pos_crossed_line(targetPos2, chosenOption):
-			graph.slide_vertices(targetPos2, chosenOption)
-		
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2,vertex4) or graph.is_pos_crossed_line(targetPos2, chosenOption):
+			graph.slide_vertices(targetPos2, chosenOption)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
 		graph.connect_vertex(vertex1, vertex4, TYPE_EDGE.PATH, chosenOption)
@@ -239,12 +241,11 @@ func _rule_extend_3(graph: Node2D):
 		var targetPos: Vector2 = vertex2.position + (chosenOption * cellSize)
 		var targetPos2: Vector2 = vertex1.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos, chosenOption):
+		if graph.is_pos_has_placed(targetPos, vertex3) or graph.is_pos_crossed_line(targetPos, chosenOption):
 			graph.slide_vertices(targetPos, chosenOption)
-		if graph.is_pos_has_placed(targetPos2) or graph.is_pos_crossed_line(targetPos2, chosenOption):
-			graph.slide_vertices(targetPos2, chosenOption)
-		
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2, vertex4) or graph.is_pos_crossed_line(targetPos2, chosenOption):
+			graph.slide_vertices(targetPos2, chosenOption)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
 		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, chosenOption)
@@ -257,7 +258,7 @@ func _rule_secret(graph: Node2D):
 	for edge in graph.get_edges():
 		#check if there is init vertex
 		var allowVertex: Array = [TYPE_VERTEX.TASK, TYPE_VERTEX.START, TYPE_VERTEX.GOAL]
-		if ((allowVertex.has(edge.from.type) and graph.get_edges_of(edge.from).size() < 4) or (allowVertex.has(edge.to.type) and graph.get_edges_of(edge.to).size() < 4 )) and edge.type == TYPE_EDGE.PATH and edge.from.connections.values().has(null) and edge.to.connections.values().has(null):
+		if ((allowVertex.has(edge.from.type) and graph.get_edges_of(edge.from).size() < 4) or (allowVertex.has(edge.to.type) and graph.get_edges_of(edge.to).size() < 4 )) and edge.type == TYPE_EDGE.PATH and (edge.from.connections.values().has(null) or edge.to.connections.values().has(null)):
 			matchEdge.append(edge)
 	
 	if matchEdge.size() > 0:
@@ -281,7 +282,7 @@ func _rule_secret(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos) or graph.is_pos_crossed_line(targetPos, direction):
+		if graph.is_pos_has_placed(targetPos, vertex2) or graph.is_pos_crossed_line(targetPos, direction):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex2, targetPos)
 		
@@ -305,7 +306,7 @@ func _rule_obstacle(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
 		
@@ -331,11 +332,11 @@ func _rule_reward(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
-		if graph.is_pos_has_placed(targetPos2):
-			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2, vertex4):
+			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
@@ -365,14 +366,14 @@ func _rule_knl_1(graph: Node2D):
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		var targetPos3: Vector2 = targetPos2 + (direction * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
-		if graph.is_pos_has_placed(targetPos2):
-			graph.slide_vertices(targetPos2, direction)
-		if graph.is_pos_has_placed(targetPos3):
-			graph.slide_vertices(targetPos3, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2, vertex4):
+			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex4, targetPos2)
+		if graph.is_pos_has_placed(targetPos3, vertex5):
+			graph.slide_vertices(targetPos3, direction)
 		graph.change_vertex_pos(vertex5, targetPos3)
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
@@ -408,11 +409,11 @@ func _rule_knl_2(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
-		if graph.is_pos_has_placed(targetPos2):
-			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2, vertex4):
+			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
@@ -428,11 +429,11 @@ func _rule_knl_2(graph: Node2D):
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos3) or graph.is_pos_crossed_line(targetPos3, chosenOption):
+		if graph.is_pos_has_placed(targetPos3, vertex6) or graph.is_pos_crossed_line(targetPos3, chosenOption):
 			graph.slide_vertices(targetPos3, chosenOption)
-		if graph.is_pos_has_placed(targetPos4) or graph.is_pos_crossed_line(targetPos4, chosenOption):
-			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex6, targetPos3)
+		if graph.is_pos_has_placed(targetPos4, vertex5) or graph.is_pos_crossed_line(targetPos4, chosenOption):
+			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex5, targetPos4)
 		
 		graph.connect_vertex(vertex1, vertex6, TYPE_EDGE.PATH, chosenOption)
@@ -466,11 +467,11 @@ func _rule_knl_3(graph: Node2D):
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
-		if graph.is_pos_has_placed(targetPos2):
-			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2, vertex4):
+			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex4, targetPos2)
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
@@ -486,11 +487,11 @@ func _rule_knl_3(graph: Node2D):
 		var targetPos3: Vector2 = vertex1.position + (chosenOption * cellSize)
 		var targetPos4: Vector2 = vertex3.position + (chosenOption * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos3) or graph.is_pos_crossed_line(targetPos3, chosenOption):
+		if graph.is_pos_has_placed(targetPos3, vertex6) or graph.is_pos_crossed_line(targetPos3, chosenOption):
 			graph.slide_vertices(targetPos3, chosenOption)
-		if graph.is_pos_has_placed(targetPos4) or graph.is_pos_crossed_line(targetPos4, chosenOption):
-			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex6, targetPos3)
+		if graph.is_pos_has_placed(targetPos4, vertex5) or graph.is_pos_crossed_line(targetPos4, chosenOption):
+			graph.slide_vertices(targetPos4, chosenOption)
 		graph.change_vertex_pos(vertex5, targetPos4)
 		
 		graph.connect_vertex(vertex6, vertex1, TYPE_EDGE.PATH, mirrorOption)
@@ -521,14 +522,14 @@ func _rule_knl_4(graph: Node2D):
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		var targetPos3: Vector2 = targetPos2 + (direction * cellSize)
 		#if that position has a vertex
-		if graph.is_pos_has_placed(targetPos):
+		if graph.is_pos_has_placed(targetPos, vertex3):
 			graph.slide_vertices(targetPos, direction)
-		if graph.is_pos_has_placed(targetPos2):
-			graph.slide_vertices(targetPos2, direction)
-		if graph.is_pos_has_placed(targetPos3):
-			graph.slide_vertices(targetPos3, direction)
 		graph.change_vertex_pos(vertex3, targetPos)
+		if graph.is_pos_has_placed(targetPos2, vertex4):
+			graph.slide_vertices(targetPos2, direction)
 		graph.change_vertex_pos(vertex4, targetPos2)
+		if graph.is_pos_has_placed(targetPos3, vertex5):
+			graph.slide_vertices(targetPos3, direction)
 		graph.change_vertex_pos(vertex5, targetPos3)
 		
 		chosenEdge.init_object(vertex1, vertex3, TYPE_EDGE.PATH, direction)
@@ -584,7 +585,6 @@ func _create_entrance(graph: Node2D, vertex: Node2D):
 		graph.change_vertex_pos(newVertex, vertex.position)
 		vertex.type = TYPE_VERTEX.ENTRANCE
 		_sub_off(newVertex, vertex)
-		graph.posVertices.erase(vertex.name)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -602,7 +602,6 @@ func _create_goal(graph: Node2D, vertex: Node2D):
 		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, vertex.position)
 		_sub_off(newVertex, vertex)
-		graph.posVertices.erase(vertex.name)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -620,7 +619,6 @@ func _create_secret(graph: Node2D, vertex: Node2D):
 		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, vertex.position)
 		_sub_off(newVertex, vertex)
-		graph.posVertices.erase(vertex.name)
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
@@ -648,7 +646,6 @@ func _add_element_before_place(graph: Node2D):
 	if !matchVertices.empty():
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		_sub_off(choosenMatch[0], choosenMatch[1])
-		graph.posVertices.erase(choosenMatch[1].name)
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -680,7 +677,6 @@ func _add_lock_after_place(graph: Node2D):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		_sub_off(choosenMatch[1], choosenMatch[0])
-		graph.posVertices.erase(choosenMatch[0].name)
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0] and edge.to == choosenMatch[1]:
 				edge.queue_free()
@@ -715,7 +711,6 @@ func _place_key_element(graph: Node2D):
 		newVertex.add_to_group("placeVertices")
 		graph.change_vertex_pos(newVertex, choosenMatch[0].position)
 		_sub_off(newVertex, choosenMatch[0])
-		graph.posVertices.erase(choosenMatch[0].name)
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[0]:
 				var theVertex: Node2D = edge.to
@@ -746,7 +741,6 @@ func _add_element_after_place(graph: Node2D):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		_sub_off(choosenMatch[2], choosenMatch[1])
-		graph.posVertices.erase(choosenMatch[1].name)
 		for edge in graph.get_edges_of(choosenMatch[1], TYPE_EDGE.PATH):
 			if edge.from == choosenMatch[1] and edge.to == choosenMatch[2]:
 				edge.queue_free()
@@ -802,14 +796,14 @@ func _execute_rule(rule: String, graph: Node2D):
 		"randomKeyLock":
 			_random_knl(graph)
 
-func _execute_create_place_rule(graph: Node2D):
+func _create_place_rule(graph: Node2D):
 	#create place rule
 	for vertex in graph.get_vertices():
 		_create_entrance(graph, vertex)
 		_create_goal(graph, vertex)
 		_create_secret(graph, vertex)
 
-func _execute_clean_outside_element_rule(graph: Node2D):
+func _clean_outside_element_rule(graph: Node2D):
 	#clean outside element rule
 	while _outside_element_exist(graph):
 		var execute: int = randi() % 4
@@ -824,142 +818,11 @@ func _make_edges_element(graph: Node2D):
 	for edge in graph.get_edges():
 		var from: Node2D = edge.from
 		var to: Node2D = edge.to
-		if from.type != TYPE_VERTEX.KEY and to.type != TYPE_VERTEX.LOCK:
-			if from.is_element() or to.is_element():
+		if (from.type != TYPE_VERTEX.KEY and to.type != TYPE_VERTEX.LOCK) and (from.is_element() or to.is_element()):
 				edge.type = TYPE_EDGE.ELEMENT
 				edge.add_to_group("elementEdges")
 
-func _execute_trim_x(graph: Node2D):
-	var verticesPos: PoolVector2Array = graph.posVertices.values()
-	
-	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
-	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
-	for vertex in graph.get_vertices():
-		if vertex.subOf == null:
-			#change task to room or cave
-			var percent = randf()
-			if (percent > 0.5):
-				vertex.type = TYPE_VERTEX.ROOM
-			else:
-				vertex.type = TYPE_VERTEX.CAVE
-			
-			#get lowest x and y
-			if vertex.position.x < lowestPos.x:
-				lowestPos.x = vertex.position.x
-			if vertex.position.y < lowestPos.y:
-				lowestPos.y = vertex.position.y
-			#get highest x and y
-			if vertex.position.x > highestPos.x:
-				highestPos.x = vertex.position.x
-			if vertex.position.y > highestPos.y:
-				highestPos.y = vertex.position.y
-	
-	#rearrange position
-	#x position
-	while lowestPos.x <= highestPos.x:
-		var found: bool = true
-		for pos in verticesPos:
-			if lowestPos.x == pos.x:
-				found = false
-				break
-		if found:
-			for i in range(verticesPos.size()):
-				if verticesPos[i].x > lowestPos.x:
-					verticesPos[i].x -= (1 * cellSize.x)
-			highestPos.x -= (1 * cellSize.x)
-			break
-		else:
-			lowestPos.x += (1 * cellSize.x)
-	
-	#sync vertices pos
-	var verticesName: PoolStringArray = graph.posVertices.keys()
-	for i in range(verticesName.size()):
-		graph.posVertices[verticesName[i]] = verticesPos[i]
-	
-	for vertex in graph.get_vertices():
-		if vertex.subOf == null:
-			graph.change_vertex_pos(vertex, graph.posVertices.get(vertex.name))
-	for subVertex in get_tree().get_nodes_in_group("subVertices"):
-		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.size() * 36))
-	
-	#re-connections vertex
-	for edge in graph.get_edges():
-		if edge.type == TYPE_EDGE.PATH and edge.from != null and edge.to != null:
-			#non diagonal direction
-			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
-			if DIRECTIONS.has(direction):
-				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
-				edge.from.connections[direction] = edge.to
-				edge.to.connections[mirror] = edge.from
-	
-	graph.update()
-
-func _execute_trim_y(graph: Node2D):
-	var verticesPos: PoolVector2Array = graph.posVertices.values()
-	
-	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
-	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
-	for vertex in graph.get_vertices():
-		if vertex.subOf == null:
-			#change task to room or cave
-			var percent = randf()
-			if (percent > 0.5):
-				vertex.type = TYPE_VERTEX.ROOM
-			else:
-				vertex.type = TYPE_VERTEX.CAVE
-			
-			#get lowest x and y
-			if vertex.position.x < lowestPos.x:
-				lowestPos.x = vertex.position.x
-			if vertex.position.y < lowestPos.y:
-				lowestPos.y = vertex.position.y
-			#get highest x and y
-			if vertex.position.x > highestPos.x:
-				highestPos.x = vertex.position.x
-			if vertex.position.y > highestPos.y:
-				highestPos.y = vertex.position.y
-	
-	#rearrange position
-	#y position
-	while lowestPos.y <= highestPos.y:
-		var found: bool = true
-		for pos in verticesPos:
-			if lowestPos.y != pos.y:
-				found = false
-				break
-		if found:
-			for i in range(verticesPos.size()):
-				if verticesPos[i].y > lowestPos.y:
-					verticesPos[i].y -= (1 * cellSize.y)
-			highestPos.y -= (1 * cellSize.y)
-			break
-		else:
-			lowestPos.y += (1 * cellSize.y)
-	
-	#sync vertices pos
-	var verticesName: PoolStringArray = graph.posVertices.keys()
-	for i in range(verticesName.size()):
-		graph.posVertices[verticesName[i]] = verticesPos[i]
-	
-	for vertex in graph.get_vertices():
-		if vertex.subOf == null:
-			graph.change_vertex_pos(vertex, graph.posVertices.get(vertex.name))
-	for subVertex in get_tree().get_nodes_in_group("subVertices"):
-		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.size() * 36))
-	
-	#re-connections vertex
-	for edge in graph.get_edges():
-		if edge.type == TYPE_EDGE.PATH and edge.from != null and edge.to != null:
-			#non diagonal direction
-			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
-			if DIRECTIONS.has(direction):
-				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
-				edge.from.connections[direction] = edge.to
-				edge.to.connections[mirror] = edge.from
-	
-	graph.update()
-
-func _execute_trim_position_vertices(graph: Node2D):
+func _make_room_and_cave(graph: Node2D):
 	#make element edge
 	for edge in graph.get_edges():
 		var from: Node2D = edge.from
@@ -969,70 +832,62 @@ func _execute_trim_position_vertices(graph: Node2D):
 				edge.type = TYPE_EDGE.ELEMENT
 				edge.add_to_group("elementEdges")
 	
-	var verticesPos: PoolVector2Array = graph.posVertices.values()
-	
 	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
 	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
-	for vertex in graph.get_vertices():
-		if vertex.subOf == null:
-			#change task to room or cave
-			var percent = randf()
-			if (percent > 0.5):
-				vertex.type = TYPE_VERTEX.ROOM
-			else:
-				vertex.type = TYPE_VERTEX.CAVE
-			
-			#get lowest x and y
-			if vertex.position.x < lowestPos.x:
-				lowestPos.x = vertex.position.x
-			if vertex.position.y < lowestPos.y:
-				lowestPos.y = vertex.position.y
-			#get highest x and y
-			if vertex.position.x > highestPos.x:
-				highestPos.x = vertex.position.x
-			if vertex.position.y > highestPos.y:
-				highestPos.y = vertex.position.y
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
+	for vertex in placeVertices:
+		#change task to room or cave
+		var percent = randf()
+		if (percent > 0.5):
+			vertex.type = TYPE_VERTEX.ROOM
+		else:
+			vertex.type = TYPE_VERTEX.CAVE
+		
+		#get lowest x and y
+		if vertex.position.x < lowestPos.x:
+			lowestPos.x = vertex.position.x
+		if vertex.position.y < lowestPos.y:
+			lowestPos.y = vertex.position.y
+		#get highest x and y
+		if vertex.position.x > highestPos.x:
+			highestPos.x = vertex.position.x
+		if vertex.position.y > highestPos.y:
+			highestPos.y = vertex.position.y
 	
 	#rearrange position
 	#x position
 	while highestPos.x >= lowestPos.x:
 		var found: bool = true
-		for pos in verticesPos:
-			if highestPos.x == pos.x:
+		for vertex in placeVertices:
+			if highestPos.x == vertex.position.x:
 				found = false
 				break
 		if found:
-			for i in range(verticesPos.size()):
-				if verticesPos[i].x > highestPos.x:
-					verticesPos[i].x -= (1 * cellSize.x)
+			for vertex in placeVertices:
+				if vertex.position.x > highestPos.x:
+					vertex.position.x -= (1 * cellSize.x)
 		highestPos.x -= (1 * cellSize.x)
 	#y position
 	while highestPos.y >= lowestPos.y:
 		var found: bool = true
-		for pos in verticesPos:
-			if highestPos.y == pos.y:
+		for vertex in placeVertices:
+			if highestPos.y == vertex.position.y:
 				found = false
 				break
 		if found:
-			for i in range(verticesPos.size()):
-				if verticesPos[i].y > highestPos.y:
-					verticesPos[i].y -= (1 * cellSize.y)
+			for vertex in placeVertices:
+				if vertex.position.y > highestPos.y:
+					vertex.position.y -= (1 * cellSize.y)
 		highestPos.y -= (1 * cellSize.y)
 	
-	#sync vertices pos
-	var verticesName: PoolStringArray = graph.posVertices.keys()
-	for i in range(verticesName.size()):
-		graph.posVertices[verticesName[i]] = verticesPos[i]
-	
-	for vertex in graph.get_vertices():
-		if vertex.subOf == null:
-			graph.change_vertex_pos(vertex, graph.posVertices.get(vertex.name))
+	#sync subvertices pos
 	for subVertex in get_tree().get_nodes_in_group("subVertices"):
-		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.size() * 36))
+		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.find(subVertex) * 36))
 	
 	#re-connections vertex
 	for edge in graph.get_edges():
-		if edge.type == TYPE_EDGE.PATH and edge.from != null and edge.to != null:
+		var allowType: Array = [TYPE_EDGE.PATH, TYPE_EDGE.HIDDEN, TYPE_EDGE.WINDOW, TYPE_EDGE.GATE]
+		if allowType.has(edge.type) and edge.from != null and edge.to != null:
 			#non diagonal direction
 			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
 			if DIRECTIONS.has(direction):
@@ -1042,23 +897,27 @@ func _execute_trim_position_vertices(graph: Node2D):
 	
 	graph.update()
 
-func _execute_transform_rule(graph: Node2D):
-	_execute_create_place_rule(graph)
-	_execute_clean_outside_element_rule(graph)
-	_execute_trim_position_vertices(graph)
-	
+func _make_hidden_path(graph: Node2D):
 	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
-	print(placeVertices)
 	for placeVertex in placeVertices:
 		#make edge hidden
 		for sub in placeVertex.subs:
 			if sub.type == TYPE_VERTEX.SECRET:
 				for edge in graph.get_edges_of(placeVertex):
 					edge.type = TYPE_EDGE.HIDDEN
-		
+
+func _make_window(graph: Node2D):
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")	
+	for placeVertex in placeVertices:
 		#make edge window
+		print("check=========================")
+		print( "check " + str(placeVertex))
 		for directionUnconnected in placeVertex.connections.keys():
-			var targetVertex: Node = graph.get_vertex_by_position(placeVertex.position + (directionUnconnected * cellSize))
+			var targetPos: Vector2 = placeVertex.position + (directionUnconnected * cellSize)
+			$Camera2D.focus_position(targetPos)
+			var targetVertex: Node = graph.get_vertex_by_position(targetPos)
+			print("direction " + str(directionUnconnected) + "->" + str(targetPos))
+			print(targetVertex)
 			if placeVertex.connections[directionUnconnected] == null and targetVertex != null:
 				var mirror: Vector2 = Vector2(directionUnconnected.x * -1, directionUnconnected.y) if directionUnconnected.x != 0 else Vector2(directionUnconnected.x, directionUnconnected.y * -1)
 				if targetVertex.connections[mirror] == null and !targetVertex.is_element():
@@ -1067,7 +926,23 @@ func _execute_transform_rule(graph: Node2D):
 					print("targetVertex " + str(targetVertex) + " :mirror " + str(mirror))
 					print("=========================")
 					graph.connect_vertex(targetVertex, placeVertex, TYPE_EDGE.WINDOW, mirror)
-	
+
+func _make_gate(graph: Node2D):
+	for edge in graph.get_edges():
+		if edge.type == TYPE_EDGE.PATH:
+			#change task to room or cave
+			var percent = randf()
+			if (percent > 0.75):
+				edge.type = TYPE_EDGE.GATE
+
+func _execute_transform_rule(graph: Node2D):
+	_create_place_rule(graph)
+	_clean_outside_element_rule(graph)
+	_make_edges_element(graph)
+	_make_room_and_cave(graph)
+	_make_hidden_path(graph)
+	_make_window(graph)
+	_make_gate(graph)
 	graph.update()
 
 func _execute_single_transform_rule(graph: Node2D):
@@ -1081,7 +956,6 @@ func _execute_single_transform_rule(graph: Node2D):
 
 func _on_ButtonAddGraph_pressed():
 	_create_graph()
-
 
 func _on_OptionTargetGraph_item_selected(index):
 	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
@@ -1153,23 +1027,3 @@ func _on_ButtonGetInfo_pressed():
 
 func _on_ButtonTransform_pressed():
 	_execute_transform_rule(targetGraph)
-
-func _on_ButtonInitSingleTransform_pressed():
-	_execute_create_place_rule(targetGraph)
-
-func _on_ButtonSingleTransform_pressed():
-	_execute_single_transform_rule(targetGraph)
-
-func _on_ButtonTrimPosition_pressed():
-	_execute_trim_position_vertices(targetGraph)
-
-
-func _on_ButtonEdgesElement_pressed():
-	_make_edges_element(targetGraph)
-
-func _on_ButtonTrimX_pressed():
-	_execute_trim_x(targetGraph)
-
-
-func _on_ButtonTrimY_pressed():
-	_execute_trim_y(targetGraph)
