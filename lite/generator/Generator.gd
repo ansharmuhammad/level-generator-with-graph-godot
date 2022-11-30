@@ -158,7 +158,7 @@ func _rule_extend_1(graph: Node2D):
 		
 		vertex3.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
@@ -188,7 +188,7 @@ func _rule_extend_2(graph: Node2D):
 		vertex3.add_to_group("placeVertices")
 		vertex4.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var directionOptions: Array = []
 		for option in DIRECTIONS:
 			if vertex1.connections[option] == null and vertex2.connections[option] == null:
@@ -230,7 +230,7 @@ func _rule_extend_3(graph: Node2D):
 		vertex3.add_to_group("placeVertices")
 		vertex4.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
 		var directionOptions: Array = []
 		for option in DIRECTIONS:
@@ -302,7 +302,7 @@ func _rule_obstacle(graph: Node2D):
 		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		
 		#if that position has a vertex
@@ -328,7 +328,7 @@ func _rule_reward(graph: Node2D):
 		var vertex3: Node2D = graph.add_vertex("", TYPE_VERTEX.OBSTACLE)
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.REWARD)
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
@@ -361,7 +361,7 @@ func _rule_knl_1(graph: Node2D):
 		
 		vertex4.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		var targetPos3: Vector2 = targetPos2 + (direction * cellSize)
@@ -405,7 +405,7 @@ func _rule_knl_2(graph: Node2D):
 		vertex3.add_to_group("placeVertices")
 		vertex6.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		#if that position has a vertex
@@ -462,7 +462,7 @@ func _rule_knl_3(graph: Node2D):
 		vertex3.add_to_group("placeVertices")
 		vertex5.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
@@ -517,7 +517,7 @@ func _rule_knl_4(graph: Node2D):
 		
 		vertex4.add_to_group("placeVertices")
 		
-		var direction: Vector2 = (vertex2.position - vertex1.position).normalized()
+		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
 		var targetPos2: Vector2 = targetPos + (direction * cellSize)
 		var targetPos3: Vector2 = targetPos2 + (direction * cellSize)
@@ -889,7 +889,7 @@ func _make_room_and_cave(graph: Node2D):
 		var allowType: Array = [TYPE_EDGE.PATH, TYPE_EDGE.HIDDEN, TYPE_EDGE.WINDOW, TYPE_EDGE.GATE]
 		if allowType.has(edge.type) and edge.from != null and edge.to != null:
 			#non diagonal direction
-			var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
+			var direction: Vector2 = edge.from.position.direction_to(edge.to.position)
 			if DIRECTIONS.has(direction):
 				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
 				edge.from.connections[direction] = edge.to
@@ -910,18 +910,15 @@ func _make_window(graph: Node2D):
 	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")	
 	for placeVertex in placeVertices:
 		#make edge window
-		print("check=========================")
-		print( "check " + str(placeVertex))
 		for directionUnconnected in placeVertex.connections.keys():
 			var targetPos: Vector2 = placeVertex.position + (directionUnconnected * cellSize)
-			$Camera2D.focus_position(targetPos)
 			var targetVertex: Node = graph.get_vertex_by_position(targetPos)
-			print("direction " + str(directionUnconnected) + "->" + str(targetPos))
-			print(targetVertex)
 			if placeVertex.connections[directionUnconnected] == null and targetVertex != null:
 				var mirror: Vector2 = Vector2(directionUnconnected.x * -1, directionUnconnected.y) if directionUnconnected.x != 0 else Vector2(directionUnconnected.x, directionUnconnected.y * -1)
 				if targetVertex.connections[mirror] == null and !targetVertex.is_element():
 					print("window=========================")
+					print("direction " + str(directionUnconnected) + "->" + str(targetPos))
+					print(targetVertex)
 					print("placeVertex " + str(placeVertex) + " :direction " + str(directionUnconnected))
 					print("targetVertex " + str(targetVertex) + " :mirror " + str(mirror))
 					print("=========================")

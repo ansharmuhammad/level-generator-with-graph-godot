@@ -280,52 +280,55 @@ func slide_vertices(inserted_pos: Vector2, direction: Vector2):
 	update()
 
 func is_pos_has_placed(_position: Vector2, insertedVertex:Node2D) -> bool:
+#	print("check has placed " + str(_position))
 	for vertex in get_vertices():
 		if vertex != insertedVertex and vertex.position == _position:
+#			print("has placed")
 			return true
 	return false
 
 func is_pos_crossed_line(_position: Vector2, _direction: Vector2) -> bool:
+#	print("check crossed_line " + str(_position) + str(_direction))
 	for edge in get_edges():
-		var direction: Vector2 = (edge.to.position - edge.from.position).normalized()
+		var direction: Vector2 = edge.from.position.direction_to(edge.to.position)
 		#crossing vertical
 		if edge.from.position.x == edge.from.position.x and _position.x == edge.from.position.x and _direction.x != 0:
-			if direction == Vector2.UP and _position.y <= edge.from.position.y and _position.y >= edge.from.position.y:
-#				print("crossedlinecheck========================")
-#				print("_position " + str(_position))
-#				print("_direction "+str(_direction))
-#				print("direction "+str(direction))
-#				print("from position " + str(edge.from.position))
-#				print("to position " + str(edge.to.position))
+#			print("crossedlinecheck========================")
+#			print("_position " + str(_position))
+#			print("_direction "+str(_direction))
+#			print("direction "+str(direction))
+#			print("from position " + str(edge.from.position))
+#			print("to position " + str(edge.to.position))
+#			print("direction == Vector2.UP " + str(direction == Vector2.UP))
+#			print("_position.y <= edge.from.position.y "+ str(_position.y <= edge.from.position.y))
+#			print("_position.y >= edge.from.position.y "+str(_position.y >= edge.from.position.y))
+#			print("direction == Vector2.DOWN" + str(direction == Vector2.DOWN))
+#			print("_position.y >= edge.from.position.y "+str(_position.y >= edge.from.position.y))
+#			print("_position.y >= edge.from.position.y "+str(_position.y >= edge.from.position.y))
+			if direction == Vector2.UP and _position.y <= edge.from.position.y and _position.y >= edge.to.position.y:
 #				print("crossed vertical")
 				return true
-			elif direction == Vector2.DOWN and _position.y >= edge.from.position.y and _position.y <= edge.from.position.y:
-#				print("crossedlinecheck========================")
-#				print("_position " + str(_position))
-#				print("_direction "+str(_direction))
-#				print("direction "+str(direction))
-#				print("from position " + str(edge.from.position))
-#				print("to position " + str(edge.to.position))
+			elif direction == Vector2.DOWN and _position.y >= edge.from.position.y and _position.y <= edge.to.position.y:
 #				print("crossed vertical")
 				return true
 		#crossing horizontal
 		elif edge.from.position.y == edge.from.position.y and _position.y == edge.from.position.y and _direction.y != 0:
-			if direction == Vector2.LEFT and _position.x <= edge.from.position.x and _position.x >= edge.from.position.x:
-#				print("crossedlinecheck========================")
-#				print("_position " + str(_position))
-#				print("_direction "+str(_direction))
-#				print("direction "+str(direction))
-#				print("from position " + str(edge.from.position))
-#				print("to position " + str(edge.to.position))
+#			print("crossedlinecheck========================")
+#			print("_position " + str(_position))
+#			print("_direction "+str(_direction))
+#			print("direction "+str(direction))
+#			print("from position " + str(edge.from.position))
+#			print("to position " + str(edge.to.position))
+#			print("direction == Vector2.LEFT " + str(direction == Vector2.LEFT))
+#			print("_position.x <= edge.from.position.x "+ str(_position.x <= edge.from.position.x))
+#			print("_position.x >= edge.from.position.x "+str(_position.x >= edge.from.position.x))
+#			print("direction == Vector2.RIGHT" + str(direction == Vector2.RIGHT))
+#			print("_position.x >= edge.from.position.x "+str(_position.x >= edge.from.position.x))
+#			print("_position.x <= edge.from.position.x "+str(_position.x <= edge.from.position.x))
+			if direction == Vector2.LEFT and _position.x <= edge.from.position.x and _position.x >= edge.to.position.x:
 #				print("crossed horizontal")
 				return true
-			elif direction == Vector2.RIGHT and _position.x >= edge.from.position.x and _position.x <= edge.from.position.x:
-#				print("crossedlinecheck========================")
-#				print("_position " + str(_position))
-#				print("_direction "+str(_direction))
-#				print("direction "+str(direction))
-#				print("from position " + str(edge.from.position))
-#				print("to position " + str(edge.to.position))
+			elif direction == Vector2.RIGHT and _position.x >= edge.from.position.x and _position.x <= edge.to.position.x:
 #				print("crossed horizontal")
 				return true
 	return false
@@ -409,7 +412,7 @@ func _draw():
 			_draw_dashed_line(startPoint, endPoint, Color.darkgray, lineSize)
 			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
 		elif edge.type == TYPE_EDGE.KEY_LOCK:
-			var direction: Vector2 = (toPosition - fromPosition).normalized()
+			var direction: Vector2 = fromPosition.direction_to(toPosition)
 			var mid: Vector2 = (toPosition + fromPosition)/2
 			mid += (Vector2(vertexRadius, vertexRadius) * Vector2(direction.y, direction.x) )
 			draw_line(fromPosition - Vector2(0,0).rotated(fromPosition.angle_to_point(toPosition)), mid, Color.aquamarine, lineSize)
