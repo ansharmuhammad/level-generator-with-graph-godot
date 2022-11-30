@@ -74,7 +74,7 @@ func change_vertex_pos(vertex: Node2D, _position: Vector2):
 	update()
 
 ## connecting between two vertex in graph with an edge
-func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vector2 = Vector2.ZERO):
+func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vector2 = Vector2.ZERO) -> Node2D:
 	var edge = Edge.instance()
 	var _type = type if type != "" else TYPE_EDGE.PATH
 	edge.init_object(from, to, _type)
@@ -85,6 +85,7 @@ func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vect
 		to.connections[mirror] = from
 	$Edges.add_child(edge)
 	update()
+	return edge
 
 ## get vertex object by its name
 func get_vertex_by_name(vertexName: String) -> Node:
@@ -93,8 +94,6 @@ func get_vertex_by_name(vertexName: String) -> Node:
 func get_vertex_by_position(_position: Vector2) -> Node:
 	$RayCast2D.position = _position - Vector2(0,30)
 	$RayCast2D.force_raycast_update()
-	print("raycast local pos ", $RayCast2D.position)
-	print("raycast global pos ", $RayCast2D.global_position)
 	if $RayCast2D.is_colliding():
 		return $RayCast2D.get_collider().get_parent()
 	else:
@@ -464,6 +463,9 @@ func _draw():
 			TYPE_VERTEX.CAVE:
 				colorShape = Color.purple
 				textSymbol = "CA"
+			TYPE_VERTEX.CONNECTOR:
+				colorShape = Color.whitesmoke
+				textSymbol = "CO"
 		if vertex.subOf == null:
 			draw_circle(vertex.position, vertexRadius, colorShape)
 			draw_arc(vertex.position, vertexOuterRadius, 0, PI*2, 50, colorShape, 4)

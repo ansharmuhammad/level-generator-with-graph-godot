@@ -836,6 +836,14 @@ func _make_room_and_cave(graph: Node2D):
 	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
 	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
 	for vertex in placeVertices:
+		#clean connections
+		vertex.connections = {
+			Vector2.UP: null,
+			Vector2.DOWN: null,
+			Vector2.LEFT: null,
+			Vector2.RIGHT: null
+		}
+		
 		#change task to room or cave
 		var percent = randf()
 		if (percent > 0.5):
@@ -883,20 +891,66 @@ func _make_room_and_cave(graph: Node2D):
 	#sync subvertices pos
 	for subVertex in get_tree().get_nodes_in_group("subVertices"):
 		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.find(subVertex) * 36))
+		subVertex.connections = {
+			Vector2.UP: null,
+			Vector2.DOWN: null,
+			Vector2.LEFT: null,
+			Vector2.RIGHT: null
+		}
 	
 	#re-connections vertex
 	for edge in graph.get_edges():
 		var allowType: Array = [TYPE_EDGE.PATH, TYPE_EDGE.HIDDEN, TYPE_EDGE.WINDOW, TYPE_EDGE.GATE]
 		if allowType.has(edge.type) and edge.from != null and edge.to != null:
-			#non diagonal direction
 			var direction: Vector2 = edge.from.position.direction_to(edge.to.position)
+			#non diagonal direction
 			if DIRECTIONS.has(direction):
 				var mirror = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
 				edge.from.connections[direction] = edge.to
 				edge.to.connections[mirror] = edge.from
-	
-	yield(VisualServer, 'frame_post_draw')
+			else:
+				#northeast
+				if direction.x >= 0 and direction.y < 0:
+					#up right
+					if edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.LEFT] == null and graph.get_vertex_by_position(Vector2(edge.from.position.x, edge.to.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.from.position.x, edge.to.position.y), Vector2.UP, Vector2.RIGHT)
+					#right up
+					elif edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.DOWN] == null and graph.get_vertex_by_position(Vector2(edge.to.position.x, edge.from.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.to.position.x, edge.from.position.y), Vector2.RIGHT, Vector2.UP)
+				#southeast
+				elif direction.x >= 0 and direction.y >= 0:
+					#down right
+					if edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.LEFT] == null and graph.get_vertex_by_position(Vector2(edge.from.position.x, edge.to.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.from.position.x, edge.to.position.y), Vector2.DOWN, Vector2.RIGHT)
+					#right down
+					elif edge.from.connections[Vector2.RIGHT] == null and edge.to.connections[Vector2.UP] == null and graph.get_vertex_by_position(Vector2(edge.to.position.x, edge.from.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.to.position.x, edge.from.position.y), Vector2.RIGHT, Vector2.DOWN)
+				#southwest
+				elif direction.x < 0 and direction.y >= 0:
+					#down left
+					if edge.from.connections[Vector2.DOWN] == null and edge.to.connections[Vector2.RIGHT] == null and graph.get_vertex_by_position(Vector2(edge.from.position.x, edge.to.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.from.position.x, edge.to.position.y), Vector2.DOWN, Vector2.LEFT)
+					#left down
+					elif edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.UP] == null and graph.get_vertex_by_position(Vector2(edge.to.position.x, edge.from.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.to.position.x, edge.from.position.y), Vector2.LEFT, Vector2.DOWN)
+				#northwest
+				elif direction.x < 0 and direction.y < 0:
+					#up left
+					if edge.from.connections[Vector2.UP] == null and edge.to.connections[Vector2.RIGHT] == null and graph.get_vertex_by_position(Vector2(edge.from.position.x, edge.to.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.from.position.x, edge.to.position.y), Vector2.UP, Vector2.LEFT)
+					#left up
+					elif edge.from.connections[Vector2.LEFT] == null and edge.to.connections[Vector2.DOWN] == null and graph.get_vertex_by_position(Vector2(edge.to.position.x, edge.from.position.y)) == null:
+						_connect_diagonal(graph, edge, Vector2(edge.to.position.x, edge.from.position.y), Vector2.LEFT, Vector2.UP)
 	graph.update()
+
+func _connect_diagonal(graph: Node2D, edge: Node2D, connectorPos: Vector2, fromDirection: Vector2, toDirection: Vector2):
+	var tempWeight: int = edge.weight
+	var newVertex: Node2D = graph.add_vertex("", TYPE_VERTEX.CONNECTOR)
+	newVertex.position = connectorPos
+	var edge2: Node2D = graph.connect_vertex(newVertex, edge.to, TYPE_EDGE.PATH, toDirection)
+	edge2.weight = edge.weight
+	edge.init_object(edge.from, newVertex, TYPE_EDGE.PATH, fromDirection)
+	edge.weight = edge.weight
 
 func _make_hidden_path(graph: Node2D):
 	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
@@ -911,26 +965,15 @@ func _make_window(graph: Node2D):
 	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
 	for placeVertex in placeVertices:
 		#make edge window
-		print("window=========================")
-		print("place "+ str(placeVertex))
 		for directionUnconnected in placeVertex.connections.keys():
 			var targetPos: Vector2 = placeVertex.position + (directionUnconnected * cellSize)
 			$Camera2D.position = Vector2(targetPos.x/2, targetPos.y/2)
 			var targetVertex: Node = graph.get_vertex_by_position(targetPos)
-			print("place pos "+ str(placeVertex.position) + " dir " + str(directionUnconnected) + " target " + str(targetPos))
-			print("target vertex "+ str(targetVertex))
-			print("placeVertex.connections[directionUnconnected] == null " + str(placeVertex.connections[directionUnconnected] == null))
-			print("targetVertex != null " +str(targetVertex != null))
 			if placeVertex.connections[directionUnconnected] == null and targetVertex != null:
 				var mirror: Vector2 = Vector2(directionUnconnected.x * -1, directionUnconnected.y) if directionUnconnected.x != 0 else Vector2(directionUnconnected.x, directionUnconnected.y * -1)
-				print("targetVertex.connections[mirror] == null " + str(targetVertex.connections[mirror] == null))
-				print("!targetVertex.is_element() " + str(!targetVertex.is_element()))
 				var mirrorVertex: Node = graph.get_vertex_by_position(targetVertex.position + (mirror * cellSize))
-				print("target actual pos "+ str(targetVertex.position) + " mirror " + str(mirror) + " place " +str(mirrorVertex))
 				if targetVertex.connections[mirror] == null and !targetVertex.is_element():
-					print("==================================================add window=====================================================")
 					graph.connect_vertex(targetVertex, placeVertex, TYPE_EDGE.WINDOW, mirror)
-		print("=========================")
 
 func _make_gate(graph: Node2D):
 	for edge in graph.get_edges():
@@ -946,6 +989,7 @@ func _execute_transform_rule(graph: Node2D):
 	_make_edges_element(graph)
 	_make_room_and_cave(graph)
 	_make_hidden_path(graph)
+	yield(VisualServer, 'frame_post_draw')
 	_make_window(graph)
 	_make_gate(graph)
 	graph.update()
