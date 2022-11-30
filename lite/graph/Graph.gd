@@ -93,6 +93,8 @@ func get_vertex_by_name(vertexName: String) -> Node:
 func get_vertex_by_position(_position: Vector2) -> Node:
 	$RayCast2D.position = _position - Vector2(0,30)
 	$RayCast2D.force_raycast_update()
+	print("raycast local pos ", $RayCast2D.position)
+	print("raycast global pos ", $RayCast2D.global_position)
 	if $RayCast2D.is_colliding():
 		return $RayCast2D.get_collider().get_parent()
 	else:

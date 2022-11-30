@@ -895,6 +895,7 @@ func _make_room_and_cave(graph: Node2D):
 				edge.from.connections[direction] = edge.to
 				edge.to.connections[mirror] = edge.from
 	
+	yield(VisualServer, 'frame_post_draw')
 	graph.update()
 
 func _make_hidden_path(graph: Node2D):
@@ -907,29 +908,36 @@ func _make_hidden_path(graph: Node2D):
 					edge.type = TYPE_EDGE.HIDDEN
 
 func _make_window(graph: Node2D):
-	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")	
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
 	for placeVertex in placeVertices:
 		#make edge window
+		print("window=========================")
+		print("place "+ str(placeVertex))
 		for directionUnconnected in placeVertex.connections.keys():
 			var targetPos: Vector2 = placeVertex.position + (directionUnconnected * cellSize)
+			$Camera2D.position = Vector2(targetPos.x/2, targetPos.y/2)
 			var targetVertex: Node = graph.get_vertex_by_position(targetPos)
+			print("place pos "+ str(placeVertex.position) + " dir " + str(directionUnconnected) + " target " + str(targetPos))
+			print("target vertex "+ str(targetVertex))
+			print("placeVertex.connections[directionUnconnected] == null " + str(placeVertex.connections[directionUnconnected] == null))
+			print("targetVertex != null " +str(targetVertex != null))
 			if placeVertex.connections[directionUnconnected] == null and targetVertex != null:
 				var mirror: Vector2 = Vector2(directionUnconnected.x * -1, directionUnconnected.y) if directionUnconnected.x != 0 else Vector2(directionUnconnected.x, directionUnconnected.y * -1)
+				print("targetVertex.connections[mirror] == null " + str(targetVertex.connections[mirror] == null))
+				print("!targetVertex.is_element() " + str(!targetVertex.is_element()))
+				var mirrorVertex: Node = graph.get_vertex_by_position(targetVertex.position + (mirror * cellSize))
+				print("target actual pos "+ str(targetVertex.position) + " mirror " + str(mirror) + " place " +str(mirrorVertex))
 				if targetVertex.connections[mirror] == null and !targetVertex.is_element():
-					print("window=========================")
-					print("direction " + str(directionUnconnected) + "->" + str(targetPos))
-					print(targetVertex)
-					print("placeVertex " + str(placeVertex) + " :direction " + str(directionUnconnected))
-					print("targetVertex " + str(targetVertex) + " :mirror " + str(mirror))
-					print("=========================")
+					print("==================================================add window=====================================================")
 					graph.connect_vertex(targetVertex, placeVertex, TYPE_EDGE.WINDOW, mirror)
+		print("=========================")
 
 func _make_gate(graph: Node2D):
 	for edge in graph.get_edges():
 		if edge.type == TYPE_EDGE.PATH:
 			#change task to room or cave
 			var percent = randf()
-			if (percent > 0.75):
+			if (percent < 0.75):
 				edge.type = TYPE_EDGE.GATE
 
 func _execute_transform_rule(graph: Node2D):
@@ -1024,3 +1032,9 @@ func _on_ButtonGetInfo_pressed():
 
 func _on_ButtonTransform_pressed():
 	_execute_transform_rule(targetGraph)
+
+
+func _on_ButtonWindowGate_pressed():
+	_make_window(targetGraph)
+	_make_gate(targetGraph)
+	targetGraph.update()
