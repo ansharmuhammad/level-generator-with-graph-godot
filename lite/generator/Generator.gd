@@ -48,13 +48,21 @@ func _input(event):
 #disable for performance
 func _process(delta):
 	if targetGraph == null:
+		$"%ButtonDeleteGraph".disabled = true
 		$"%ButtonExecuteSingleRule".disabled = true
 		$"%ButtonExecuteRecipe".disabled = true
+		$"%ButtonGetInfo".disabled = true
 		$"%ButtonTransform".disabled = true
+		$"%ButtonTransformKeyLock".disabled = true
+		$"%ButtonGetMetaData".disabled = true
 	else:
+		$"%ButtonDeleteGraph".disabled = false
 		$"%ButtonExecuteSingleRule".disabled = false
 		$"%ButtonExecuteRecipe".disabled = false
+		$"%ButtonGetInfo".disabled = false
 		$"%ButtonTransform".disabled = false
+		$"%ButtonTransformKeyLock".disabled = false
+		$"%ButtonGetMetaData".disabled = false
 
 func _create_graph():
 	#make graph
@@ -111,18 +119,46 @@ func _execute_rule(rule: String, graph: Node2D):
 			$Rule.random_extend(graph)
 		"randomKeyLock":
 			$Rule.random_knl(graph)
+		"create_place_rule":
+			$RulePlace.create_place_rule(graph)
+		"clean_outside_element_rule":
+			$RulePlace.clean_outside_element_rule(graph)
+		"make_edges_element":
+			$RulePlace.make_edges_element(graph)
+		"make_room_and_cave":
+			$RulePlace.make_room_and_cave(graph)
+		"make_hidden_path":
+			$RulePlace.make_hidden_path(graph)
+		"make_window":
+			$RulePlace.make_window(graph)
+		"make_gate":
+			$RulePlace.make_gate(graph)
+		"duplicate_key":
+			$RuleTransformKL.duplicate_key(graph)
+		"duplicate_lock":
+			$RuleTransformKL.duplicate_lock(graph)
+		"move_lock_toward":
+			$RuleTransformKL.move_lock_toward(graph)
+		"move_key_duplicate_backward":
+			$RuleTransformKL.move_key_duplicate_backward(graph)
 	graph.update()
 
-func _execute_transform_rule(graph: Node2D):
-	$RulePlace.create_place_rule(graph)
-	$RulePlace.clean_outside_element_rule(graph)
-	$RulePlace.make_edges_element(graph)
-	$RulePlace.make_room_and_cave(graph)
-	$RulePlace.make_hidden_path(graph)
+func _execute_place_rule(graph: Node2D):
+	_execute_rule("create_place_rule", graph)
+	_execute_rule("clean_outside_element_rule", graph)
+	_execute_rule("make_edges_element", graph)
+	_execute_rule("make_room_and_cave", graph)
+	_execute_rule("make_hidden_path", graph)
 	yield(VisualServer, 'frame_post_draw')
-	$RulePlace.make_window(graph)
-	$RulePlace.make_gate(graph)
+	_execute_rule("make_window", graph)
+	_execute_rule("make_gate", graph)
 	graph.update()
+
+func _execute_transform_key_rule(graph: Node2D):
+	_execute_rule("duplicate_key", graph)
+	_execute_rule("duplicate_lock", graph)
+	_execute_rule("move_lock_toward", graph)
+	_execute_rule("move_key_duplicate_backward", graph)
 
 func _on_ButtonAddGraph_pressed():
 	_create_graph()
@@ -136,7 +172,7 @@ func _on_ButtonDeleteGraph_pressed():
 	targetGraph.queue_free()
 	targetGraph = null
 	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
-	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph2".get_selected_id())
 	$"%OptionTargetGraph".select(-1)
 	$"%OptionTargetGraph2".select(-1)
 
@@ -168,6 +204,7 @@ func _on_ButtonClearAll_pressed():
 		graph.queue_free()
 	targetGraph = null
 	$"%OptionTargetGraph".clear()
+	$"%OptionTargetGraph2".clear()
 	indexGraph = 0
 	indexVertex = 0
 	recipe.clear()
@@ -196,4 +233,19 @@ func _on_ButtonGetInfo_pressed():
 
 
 func _on_ButtonTransform_pressed():
-	_execute_transform_rule(targetGraph)
+	_execute_place_rule(targetGraph)
+
+
+func _on_ButtonTransformKeyLock_pressed():
+	_execute_transform_key_rule(targetGraph)
+
+
+func _on_ButtonGetMetaData_pressed():
+	var metadata: Dictionary = targetGraph.get_meta_data()
+	var path = "C:/SourceCode/level-generator-with-graph-godot/graph.json"
+#	print(JSON.print(metadata, "\t"))
+	var file
+	file = File.new()
+	file.open(path, File.WRITE)
+	file.store_line(JSON.print(metadata, "\t"))
+	file.close()

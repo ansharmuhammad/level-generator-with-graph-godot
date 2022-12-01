@@ -141,6 +141,31 @@ func get_outgoing_vertex(vertex: Node, typeEdge: String = "") -> Array:
 ## get sum of outgoing edges on a vertex
 func get_outdegree(vertex: Node, typeEdge: String = "") -> int:
 	return get_outgoing_edges(vertex, typeEdge).size()
+
+## get list of outgoing edges on a vertex
+func get_incoming_edges(vertex: Node, type: String = "") -> Array:
+	var listEdge: Array = []
+	for edge in $Edges.get_children():
+		if edge.to == vertex:
+			if type == "":
+				listEdge.append(edge)
+			elif edge.type == type:
+				listEdge.append(edge)
+	return listEdge
+
+## get list outgoing edges on a vertex
+func get_incoming_vertex(vertex: Node, typeEdge: String = "") -> Array:
+	var listVertex: Array = []
+	var edges: Array = get_incoming_edges(vertex, typeEdge)
+	for edge in edges:
+		var toVertex: Node = get_vertex(edge.from)
+		if listVertex.find(toVertex) == -1:
+			listVertex.append(toVertex)
+	return listVertex
+
+## get sum of outgoing edges on a vertex
+func get_indegree(vertex: Node, typeEdge: String = "") -> int:
+	return get_incoming_edges(vertex, typeEdge).size()
 # (1) end ======================================================================
 
 # (2) function fitness =========================================================
@@ -476,3 +501,82 @@ func _draw():
 			draw_string(font, vertex.position + Vector2(-font.get_string_size(textSymbol).x/2, font.get_string_size(textSymbol).x/2), textSymbol, Color.black)
 #			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexRadius/2), vertex.name, Color.black)
 
+func get_meta_data() -> Dictionary:
+	var result: Dictionary = {
+		"name": name,
+		"value": {
+			"variation": variation,
+			"exploration": exploration,
+			"shortesPathLength": shortesPathLength,
+			"standardShortPath": standardShortPath,
+			"weightDuration": weightDuration,
+			"optionReplay": optionReplay,
+			"fitness": fitness
+		},
+		"vertices": {
+			"data": [],
+			"count": 0
+		},
+		"edges": {
+			"data": [],
+			"count": 0
+		}
+	}
+	var vertexObjectType: Dictionary = {
+		"name": "",
+		"type": "",
+		"connections": {
+			"UP": null,
+			"DOWN": null,
+			"LEFT": null,
+			"RIGHT": null
+		},
+		"position": null,
+		"subOf": null,
+#		"subs": []
+	}
+	
+	for vertex in get_vertices():
+		var vertexObject: Dictionary = vertexObjectType.duplicate()
+		vertexObject.name = vertex.name
+		vertexObject.type = vertex.type
+		for key in vertex.connections.keys():
+			var resultKey: String
+			match key:
+				Vector2.UP:
+					resultKey = "UP"
+				Vector2.DOWN:
+					resultKey = "DOWN"
+				Vector2.LEFT:
+					resultKey = "LEFT"
+				Vector2.RIGHT:
+					resultKey = "RIGHT"
+			vertexObject.connections[resultKey] = vertex.connections[key].name if vertex.connections[key] != null else null
+		vertexObject.position = Vector2(vertex.position.x / cellSize.x, vertex.position.y / cellSize.y) if vertex.subOf == null else Vector2(vertex.subOf.position.x / cellSize.x, vertex.subOf.position.y / cellSize.y)
+		vertexObject.subOf = vertex.subOf.name if vertex.subOf != null else null
+#		if vertex.subs.size() > 0:
+#			for sub in vertex.subs:
+#				vertexObject.subs.append(sub.name)
+#		else:
+#			vertexObject.subs = []
+		result.vertices.data.append(vertexObject)
+	result.vertices.count = get_vertices().size()
+	
+	var edgeObjectType: Dictionary = {
+		"name": "",
+		"type": "",
+		"from": "",
+		"to": ""
+	}
+	
+	for edge in get_edges():
+		var edgeObject: Dictionary = edgeObjectType.duplicate()
+		edgeObject.name = edge.name
+		edgeObject.type = edge.type
+		edgeObject.from = edge.from.name if edge.from != null else ""
+		edgeObject.to = edge.to.name if edge.to != null else ""
+		result.edges.data.append(edgeObject)
+	
+	result.edges.count = get_edges().size()
+	
+	return result

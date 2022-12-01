@@ -18,7 +18,7 @@ func _ready():
 	print(a.direction_to(c))
 	print(a.direction_to(d))
 	print(a.direction_to(e))
-	
+	print(0/325)
 	
 
 
