@@ -4,15 +4,26 @@ const Vertex = preload("res://lite/vertex/Vertex.tscn")
 const Edge = preload("res://lite/edge/Edge.tscn")
 
 ## object function value
-onready var variation: float = 0.0
-onready var exploration: int = 0 #???
 onready var shortesPathLength: int = 0
+# shortest amount of vertex between start and goal
+onready var preferredValueShortPath: float = 15
+# preferred value of shortes path
 onready var standardShortPath: float = 0.0
+# standardized shortest path
+onready var variation: float = 0.0
+# percentage of edge which connecting different type vertex, (exlude start and goal)
+onready var exploration: int = 0 #???
+# amount of vertex which can explore by player
 onready var weightDuration: float = 0.0
+# percentage of average weight with preferred weight
+onready var preferredValueWeightAverage: float = 2.0
+# preferred average value of weigh
 onready var optionReplay: float = 0.0
+# percentage of branched vertex in all vertex
 
 ## fitness function value
 onready var fitness: float = 0.0
+# (variation + weighDuration + optionReplay + standardShortPath)/4
 
 var index: int = 0
 var indexNode: int = 0
@@ -60,7 +71,6 @@ func get_edges_of(vertex: Node2D, type: String = "") -> Array:
 
 ## add vertex to graph
 func add_vertex(name: String = "", type: String = "") -> Node2D:
-#	var _name = "Node" + str($Vertices.get_child_count()) if name == "" else name
 	var _name = "Node" + str(indexNode) if name == "" else name
 	indexNode += 1
 	var _type = TYPE_VERTEX.TASK if type == "" else type
@@ -68,10 +78,6 @@ func add_vertex(name: String = "", type: String = "") -> Node2D:
 	vertex.init_object(_name, _type)
 	$Vertices.add_child(vertex)
 	return vertex
-
-func change_vertex_pos(vertex: Node2D, _position: Vector2):
-	vertex.position = _position
-	update()
 
 ## connecting between two vertex in graph with an edge
 func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vector2 = Vector2.ZERO) -> Node2D:
@@ -84,38 +90,9 @@ func connect_vertex(from: Node2D, to: Node2D, type: String = "", direction: Vect
 		from.connections[direction] = to
 		to.connections[mirror] = from
 	$Edges.add_child(edge)
-	update()
 	return edge
 
-## get vertex object by its name
-func get_vertex_by_name(vertexName: String) -> Node:
-	return $Vertices.get_node(vertexName)
-
-func get_vertex_by_position(_position: Vector2) -> Node:
-	$RayCast2D.position = _position - Vector2(0,30)
-	$RayCast2D.force_raycast_update()
-	if $RayCast2D.is_colliding():
-		return $RayCast2D.get_collider().get_parent()
-	else:
-		 return null
-
-## get vertex object by its name
-func get_vertex(vertex: Node2D) -> Node:
-	return $Vertices.get_node(vertex.name)
-
-func is_place(vertex: Node) -> bool:
-	if vertex.type == TYPE_VERTEX.TASK or vertex.type == TYPE_VERTEX.SECRET:
-		return true
-	return false
-
-func is_element(vertex: Node) -> bool:
-	var element: Array = [
-		TYPE_VERTEX.KEY,
-		TYPE_VERTEX.LOCK,
-		TYPE_VERTEX.OBSTACLE,
-		TYPE_VERTEX.REWARD
-	]
-	return true if element.find(vertex.type) != -1 else false
+# direction
 
 ## get list of outgoing edges on a vertex
 func get_outgoing_edges(vertex: Node, type: String = "") -> Array:
@@ -128,21 +105,17 @@ func get_outgoing_edges(vertex: Node, type: String = "") -> Array:
 				listEdge.append(edge)
 	return listEdge
 
-## get list outgoing edges on a vertex
+## get list outgoing vertex on a vertex
 func get_outgoing_vertex(vertex: Node, typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	var edges: Array = get_outgoing_edges(vertex, typeEdge)
 	for edge in edges:
-		var toVertex: Node = get_vertex(edge.to)
+		var toVertex: Node = edge.to
 		if listVertex.find(toVertex) == -1:
 			listVertex.append(toVertex)
 	return listVertex
 
-## get sum of outgoing edges on a vertex
-func get_outdegree(vertex: Node, typeEdge: String = "") -> int:
-	return get_outgoing_edges(vertex, typeEdge).size()
-
-## get list of outgoing edges on a vertex
+## get list of incoming edges on a vertex
 func get_incoming_edges(vertex: Node, type: String = "") -> Array:
 	var listEdge: Array = []
 	for edge in $Edges.get_children():
@@ -153,29 +126,31 @@ func get_incoming_edges(vertex: Node, type: String = "") -> Array:
 				listEdge.append(edge)
 	return listEdge
 
-## get list outgoing edges on a vertex
+## get list incoming vertex on a vertex
 func get_incoming_vertex(vertex: Node, typeEdge: String = "") -> Array:
 	var listVertex: Array = []
 	var edges: Array = get_incoming_edges(vertex, typeEdge)
 	for edge in edges:
-		var toVertex: Node = get_vertex(edge.from)
+		var toVertex: Node = edge.from
 		if listVertex.find(toVertex) == -1:
 			listVertex.append(toVertex)
 	return listVertex
 
-## get sum of outgoing edges on a vertex
-func get_indegree(vertex: Node, typeEdge: String = "") -> int:
-	return get_incoming_edges(vertex, typeEdge).size()
 # (1) end ======================================================================
 
 # (2) function fitness =========================================================
+
+func get_exploration(): #???
+	exploration = $Vertices.get_child_count()
+	return exploration
+
 func get_variation():
 	var Ed: float = 0
 	var edges: Array = []
 	edges.append_array($Edges.get_children())
 	for edge in edges:
-		var from = get_vertex(edge.from)
-		var to = get_vertex(edge.to)
+		var from = edge.from
+		var to = edge.to
 		if (from.type != TYPE_VERTEX.START or from.type != TYPE_VERTEX.GOAL) and (to.type != TYPE_VERTEX.START or to.type != TYPE_VERTEX.GOAL) and (from.type != to.type):
 			Ed += 1
 	edges.pop_back()
@@ -185,17 +160,12 @@ func get_variation():
 	variation = fe
 	return variation
 
-func get_exploration(): #???
-	exploration = $Vertices.get_child_count()
-	return exploration
-
 func get_weight_duration() -> float:
-	var preferred_value = 2
 	var sumWeight = 0
 	var edges: Array = get_edges()
 	for edge in edges:
 		sumWeight += edge.weight
-	var result: float =  abs(sumWeight - (edges.size() * preferred_value)) / edges.size()
+	var result: float =  abs(sumWeight - (edges.size() * preferredValueWeightAverage)) / edges.size()
 	weightDuration = 1 - result
 	return weightDuration
 
@@ -203,7 +173,7 @@ func get_option_replay() -> float:
 	var sum_branched_vertex: float = 0.0
 	var vertices: Array = get_vertices()
 	for vertex in vertices:
-		if get_outdegree(vertex) > 1 :
+		if get_outgoing_edges(vertex).size() > 1 :
 			sum_branched_vertex += 1
 	var result: float = sum_branched_vertex / vertices.size()
 	optionReplay = result
@@ -241,7 +211,7 @@ func _solve_path(startVertex: Node) -> Dictionary:
 		var edges: Array = get_outgoing_edges(vertex)
 		for edge in edges:
 			if !visitedDict[edge.to.name] and edge.type == TYPE_EDGE.PATH:
-				queue.push_back(get_vertex(edge.to))
+				queue.push_back(edge.to)
 				visitedDict[edge.to.name] = true
 				prevDict[edge.to.name] = vertex.name
 	return prevDict
@@ -260,17 +230,16 @@ func _reconstruct_path(startVertex: Node, goalVertex: Node, prevDict: Dictionary
 	return []
 
 func get_standard_short_path() -> float:
-	var preferred_value = 30
 	var shortPathLength: float = get_shortest_path()
 	var vertices = get_vertices()
 	var shortPathPercentage: float = (shortPathLength / vertices.size()) * 100
-	var result: float = 1 - (abs(preferred_value -shortPathPercentage)/preferred_value)
+	var result: float = 1 - (abs(preferredValueShortPath - shortPathPercentage)/preferredValueShortPath)
 	standardShortPath = result
 	return result
 
 func get_fitness() -> float:
+#	exploration = get_exploration()
 	variation = get_variation()
-	exploration = get_exploration()
 	var weighDuration = get_weight_duration()
 	optionReplay = get_option_replay()
 	standardShortPath = get_standard_short_path()
@@ -281,6 +250,40 @@ func get_fitness() -> float:
 	return fitness
 
 # (2) end ======================================================================
+
+# (3) position related =========================================================
+
+func get_vertex_by_position(_position: Vector2) -> Node:
+	for vertex in get_vertices():
+		if vertex.position == _position:
+			return vertex
+	return null
+
+func change_vertex_pos(vertex: Node2D, _position: Vector2):
+	vertex.position = _position
+
+func is_pos_has_placed(_position: Vector2, insertedVertex:Node2D) -> bool:
+	for vertex in get_vertices():
+		if vertex != insertedVertex and vertex.position == _position:
+			return true
+	return false
+
+func is_pos_crossed_line(_position: Vector2, _direction: Vector2) -> bool:
+	for edge in get_edges():
+		var direction: Vector2 = edge.from.position.direction_to(edge.to.position)
+		#crossing vertical
+		if edge.from.position.x == edge.from.position.x and _position.x == edge.from.position.x and _direction.x != 0:
+			if direction == Vector2.UP and _position.y <= edge.from.position.y and _position.y >= edge.to.position.y:
+				return true
+			elif direction == Vector2.DOWN and _position.y >= edge.from.position.y and _position.y <= edge.to.position.y:
+				return true
+		#crossing horizontal
+		elif edge.from.position.y == edge.from.position.y and _position.y == edge.from.position.y and _direction.y != 0:
+			if direction == Vector2.LEFT and _position.x <= edge.from.position.x and _position.x >= edge.to.position.x:
+				return true
+			elif direction == Vector2.RIGHT and _position.x >= edge.from.position.x and _position.x <= edge.to.position.x:
+				return true
+	return false
 
 func slide_vertices(inserted_pos: Vector2, direction: Vector2):
 	var slideVertices: Array = []
@@ -303,61 +306,10 @@ func slide_vertices(inserted_pos: Vector2, direction: Vector2):
 					slideVertices.append(vertex)
 	for vertex in slideVertices:
 		vertex.position += (direction * cellSize)
-	update()
 
-func is_pos_has_placed(_position: Vector2, insertedVertex:Node2D) -> bool:
-#	print("check has placed " + str(_position))
-	for vertex in get_vertices():
-		if vertex != insertedVertex and vertex.position == _position:
-#			print("has placed")
-			return true
-	return false
+# (3) end ======================================================================
 
-func is_pos_crossed_line(_position: Vector2, _direction: Vector2) -> bool:
-#	print("check crossed_line " + str(_position) + str(_direction))
-	for edge in get_edges():
-		var direction: Vector2 = edge.from.position.direction_to(edge.to.position)
-		#crossing vertical
-		if edge.from.position.x == edge.from.position.x and _position.x == edge.from.position.x and _direction.x != 0:
-#			print("crossedlinecheck========================")
-#			print("_position " + str(_position))
-#			print("_direction "+str(_direction))
-#			print("direction "+str(direction))
-#			print("from position " + str(edge.from.position))
-#			print("to position " + str(edge.to.position))
-#			print("direction == Vector2.UP " + str(direction == Vector2.UP))
-#			print("_position.y <= edge.from.position.y "+ str(_position.y <= edge.from.position.y))
-#			print("_position.y >= edge.from.position.y "+str(_position.y >= edge.from.position.y))
-#			print("direction == Vector2.DOWN" + str(direction == Vector2.DOWN))
-#			print("_position.y >= edge.from.position.y "+str(_position.y >= edge.from.position.y))
-#			print("_position.y >= edge.from.position.y "+str(_position.y >= edge.from.position.y))
-			if direction == Vector2.UP and _position.y <= edge.from.position.y and _position.y >= edge.to.position.y:
-#				print("crossed vertical")
-				return true
-			elif direction == Vector2.DOWN and _position.y >= edge.from.position.y and _position.y <= edge.to.position.y:
-#				print("crossed vertical")
-				return true
-		#crossing horizontal
-		elif edge.from.position.y == edge.from.position.y and _position.y == edge.from.position.y and _direction.y != 0:
-#			print("crossedlinecheck========================")
-#			print("_position " + str(_position))
-#			print("_direction "+str(_direction))
-#			print("direction "+str(direction))
-#			print("from position " + str(edge.from.position))
-#			print("to position " + str(edge.to.position))
-#			print("direction == Vector2.LEFT " + str(direction == Vector2.LEFT))
-#			print("_position.x <= edge.from.position.x "+ str(_position.x <= edge.from.position.x))
-#			print("_position.x >= edge.from.position.x "+str(_position.x >= edge.from.position.x))
-#			print("direction == Vector2.RIGHT" + str(direction == Vector2.RIGHT))
-#			print("_position.x >= edge.from.position.x "+str(_position.x >= edge.from.position.x))
-#			print("_position.x <= edge.from.position.x "+str(_position.x <= edge.from.position.x))
-			if direction == Vector2.LEFT and _position.x <= edge.from.position.x and _position.x >= edge.to.position.x:
-#				print("crossed horizontal")
-				return true
-			elif direction == Vector2.RIGHT and _position.x >= edge.from.position.x and _position.x <= edge.to.position.x:
-#				print("crossed horizontal")
-				return true
-	return false
+# (4) draw related =============================================================
 
 func _draw_dashed_line(from, to, color, width, dash_length = 5, cap_end = false, antialiased = false):
 	var length = (to - from).length()
@@ -391,12 +343,10 @@ func _draw():
 	for x in range((gridSize.x * 2) + 1):
 		var col_pos = (x - gridSize.x) * cellSize.x
 		var limit = gridSize.y * cellSize.y
-#		draw_line(Vector2(col_pos, 0 - (gridSize.y * cellSize.y)), Vector2(col_pos, limit), LINE_COLOR, LINE_WIDTH)
 		gridPoints.append_array([Vector2(col_pos, 0 - (gridSize.y * cellSize.y)), Vector2(col_pos, limit)])
 	for y in range((gridSize.y * 2) + 1):
 		var row_pos = (y - gridSize.y) * cellSize.y
 		var limit = gridSize.x * cellSize.x
-#		draw_line(Vector2((0 - gridSize.x * cellSize.x), row_pos), Vector2(limit, row_pos), LINE_COLOR, LINE_WIDTH)
 		gridPoints.append_array([Vector2((0 - gridSize.x * cellSize.x), row_pos), Vector2(limit, row_pos)])
 	draw_multiline(gridPoints, LINE_COLOR, LINE_WIDTH, true)
 	
@@ -501,16 +451,19 @@ func _draw():
 			draw_string(font, vertex.position + Vector2(-font.get_string_size(textSymbol).x/2, font.get_string_size(textSymbol).x/2), textSymbol, Color.black)
 #			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexRadius/2), vertex.name, Color.black)
 
+# (4) end ======================================================================
+
+# export
 func get_meta_data() -> Dictionary:
 	var result: Dictionary = {
 		"name": name,
 		"value": {
-			"variation": variation,
-			"exploration": exploration,
-			"shortesPathLength": shortesPathLength,
-			"standardShortPath": standardShortPath,
-			"weightDuration": weightDuration,
-			"optionReplay": optionReplay,
+#			"variation": variation,
+#			"exploration": exploration,
+#			"shortesPathLength": shortesPathLength,
+#			"standardShortPath": standardShortPath,
+#			"weightDuration": weightDuration,
+#			"optionReplay": optionReplay,
 			"fitness": fitness
 		},
 		"vertices": {
@@ -525,14 +478,14 @@ func get_meta_data() -> Dictionary:
 	var vertexObjectType: Dictionary = {
 		"name": "",
 		"type": "",
-		"connections": {
-			"UP": null,
-			"DOWN": null,
-			"LEFT": null,
-			"RIGHT": null
-		},
+#		"connections": {
+#			"UP": null,
+#			"DOWN": null,
+#			"LEFT": null,
+#			"RIGHT": null
+#		},
 		"position": null,
-		"subOf": null,
+#		"subOf": null,
 #		"subs": []
 	}
 	
@@ -540,20 +493,21 @@ func get_meta_data() -> Dictionary:
 		var vertexObject: Dictionary = vertexObjectType.duplicate()
 		vertexObject.name = vertex.name
 		vertexObject.type = vertex.type
-		for key in vertex.connections.keys():
-			var resultKey: String
-			match key:
-				Vector2.UP:
-					resultKey = "UP"
-				Vector2.DOWN:
-					resultKey = "DOWN"
-				Vector2.LEFT:
-					resultKey = "LEFT"
-				Vector2.RIGHT:
-					resultKey = "RIGHT"
-			vertexObject.connections[resultKey] = vertex.connections[key].name if vertex.connections[key] != null else null
+#		for key in vertex.connections.keys():
+#			var resultKey: String
+#			match key:
+#				Vector2.UP:
+#					resultKey = "UP"
+#				Vector2.DOWN:
+#					resultKey = "DOWN"
+#				Vector2.LEFT:
+#					resultKey = "LEFT"
+#				Vector2.RIGHT:
+#					resultKey = "RIGHT"
+#			vertexObject.connections[resultKey] = vertex.connections[key].name if vertex.connections[key] != null else null
 		vertexObject.position = Vector2(vertex.position.x / cellSize.x, vertex.position.y / cellSize.y) if vertex.subOf == null else Vector2(vertex.subOf.position.x / cellSize.x, vertex.subOf.position.y / cellSize.y)
-		vertexObject.subOf = vertex.subOf.name if vertex.subOf != null else null
+		if vertex.subOf != null:
+			vertexObject["subOf"] = vertex.subOf.name
 #		if vertex.subs.size() > 0:
 #			for sub in vertex.subs:
 #				vertexObject.subs.append(sub.name)
@@ -563,7 +517,7 @@ func get_meta_data() -> Dictionary:
 	result.vertices.count = get_vertices().size()
 	
 	var edgeObjectType: Dictionary = {
-		"name": "",
+#		"name": "",
 		"type": "",
 		"from": "",
 		"to": ""
@@ -571,7 +525,7 @@ func get_meta_data() -> Dictionary:
 	
 	for edge in get_edges():
 		var edgeObject: Dictionary = edgeObjectType.duplicate()
-		edgeObject.name = edge.name
+#		edgeObject.name = edge.name
 		edgeObject.type = edge.type
 		edgeObject.from = edge.from.name if edge.from != null else ""
 		edgeObject.to = edge.to.name if edge.to != null else ""

@@ -352,6 +352,136 @@ margin_right = 193.0
 margin_bottom = 68.0
 text = "get MetaData"
 
+[node name="HSeparator3" type="HSeparator" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer"]
+margin_top = 298.0
+margin_right = 193.0
+margin_bottom = 302.0
+
+[node name="SectionGenerator" type="VBoxContainer" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer"]
+margin_top = 312.0
+margin_right = 193.0
+margin_bottom = 360.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGenerator"]
+margin_right = 193.0
+margin_bottom = 24.0
+
+[node name="Label" type="Label" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGenerator/HBoxContainer"]
+margin_top = 5.0
+margin_right = 68.0
+margin_bottom = 19.0
+text = "Populate : "
+
+[node name="LineEditPopulation" type="LineEdit" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGenerator/HBoxContainer"]
+unique_name_in_owner = true
+margin_left = 72.0
+margin_right = 193.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "3"
+
+[node name="ButtonDungeon" type="Button" parent="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGenerator"]
+margin_top = 28.0
+margin_right = 193.0
+margin_bottom = 48.0
+text = "Generate Dungeon"
+
+[node name="PanelContainer" type="PanelContainer" parent="GUI"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -238.0
+margin_bottom = 261.0
+
+[node name="MarginContainer" type="MarginContainer" parent="GUI/PanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 231.0
+margin_bottom = 254.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI/PanelContainer/MarginContainer"]
+margin_right = 224.0
+margin_bottom = 247.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_right = 224.0
+margin_bottom = 24.0
+
+[node name="Label" type="Label" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+margin_top = 5.0
+margin_right = 80.0
+margin_bottom = 19.0
+text = "Population : "
+
+[node name="Population" type="LineEdit" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+margin_left = 84.0
+margin_right = 224.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "3"
+
+[node name="Label2" type="Label" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_top = 28.0
+margin_right = 224.0
+margin_bottom = 42.0
+text = "rules"
+
+[node name="OptionRuleRecipeonPanel" type="OptionButton" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+margin_top = 46.0
+margin_right = 224.0
+margin_bottom = 66.0
+size_flags_horizontal = 3
+text = "init1"
+items = [ "init1", null, false, 0, null, "init2", null, false, 1, null, "extend1", null, false, 2, null, "extend2", null, false, 3, null, "extend3", null, false, 4, null, "secret", null, false, 5, null, "obstacle", null, false, 6, null, "reward", null, false, 7, null, "key&lock1", null, false, 8, null, "key&lock2", null, false, 9, null, "key&lock3", null, false, 10, null, "key&lock4", null, false, 11, null, "randomInit", null, false, 12, null, "randomExtend", null, false, 13, null, "randomKeyLock", null, false, 14, null, "placeRules", null, false, 15, null, "duplicate_key", null, false, 16, null, "duplicate_lock", null, false, 17, null, "move_lock_toward", null, false, 18, null, "move_key_duplicate_backward", null, false, 19, null ]
+selected = 0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_top = 70.0
+margin_right = 224.0
+margin_bottom = 90.0
+
+[node name="ButtonAddRuleonPanel" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+margin_right = 110.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "add"
+
+[node name="ButtonClearRecipeonPanel" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+margin_left = 114.0
+margin_right = 224.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "clear"
+
+[node name="PanelContainer" type="PanelContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_top = 94.0
+margin_right = 224.0
+margin_bottom = 194.0
+rect_min_size = Vector2( 0, 100 )
+size_flags_horizontal = 3
+
+[node name="RichTextRecipeonPanel" type="RichTextLabel" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 217.0
+margin_bottom = 93.0
+size_flags_vertical = 3
+
+[node name="ButtonGenerateDungeon" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+margin_top = 198.0
+margin_right = 224.0
+margin_bottom = 218.0
+text = "generate"
+
+[node name="Restart" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_top = 222.0
+margin_right = 224.0
+margin_bottom = 242.0
+text = "restart"
+
 [node name="Camera2D" parent="." instance=ExtResource( 2 )]
 zoom = Vector2( 5, 5 )
 
@@ -368,3 +498,8 @@ zoom = Vector2( 5, 5 )
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTransform" to="." method="_on_ButtonTransform_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonTransformKeyLock" to="." method="_on_ButtonTransformKeyLock_pressed"]
 [connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionTransform/ButtonGetMetaData" to="." method="_on_ButtonGetMetaData_pressed"]
+[connection signal="pressed" from="GUI/WindowDialogGraph/MarginContainer/VBoxContainer/SectionGenerator/ButtonDungeon" to="." method="_on_ButtonDungeon_pressed"]
+[connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ButtonAddRuleonPanel" to="." method="_on_ButtonAddRuleonPanel_pressed"]
+[connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ButtonClearRecipeonPanel" to="." method="_on_ButtonClearRecipeonPanel_pressed"]
+[connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/ButtonGenerateDungeon" to="." method="_on_ButtonGenerateDungeon_pressed"]
+[connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/Restart" to="." method="_on_Restart_pressed"]

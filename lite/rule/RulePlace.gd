@@ -5,10 +5,11 @@ const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
 func sub_off(vertex: Node2D, sub_vertex: Node2D):
 	sub_vertex.subOf = vertex
-	sub_vertex.add_to_group("subVertices")
 	sub_vertex.connection_reset()
 	vertex.subs.append(sub_vertex)
-	vertex.add_to_group("placeVertices")
+	var graph: Node = vertex.get_parent().get_parent()
+	vertex.add_to_group("placeVertices" + graph.name)
+	sub_vertex.add_to_group("subVertices" + graph.name)
 	#positioning sub vertices
 	for i in range(vertex.subs.size()):
 		var sub: Node2D = vertex.subs[i]
@@ -18,7 +19,7 @@ func create_entrance(graph: Node2D, vertex: Node2D):
 	#create entrance
 	if vertex.type == TYPE_VERTEX.START:
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.add_to_group("placeVertices")
+		newVertex.add_to_group("placeVertices" + graph.name)
 		graph.change_vertex_pos(newVertex, vertex.position)
 		vertex.type = TYPE_VERTEX.ENTRANCE
 		sub_off(newVertex, vertex)
@@ -35,7 +36,7 @@ func create_goal(graph: Node2D, vertex: Node2D):
 	#create goal
 	if vertex.type == TYPE_VERTEX.GOAL:
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.add_to_group("placeVertices")
+		newVertex.add_to_group("placeVertices" + graph.name)
 		graph.change_vertex_pos(newVertex, vertex.position)
 		sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
@@ -51,7 +52,7 @@ func create_secret(graph: Node2D, vertex: Node2D):
 	#create secret
 	if vertex.type == TYPE_VERTEX.SECRET:
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.add_to_group("placeVertices")
+		newVertex.add_to_group("placeVertices" + graph.name)
 		graph.change_vertex_pos(newVertex, vertex.position)
 		sub_off(newVertex, vertex)
 		for edge in graph.get_edges_of(vertex):
@@ -140,7 +141,7 @@ func place_key_element(graph: Node2D):
 	if matchVertices.size() > 0:
 		var choosenMatch = matchVertices[randi() % matchVertices.size()]
 		var newVertex: Node2D = graph.add_vertex()
-		newVertex.add_to_group("placeVertices")
+		newVertex.add_to_group("placeVertices" + graph.name)
 		graph.change_vertex_pos(newVertex, choosenMatch[0].position)
 		sub_off(newVertex, choosenMatch[0])
 		for edge in graph.get_edges_of(choosenMatch[0], TYPE_EDGE.PATH):
@@ -230,7 +231,7 @@ func make_room_and_cave(graph: Node2D):
 	
 	var lowestPos: Vector2 = Vector2(10000,10000) * cellSize
 	var highestPos: Vector2 = Vector2(-10000,-10000) * cellSize
-	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices" + graph.name)
 	for vertex in placeVertices:
 		#clean connections
 		vertex.connections = {
@@ -285,7 +286,7 @@ func make_room_and_cave(graph: Node2D):
 		highestPos.y -= (1 * cellSize.y)
 	
 	#sync subvertices pos
-	for subVertex in get_tree().get_nodes_in_group("subVertices"):
+	for subVertex in get_tree().get_nodes_in_group("subVertices" + graph.name):
 		subVertex.position = subVertex.subOf.position + Vector2(32 + 16,0).rotated(deg2rad(subVertex.subOf.subs.find(subVertex) * 36))
 		subVertex.connections = {
 			Vector2.UP: null,
@@ -348,7 +349,7 @@ func _connect_diagonal(graph: Node2D, edge: Node2D, connectorPos: Vector2, fromD
 	edge.weight = edge.weight
 
 func make_hidden_path(graph: Node2D):
-	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices" + graph.name)
 	for placeVertex in placeVertices:
 		#make edge hidden
 		for sub in placeVertex.subs:
@@ -357,7 +358,7 @@ func make_hidden_path(graph: Node2D):
 					edge.type = TYPE_EDGE.HIDDEN
 
 func make_window(graph: Node2D):
-	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices")
+	var placeVertices: Array = get_tree().get_nodes_in_group("placeVertices" + graph.name)
 	for placeVertex in placeVertices:
 		#make edge window
 		for directionUnconnected in placeVertex.connections.keys():

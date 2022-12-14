@@ -64,7 +64,7 @@ func _process(delta):
 		$"%ButtonTransformKeyLock".disabled = false
 		$"%ButtonGetMetaData".disabled = false
 
-func _create_graph():
+func _create_graph() -> Node2D:
 	#make graph
 	var graph = Graph.instance()
 	graph.init_object("graph"+str(indexGraph), indexGraph)
@@ -72,7 +72,6 @@ func _create_graph():
 	graph.gridSize = gridSize
 	graph.cellSize = cellSize
 	graph.position = Vector2(posx, 0)
-	graph.update()
 	graphs.add_child(graph)
 	
 	#initiate vertex
@@ -86,6 +85,7 @@ func _create_graph():
 	$"%OptionTargetGraph2".select(indexGraph)
 	targetGraph = graph
 	indexGraph += 1
+	return graph
 
 func _execute_rule(rule: String, graph: Node2D):
 	match rule:
@@ -133,6 +133,8 @@ func _execute_rule(rule: String, graph: Node2D):
 			$RulePlace.make_window(graph)
 		"make_gate":
 			$RulePlace.make_gate(graph)
+		"placeRules":
+			_execute_place_rule(graph)
 		"duplicate_key":
 			$RuleTransformKL.duplicate_key(graph)
 		"duplicate_lock":
@@ -141,7 +143,6 @@ func _execute_rule(rule: String, graph: Node2D):
 			$RuleTransformKL.move_lock_toward(graph)
 		"move_key_duplicate_backward":
 			$RuleTransformKL.move_key_duplicate_backward(graph)
-	graph.update()
 
 func _execute_place_rule(graph: Node2D):
 	_execute_rule("create_place_rule", graph)
@@ -149,10 +150,8 @@ func _execute_place_rule(graph: Node2D):
 	_execute_rule("make_edges_element", graph)
 	_execute_rule("make_room_and_cave", graph)
 	_execute_rule("make_hidden_path", graph)
-	yield(VisualServer, 'frame_post_draw')
 	_execute_rule("make_window", graph)
 	_execute_rule("make_gate", graph)
-	graph.update()
 
 func _execute_transform_key_rule(graph: Node2D):
 	_execute_rule("duplicate_key", graph)
@@ -160,47 +159,30 @@ func _execute_transform_key_rule(graph: Node2D):
 	_execute_rule("move_lock_toward", graph)
 	_execute_rule("move_key_duplicate_backward", graph)
 
-func _on_ButtonAddGraph_pressed():
-	_create_graph()
+func _get_metadata(graph: Node2D):
+	var metadata: Dictionary = targetGraph.get_meta_data()
+	var path = "C:/SourceCode/level-generator-with-graph-godot/graph.json"
+#	print(JSON.print(metadata, "\t"))
+	var file
+	file = File.new()
+	file.open(path, File.WRITE)
+	file.store_line(JSON.print(metadata, "\t"))
+	file.close()
 
-func _on_OptionTargetGraph_item_selected(index):
-	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
-	$"%OptionTargetGraph2".select($"%OptionTargetGraph".get_selected_id())
+func _get_info():
+	if targetGraph != null:
+		var fitness = targetGraph.fitness
+		$"%Labelvariation".text = "variation : " + str(targetGraph.variation)
+		$"%Labelexploration".text = "exploration : " + str(targetGraph.exploration)
+		$"%LabelshortesPathLength".text = "shortesPathLength : " + str(targetGraph.shortesPathLength)
+		$"%LabelstandardShortPath".text = "standardShortPath : " + str(targetGraph.standardShortPath)
+		$"%LabelweightDuration".text = "weightDuration : " + str(targetGraph.weightDuration)
+		$"%LabeloptionReplay".text = "optionReplay : " + str(targetGraph.optionReplay)
+		$"%Labelfitness".text = "fitness : " + str(fitness)
 
-
-func _on_ButtonDeleteGraph_pressed():
-	targetGraph.queue_free()
-	targetGraph = null
-	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
-	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph2".get_selected_id())
-	$"%OptionTargetGraph".select(-1)
-	$"%OptionTargetGraph2".select(-1)
-
-
-func _on_ButtonExecuteSingleRule_pressed():
-	var selectedRule = $"%OptionSingleRule".get_item_text($"%OptionSingleRule".get_selected_id())
-	_execute_rule(selectedRule, targetGraph)
-
-
-func _on_ButtonAddRule_pressed():
-	var textItem = $"%OptionRuleRecipe".get_item_text($"%OptionRuleRecipe".get_selected_id())
-	recipe.append(textItem)
-	$"%RichTextRecipe".add_text(textItem)
-	$"%RichTextRecipe".newline()
-
-
-func _on_ButtonExecuteRecipe_pressed():
-	for rule in recipe:
-		_execute_rule(rule, targetGraph)
-
-
-func _on_ButtonClearRecipe_pressed():
-	recipe.clear()
-	$"%RichTextRecipe".clear()
-
-
-func _on_ButtonClearAll_pressed():
-	for graph in graphs.get_children():
+func _reset():
+	for graph in $Graphs.get_children():
+		graph.name += "free1"
 		graph.queue_free()
 	targetGraph = null
 	$"%OptionTargetGraph".clear()
@@ -214,6 +196,54 @@ func _on_ButtonClearAll_pressed():
 		$"%RichTextRecipe".add_text(rule)
 		$"%RichTextRecipe".newline()
 
+func _execute_recipe(graph: Node2D):
+	for rule in recipe:
+		_execute_rule(rule, graph)
+
+func _on_ButtonAddGraph_pressed():
+	_create_graph()
+	targetGraph.update()
+
+func _on_OptionTargetGraph_item_selected(index):
+	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
+	$"%OptionTargetGraph2".select($"%OptionTargetGraph".get_selected_id())
+
+
+func _on_ButtonDeleteGraph_pressed():
+	targetGraph.queue_free()
+	targetGraph = null
+	$"%OptionTargetGraph".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph2".remove_item($"%OptionTargetGraph".get_selected_id())
+	$"%OptionTargetGraph".select(-1)
+	$"%OptionTargetGraph2".select(-1)
+
+
+func _on_ButtonExecuteSingleRule_pressed():
+	var selectedRule = $"%OptionSingleRule".get_item_text($"%OptionSingleRule".get_selected_id())
+	_execute_rule(selectedRule, targetGraph)
+	targetGraph.update()
+
+
+func _on_ButtonAddRule_pressed():
+	var textItem = $"%OptionRuleRecipe".get_item_text($"%OptionRuleRecipe".get_selected_id())
+	recipe.append(textItem)
+	$"%RichTextRecipe".add_text(textItem)
+	$"%RichTextRecipe".newline()
+
+
+func _on_ButtonExecuteRecipe_pressed():
+	_execute_recipe(targetGraph)
+	targetGraph.update()
+
+
+func _on_ButtonClearRecipe_pressed():
+	recipe.clear()
+	$"%RichTextRecipe".clear()
+
+
+func _on_ButtonClearAll_pressed():
+	_reset()
+
 
 func _on_OptionTargetGraph2_item_selected(index):
 	targetGraph = get_node("Graphs/" + $"%OptionTargetGraph".get_item_text(index))
@@ -221,31 +251,106 @@ func _on_OptionTargetGraph2_item_selected(index):
 
 
 func _on_ButtonGetInfo_pressed():
-	if targetGraph != null:
-		var fitness = targetGraph.get_fitness()
-		$"%Labelvariation".text = "variation : " + str(targetGraph.variation)
-		$"%Labelexploration".text = "exploration : " + str(targetGraph.exploration)
-		$"%LabelshortesPathLength".text = "shortesPathLength : " + str(targetGraph.shortesPathLength)
-		$"%LabelstandardShortPath".text = "standardShortPath : " + str(targetGraph.standardShortPath)
-		$"%LabelweightDuration".text = "weightDuration : " + str(targetGraph.weightDuration)
-		$"%LabeloptionReplay".text = "optionReplay : " + str(targetGraph.optionReplay)
-		$"%Labelfitness".text = "fitness : " + str(fitness)
+	_get_info()
 
 
 func _on_ButtonTransform_pressed():
 	_execute_place_rule(targetGraph)
+	targetGraph.update()
 
 
 func _on_ButtonTransformKeyLock_pressed():
 	_execute_transform_key_rule(targetGraph)
+	targetGraph.update()
 
 
 func _on_ButtonGetMetaData_pressed():
-	var metadata: Dictionary = targetGraph.get_meta_data()
-	var path = "C:/SourceCode/level-generator-with-graph-godot/graph.json"
-#	print(JSON.print(metadata, "\t"))
-	var file
-	file = File.new()
-	file.open(path, File.WRITE)
-	file.store_line(JSON.print(metadata, "\t"))
-	file.close()
+	_get_metadata(targetGraph)
+
+
+func _on_ButtonDungeon_pressed():
+	_reset()
+	var population: int = int($"%LineEditPopulation".text)
+	for dungeon in range(population):
+		var graph = _create_graph()
+		_execute_recipe(graph)
+		graph.get_fitness()
+	
+	targetGraph = null
+	for graph in $Graphs.get_children():
+		if targetGraph == null:
+			targetGraph = graph
+		elif graph.fitness > targetGraph.fitness:
+			targetGraph = graph
+		else:
+			graph.queue_free()
+	
+	$"%OptionTargetGraph".select(targetGraph.index)
+	$"%OptionTargetGraph2".select(targetGraph.index)
+	
+	$Camera2D.focus_position(targetGraph.position)
+	
+	_get_info()
+	_execute_place_rule(targetGraph)
+	_execute_transform_key_rule(targetGraph)
+	targetGraph.update()
+	update()
+	_get_metadata(targetGraph)
+
+
+func _on_ButtonAddRuleonPanel_pressed():
+	var textItem = $"%OptionRuleRecipeonPanel".get_item_text($"%OptionRuleRecipeonPanel".get_selected_id())
+	recipe.append(textItem)
+	$"%RichTextRecipeonPanel".add_text(textItem)
+	$"%RichTextRecipeonPanel".newline()
+
+
+func _on_ButtonClearRecipeonPanel_pressed():
+	$"%RichTextRecipeonPanel".clear()
+
+
+func _on_ButtonGenerateDungeon_pressed():
+	var rules: Array = $"%RichTextRecipeonPanel".text.split("\n", false)
+	var rulesNext: Array = []
+	var indexdelete: Array = []
+	for rule in range(rules.size()):
+		if rules[rule] == "placeRules" or rules[rule] == "duplicate_key" or rules[rule] == "duplicate_lock" or rules[rule] == "move_lock_toward" or rules[rule] == "move_key_duplicate_backward":
+			rulesNext.append(rules[rule])
+			indexdelete.append(rule)
+	recipe.clear()
+	indexdelete.invert()
+	for rule in indexdelete:
+		rules.remove(rule)
+	recipe.append_array(rules)
+	print(recipe)
+	var population: int = int($"%Population".text)
+	for dungeon in range(population):
+		var graph = _create_graph()
+		_execute_recipe(graph)
+		graph.get_fitness()
+		print("===============")
+		print(graph.name)
+		print(graph.fitness)
+		print("===============")
+
+	targetGraph = null
+	for graph in $Graphs.get_children():
+		if targetGraph == null:
+			targetGraph = graph
+		elif graph.fitness > targetGraph.fitness:
+			targetGraph = graph
+		else:
+			graph.queue_free()
+
+	for rule in rulesNext:
+			_execute_rule(rule, targetGraph)
+
+	$Camera2D.focus_position(targetGraph.position)
+
+	targetGraph.update()
+	update()
+	_get_metadata(targetGraph)
+
+
+func _on_Restart_pressed():
+	get_tree().reload_current_scene()

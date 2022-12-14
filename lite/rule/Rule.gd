@@ -17,8 +17,8 @@ func rule_init_1(graph: Node2D):
 		var vertex3: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
 		var vertex4: Node2D = graph.add_vertex()
 		
-		vertex2.add_to_group("placeVertices")
-		vertex4.add_to_group("placeVertices")
+		vertex2.add_to_group("placeVertices" + graph.name)
+		vertex4.add_to_group("placeVertices" + graph.name)
 		
 		vertex1.type = TYPE_VERTEX.START
 		graph.change_vertex_pos(vertex2, vertex1.position + (Vector2.RIGHT * cellSize))
@@ -47,10 +47,10 @@ func rule_init_2(graph: Node2D):
 		var vertex5: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
 		var vertex6: Node2D = graph.add_vertex()
 		
-		vertex2.add_to_group("placeVertices")
-		vertex3.add_to_group("placeVertices")
-		vertex4.add_to_group("placeVertices")
-		vertex6.add_to_group("placeVertices")
+		vertex2.add_to_group("placeVertices" + graph.name)
+		vertex3.add_to_group("placeVertices" + graph.name)
+		vertex4.add_to_group("placeVertices" + graph.name)
+		vertex6.add_to_group("placeVertices" + graph.name)
 		
 		vertex1.type = TYPE_VERTEX.START
 		graph.change_vertex_pos(vertex2, vertex1.position + Vector2.RIGHT * cellSize)
@@ -80,7 +80,7 @@ func rule_extend_1(graph: Node2D):
 		var vertex2: Node2D = chosenEdge.to
 		var vertex3: Node2D = graph.add_vertex()
 		
-		vertex3.add_to_group("placeVertices")
+		vertex3.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -109,8 +109,8 @@ func rule_extend_2(graph: Node2D):
 		var vertex3: Node2D = graph.add_vertex()
 		var vertex4: Node2D = graph.add_vertex()
 		
-		vertex3.add_to_group("placeVertices")
-		vertex4.add_to_group("placeVertices")
+		vertex3.add_to_group("placeVertices" + graph.name)
+		vertex4.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var directionOptions: Array = []
@@ -151,8 +151,8 @@ func rule_extend_3(graph: Node2D):
 		var vertex3: Node2D = graph.add_vertex()
 		var vertex4: Node2D = graph.add_vertex()
 		
-		vertex3.add_to_group("placeVertices")
-		vertex4.add_to_group("placeVertices")
+		vertex3.add_to_group("placeVertices" + graph.name)
+		vertex4.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
@@ -283,7 +283,7 @@ func rule_knl_1(graph: Node2D):
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		
-		vertex4.add_to_group("placeVertices")
+		vertex4.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -326,8 +326,8 @@ func rule_knl_2(graph: Node2D):
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		
-		vertex3.add_to_group("placeVertices")
-		vertex6.add_to_group("placeVertices")
+		vertex3.add_to_group("placeVertices" + graph.name)
+		vertex6.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)
@@ -383,8 +383,8 @@ func rule_knl_3(graph: Node2D):
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex6: Node2D = graph.add_vertex("", TYPE_VERTEX.KEY)
 		
-		vertex3.add_to_group("placeVertices")
-		vertex5.add_to_group("placeVertices")
+		vertex3.add_to_group("placeVertices" + graph.name)
+		vertex5.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var mirrorDirection: Vector2 = Vector2(direction.x * -1, direction.y) if direction.x != 0 else Vector2(direction.x, direction.y * -1)
@@ -439,7 +439,7 @@ func rule_knl_4(graph: Node2D):
 		var vertex4: Node2D = graph.add_vertex("", TYPE_VERTEX.TASK)
 		var vertex5: Node2D = graph.add_vertex("", TYPE_VERTEX.LOCK)
 		
-		vertex4.add_to_group("placeVertices")
+		vertex4.add_to_group("placeVertices" + graph.name)
 		
 		var direction: Vector2 = vertex1.position.direction_to(vertex2.position)
 		var targetPos: Vector2 = vertex1.position + (direction * cellSize)

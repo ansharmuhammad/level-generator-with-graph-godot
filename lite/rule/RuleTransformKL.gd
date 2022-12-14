@@ -2,10 +2,11 @@ extends Node
 
 func sub_off(vertex: Node2D, sub_vertex: Node2D):
 	sub_vertex.subOf = vertex
-	sub_vertex.add_to_group("subVertices")
 	sub_vertex.connection_reset()
 	vertex.subs.append(sub_vertex)
-	vertex.add_to_group("placeVertices")
+	var graph: Node = vertex.get_parent().get_parent()
+	vertex.add_to_group("placeVertices" + graph.name)
+	sub_vertex.add_to_group("subVertices" + graph.name)
 	#positioning sub vertices
 	for i in range(vertex.subs.size()):
 		var sub: Node2D = vertex.subs[i]
