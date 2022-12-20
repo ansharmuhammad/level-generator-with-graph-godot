@@ -23,7 +23,7 @@ func init_object(_name: String = "", _type: String = "TASK"):
 	type = _type
 
 func is_element() -> bool:
-	if type == TYPE_VERTEX.TASK or type == TYPE_VERTEX.ROOM or type == TYPE_VERTEX.CAVE:
+	if type == TYPE_VERTEX.TASK or type == TYPE_VERTEX.ROOM or type == TYPE_VERTEX.CAVE or type == TYPE_VERTEX.CONNECTOR:
 		return false
 	return true
 

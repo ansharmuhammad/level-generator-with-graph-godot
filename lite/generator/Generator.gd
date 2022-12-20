@@ -322,35 +322,133 @@ func _on_ButtonGenerateDungeon_pressed():
 	for rule in indexdelete:
 		rules.remove(rule)
 	recipe.append_array(rules)
-	print(recipe)
-	var population: int = int($"%Population".text)
-	for dungeon in range(population):
-		var graph = _create_graph()
-		_execute_recipe(graph)
-		graph.get_fitness()
+	var graphsChart: Array  = []
+#	var graphsChart: Dictionary = {
+#		"data": []
+#	}
+#	var branch: Array = []
+#	var deadend: Array = []
+#	var axis: Array = []
+	var idx: int = 0
+	print("************************************")
+	if targetGraph != null:
+#		targetGraph.queue_free()
+#		$"%Graphs".remove_child(targetGraph)
+#		$Trash.add_child(targetGraph)
+		targetGraph.free()
+		targetGraph = null
+		printraw(targetGraph)
+		print(idx)
+		print("target graph free")
+#	for test in range(1):
+	for test in range(int($"%AmounTest".text)):
 		print("===============")
-		print(graph.name)
-		print(graph.fitness)
-		print("===============")
-
-	targetGraph = null
-	for graph in $Graphs.get_children():
-		if targetGraph == null:
-			targetGraph = graph
-		elif graph.fitness > targetGraph.fitness:
-			targetGraph = graph
+		idx += 1
+		
+		# make population
+		var population: int = int($"%Population".text)
+		for dungeon in range(population):
+			print("make graph")
+			var graph = _create_graph()
+			print("execute rule")
+			_execute_recipe(graph)
+			print("get fitness")
+			graph.get_fitness()
+	#		print("===============")
+	#		print(graph.name)
+	#		print(graph.fitness)
+	#		print("===============")
+		
+		# initiate target graph
+		
+		print(idx)
+		if targetGraph != null:
+#			targetGraph.queue_free()
+#			$"%Graphs".remove_child(targetGraph)
+#			$Trash.add_child(targetGraph)
+			targetGraph.free()
+			targetGraph = null
+			printraw(targetGraph)
+			print(idx)
+			print("target graph free")
 		else:
-			graph.queue_free()
-
-	for rule in rulesNext:
-			_execute_rule(rule, targetGraph)
-
-	$Camera2D.focus_position(targetGraph.position)
-
+			targetGraph = null
+			printraw(targetGraph)
+			print(idx)
+		
+		# compare fitness
+		print("comparing")
+		for graph in $Graphs.get_children():
+			if targetGraph == null:
+				targetGraph = graph
+			elif graph.fitness > targetGraph.fitness:
+				targetGraph = graph
+		print(targetGraph.name)
+		
+		for graph in $Graphs.get_children():
+			if targetGraph != graph:
+#				graph.queue_free()
+#				$"%Graphs".remove_child(targetGraph)
+#				$Trash.add_child(targetGraph)
+				graph.free()
+		
+		printraw("banyaknya graph : ")
+		print($Graphs.get_children().size())
+		
+		# execute rule place
+		print("execute place")
+		for rule in rulesNext:
+				_execute_rule(rule, targetGraph)
+		
+		# makechart
+#		print("make chart")
+		var graphObject: Dictionary = {
+			"name": "",
+			"branch": 0,
+			"deadend": 0
+		}
+		graphObject.name = "result " + str(idx)
+		graphObject.branch = targetGraph.get_vertex_with_branch_amount()
+		graphObject.deadend = targetGraph.get_vertex_with_deadend_amount()
+#		print(graphObject)
+		graphsChart.append(graphObject)
+#		branch.append(targetGraph.get_vertex_with_branch_amount())
+#		deadend.append(targetGraph.get_vertex_with_deadend_amount())
+#		axis.append(idx)
+		
+	# make chart
+#	graphsChart["branch"] = branch
+#	graphsChart["deadend"] = deadend
+#	graphsChart["axis"] = axis
+	var path = "C:/SourceCode/level-generator-with-graph-godot/chart.json"
+#	print(JSON.print(metadata, "\t"))
+	var file
+	file = File.new()
+	file.open(path, File.WRITE)
+	file.store_line(JSON.print(graphsChart, "\t"))
+	file.close()
+	
+	# redraw
 	targetGraph.update()
 	update()
+	# make metadata
 	_get_metadata(targetGraph)
-
+	
+	$Camera2D.focus_position(targetGraph.position)
+	
+	# debug edge
+#	for edge in targetGraph.get_edges():
+#		if (edge.type == TYPE_EDGE.PATH or edge.type == TYPE_EDGE.GATE) and (edge.from == null or edge.to == null or edge.from == edge.to):
+#			print(edge)
+	
+#	for graph in $Trash.get_children():
+#		graph.queue_free()
 
 func _on_Restart_pressed():
 	get_tree().reload_current_scene()
+
+
+func _on_ButtonUpdate_pressed():
+	update()
+	if targetGraph != null:
+		targetGraph.update()

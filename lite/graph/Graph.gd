@@ -364,6 +364,7 @@ func _draw():
 			#arrow right
 			draw_line(toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), toPosition - Vector2(vertexOuterRadius + 32,0).rotated(toPosition.angle_to_point(fromPosition) + deg2rad(-10)), Color.aliceblue, lineSize)
 			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+#			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.name), Color.black)
 		if edge.type == TYPE_EDGE.GATE:
 			# line
 			draw_line(fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition)), toPosition - Vector2(vertexOuterRadius,0).rotated(toPosition.angle_to_point(fromPosition)), Color.aliceblue, lineSize)
@@ -374,6 +375,7 @@ func _draw():
 			#dra crossed line
 			draw_line(fromPosition - Vector2(vertexOuterRadius,32).rotated(fromPosition.angle_to_point(toPosition)), fromPosition - Vector2(vertexOuterRadius,-32).rotated(fromPosition.angle_to_point(toPosition)), Color.aliceblue, lineSize)
 			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.weight), Color.aqua)
+#			draw_string(font, (fromPosition + toPosition) / Vector2(2,2), str(edge.name), Color.black)
 		if edge.type == TYPE_EDGE.HIDDEN:
 			# dashed line
 			var startPoint: Vector2 = fromPosition - Vector2(vertexOuterRadius,0).rotated(fromPosition.angle_to_point(toPosition))
@@ -450,7 +452,6 @@ func _draw():
 			draw_circle(vertex.position, vertexRadius/2, colorShape)
 			draw_string(font, vertex.position + Vector2(-font.get_string_size(textSymbol).x/2, font.get_string_size(textSymbol).x/2), textSymbol, Color.black)
 #			draw_string(font, vertex.position + Vector2(-halfNameSize.x/2, 0) - Vector2(0,vertexRadius/2), vertex.name, Color.black)
-
 # (4) end ======================================================================
 
 # export
@@ -533,4 +534,28 @@ func get_meta_data() -> Dictionary:
 	
 	result.edges.count = get_edges().size()
 	
+	return result
+
+func get_vertex_with_branch_amount() -> int:
+	var result: int = 0
+	for vertex in get_vertices():
+		if !vertex.is_element():
+			var path: int = 0
+			for edge in get_outgoing_edges(vertex):
+				if edge.type == TYPE_EDGE.PATH or edge.type == TYPE_EDGE.GATE or edge.type == TYPE_EDGE.HIDDEN:
+					path += 1
+			if path > 1:
+				result += 1 
+	return result
+
+func get_vertex_with_deadend_amount() -> int:
+	var result: int = 0
+	for vertex in get_vertices():
+		if !vertex.is_element():
+			var path: int = 0
+			for edge in get_edges_of(vertex):
+				if edge.type == TYPE_EDGE.PATH or edge.type == TYPE_EDGE.GATE or edge.type == TYPE_EDGE.HIDDEN:
+					path += 1
+			if path <= 1:
+				result += 1 
 	return result

@@ -26,15 +26,17 @@ func create_entrance(graph: Node2D, vertex: Node2D):
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
+				edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 			elif edge.to == vertex:
 				edge.to = newVertex
+				edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 		newVertex.connections = vertex.connections.duplicate()
 #		var msg = "execute rule createEntrance at " + str(vertex) +" new "+str(newVertex)
 #		print(msg)
 
 func create_goal(graph: Node2D, vertex: Node2D):
 	#create goal
-	if vertex.type == TYPE_VERTEX.GOAL:
+	if vertex.type == TYPE_VERTEX.GOAL and vertex.subOf == null:
 		var newVertex: Node2D = graph.add_vertex()
 		newVertex.add_to_group("placeVertices" + graph.name)
 		graph.change_vertex_pos(newVertex, vertex.position)
@@ -42,15 +44,17 @@ func create_goal(graph: Node2D, vertex: Node2D):
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
+				edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 			elif edge.to == vertex:
 				edge.to = newVertex
+				edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 		newVertex.connections = vertex.connections.duplicate()
 #		var msg = "execute rule createGoal at" + str(vertex) +" new "+str(newVertex)
 #		print(msg)
 
 func create_secret(graph: Node2D, vertex: Node2D):
 	#create secret
-	if vertex.type == TYPE_VERTEX.SECRET:
+	if vertex.type == TYPE_VERTEX.SECRET and vertex.subOf == null:
 		var newVertex: Node2D = graph.add_vertex()
 		newVertex.add_to_group("placeVertices" + graph.name)
 		graph.change_vertex_pos(newVertex, vertex.position)
@@ -58,8 +62,10 @@ func create_secret(graph: Node2D, vertex: Node2D):
 		for edge in graph.get_edges_of(vertex):
 			if edge.from == vertex:
 				edge.from = newVertex
+				edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 			elif edge.to == vertex:
 				edge.to = newVertex
+				edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 #			edge.type = TYPE_EDGE.HIDDEN
 		newVertex.connections = vertex.connections.duplicate()
 #		var msg = "execute rule createSecret at" + str(vertex) +" new "+str(newVertex)
@@ -68,6 +74,7 @@ func create_secret(graph: Node2D, vertex: Node2D):
 func outside_element_exist(graph: Node2D) -> bool:
 	for vertex in graph.get_vertices():
 		if vertex.is_element() and vertex.subOf == null:
+			print(vertex)
 			return true
 	return false
 
@@ -88,6 +95,7 @@ func add_element_before_place(graph: Node2D):
 				var theVertex: Node2D = edge.to
 				if !theVertex.is_element():
 					edge.from = choosenMatch[0]
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(choosenMatch[0], theVertex)
@@ -95,6 +103,7 @@ func add_element_before_place(graph: Node2D):
 				var theVertex: Node2D = edge.from
 				if !theVertex.is_element():
 					edge.to = choosenMatch[0]
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[0])
@@ -118,6 +127,7 @@ func add_lock_after_place(graph: Node2D):
 				var theVertex: Node2D = edge.to
 				if !theVertex.is_element():
 					edge.from = choosenMatch[1]
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(choosenMatch[1], theVertex)
@@ -125,6 +135,7 @@ func add_lock_after_place(graph: Node2D):
 				var theVertex: Node2D = edge.from
 				if !theVertex.is_element():
 					edge.to = choosenMatch[1]
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[1])
@@ -149,6 +160,7 @@ func place_key_element(graph: Node2D):
 				var theVertex: Node2D = edge.to
 				if !theVertex.is_element():
 					edge.from = newVertex
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(newVertex, theVertex)
@@ -156,6 +168,7 @@ func place_key_element(graph: Node2D):
 				var theVertex: Node2D = edge.from
 				if !theVertex.is_element():
 					edge.to = newVertex
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, newVertex)
@@ -180,6 +193,7 @@ func add_element_after_place(graph: Node2D):
 				var theVertex: Node2D = edge.to
 				if !theVertex.is_element():
 					edge.from = choosenMatch[2]
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(choosenMatch[2], theVertex)
@@ -187,6 +201,7 @@ func add_element_after_place(graph: Node2D):
 				var theVertex: Node2D = edge.from
 				if !theVertex.is_element():
 					edge.to = choosenMatch[2]
+					edge.name = str(edge.from.name) + "to" + str(edge.to.name)
 				else:
 					edge.type = TYPE_EDGE.ELEMENT
 					graph.connect_vertex(theVertex, choosenMatch[2])
@@ -203,6 +218,7 @@ func create_place_rule(graph: Node2D):
 func clean_outside_element_rule(graph: Node2D):
 	#clean outside element rule
 	while outside_element_exist(graph):
+		print("exist " + graph.name)
 		var execute: int = randi() % 4
 		match execute:
 			0: add_element_before_place(graph)
@@ -354,7 +370,7 @@ func make_hidden_path(graph: Node2D):
 		#make edge hidden
 		for sub in placeVertex.subs:
 			if sub.type == TYPE_VERTEX.SECRET:
-				for edge in graph.get_edges_of(placeVertex):
+				for edge in graph.get_incoming_edges(placeVertex):
 					edge.type = TYPE_EDGE.HIDDEN
 
 func make_window(graph: Node2D):

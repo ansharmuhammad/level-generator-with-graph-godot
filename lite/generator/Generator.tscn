@@ -18,6 +18,8 @@ script = ExtResource( 1 )
 [node name="Graphs" type="Node" parent="."]
 unique_name_in_owner = true
 
+[node name="Trash" type="Node" parent="."]
+
 [node name="GUI" type="CanvasLayer" parent="."]
 unique_name_in_owner = true
 
@@ -396,50 +398,69 @@ margin_bottom = 261.0
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 231.0
-margin_bottom = 254.0
+margin_bottom = 301.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GUI/PanelContainer/MarginContainer"]
 margin_right = 224.0
-margin_bottom = 247.0
+margin_bottom = 294.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
 margin_right = 224.0
 margin_bottom = 24.0
 
+[node name="Label" type="Label" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+margin_top = 5.0
+margin_right = 94.0
+margin_bottom = 19.0
+text = "Amount Test : "
+
+[node name="AmounTest" type="LineEdit" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+unique_name_in_owner = true
+margin_left = 98.0
+margin_right = 224.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+text = "10"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_top = 28.0
+margin_right = 224.0
+margin_bottom = 52.0
+
 [node name="Label" type="Label" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 margin_top = 5.0
-margin_right = 80.0
+margin_right = 96.0
 margin_bottom = 19.0
-text = "Population : "
+text = "Population     : "
 
 [node name="Population" type="LineEdit" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 84.0
+margin_left = 100.0
 margin_right = 224.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 text = "3"
 
 [node name="Label2" type="Label" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
-margin_top = 28.0
+margin_top = 56.0
 margin_right = 224.0
-margin_bottom = 42.0
+margin_bottom = 70.0
 text = "rules"
 
 [node name="OptionRuleRecipeonPanel" type="OptionButton" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-margin_top = 46.0
+margin_top = 74.0
 margin_right = 224.0
-margin_bottom = 66.0
+margin_bottom = 94.0
 size_flags_horizontal = 3
 text = "init1"
 items = [ "init1", null, false, 0, null, "init2", null, false, 1, null, "extend1", null, false, 2, null, "extend2", null, false, 3, null, "extend3", null, false, 4, null, "secret", null, false, 5, null, "obstacle", null, false, 6, null, "reward", null, false, 7, null, "key&lock1", null, false, 8, null, "key&lock2", null, false, 9, null, "key&lock3", null, false, 10, null, "key&lock4", null, false, 11, null, "randomInit", null, false, 12, null, "randomExtend", null, false, 13, null, "randomKeyLock", null, false, 14, null, "placeRules", null, false, 15, null, "duplicate_key", null, false, 16, null, "duplicate_lock", null, false, 17, null, "move_lock_toward", null, false, 18, null, "move_key_duplicate_backward", null, false, 19, null ]
 selected = 0
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
-margin_top = 70.0
+margin_top = 98.0
 margin_right = 224.0
-margin_bottom = 90.0
+margin_bottom = 118.0
 
 [node name="ButtonAddRuleonPanel" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 margin_right = 110.0
@@ -455,9 +476,9 @@ size_flags_horizontal = 3
 text = "clear"
 
 [node name="PanelContainer" type="PanelContainer" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
-margin_top = 94.0
+margin_top = 122.0
 margin_right = 224.0
-margin_bottom = 194.0
+margin_bottom = 222.0
 rect_min_size = Vector2( 0, 100 )
 size_flags_horizontal = 3
 
@@ -468,19 +489,41 @@ margin_top = 7.0
 margin_right = 217.0
 margin_bottom = 93.0
 size_flags_vertical = 3
+text = "randomInit
+randomExtend
+randomExtend
+randomExtend
+randomExtend
+secret
+obstacle
+obstacle
+obstacle
+reward
+reward
+randomKeyLock
+randomKeyLock
+randomKeyLock
+randomKeyLock
+placeRules"
 
 [node name="ButtonGenerateDungeon" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-margin_top = 198.0
+margin_top = 226.0
 margin_right = 224.0
-margin_bottom = 218.0
+margin_bottom = 246.0
 text = "generate"
 
 [node name="Restart" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
-margin_top = 222.0
+margin_top = 250.0
 margin_right = 224.0
-margin_bottom = 242.0
+margin_bottom = 270.0
 text = "restart"
+
+[node name="ButtonUpdate" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
+margin_top = 274.0
+margin_right = 224.0
+margin_bottom = 294.0
+text = "redraw"
 
 [node name="Camera2D" parent="." instance=ExtResource( 2 )]
 zoom = Vector2( 5, 5 )
@@ -503,3 +546,4 @@ zoom = Vector2( 5, 5 )
 [connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/ButtonClearRecipeonPanel" to="." method="_on_ButtonClearRecipeonPanel_pressed"]
 [connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/ButtonGenerateDungeon" to="." method="_on_ButtonGenerateDungeon_pressed"]
 [connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/Restart" to="." method="_on_Restart_pressed"]
+[connection signal="pressed" from="GUI/PanelContainer/MarginContainer/VBoxContainer/ButtonUpdate" to="." method="_on_ButtonUpdate_pressed"]
