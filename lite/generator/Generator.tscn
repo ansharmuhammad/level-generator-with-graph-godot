@@ -504,7 +504,8 @@ randomKeyLock
 randomKeyLock
 randomKeyLock
 randomKeyLock
-placeRules"
+placeRules
+"
 
 [node name="ButtonGenerateDungeon" type="Button" parent="GUI/PanelContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true

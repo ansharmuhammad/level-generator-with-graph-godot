@@ -1,502 +1,52 @@
 [
 	{
-		"name": "result 1",
+		"name": "1",
 		"branch": 6,
 		"deadend": 1
 	},
 	{
-		"name": "result 2",
+		"name": "2",
+		"branch": 8,
+		"deadend": 2
+	},
+	{
+		"name": "3",
 		"branch": 6,
 		"deadend": 1
 	},
 	{
-		"name": "result 3",
+		"name": "4",
+		"branch": 4,
+		"deadend": 1
+	},
+	{
+		"name": "5",
 		"branch": 5,
 		"deadend": 1
 	},
 	{
-		"name": "result 4",
+		"name": "6",
 		"branch": 5,
 		"deadend": 1
 	},
 	{
-		"name": "result 5",
+		"name": "7",
+		"branch": 6,
+		"deadend": 2
+	},
+	{
+		"name": "8",
 		"branch": 5,
 		"deadend": 1
 	},
 	{
-		"name": "result 6",
-		"branch": 5,
+		"name": "9",
+		"branch": 4,
 		"deadend": 1
 	},
 	{
-		"name": "result 7",
+		"name": "10",
 		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 8",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 9",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 10",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 11",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 12",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 13",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 14",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 15",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 16",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 17",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 18",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 19",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 20",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 21",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 22",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 23",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 24",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 25",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 26",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 27",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 28",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 29",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 30",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 31",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 32",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 33",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 34",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 35",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 36",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 37",
-		"branch": 5,
-		"deadend": 1
-	},
-	{
-		"name": "result 38",
-		"branch": 5,
-		"deadend": 1
-	},
-	{
-		"name": "result 39",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 40",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 41",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 42",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 43",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 44",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 45",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 46",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 47",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 48",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 49",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 50",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 51",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 52",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 53",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 54",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 55",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 56",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 57",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 58",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 59",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 60",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 61",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 62",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 63",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 64",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 65",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 66",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 67",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 68",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 69",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 70",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 71",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 72",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 73",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 74",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 75",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 76",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 77",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 78",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 79",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 80",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 81",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 82",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 83",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 84",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 85",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 86",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 87",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 88",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 89",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 90",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 91",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 92",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 93",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 94",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 95",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 96",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 97",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 98",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 99",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "result 100",
-		"branch": 6,
-		"deadend": 1
+		"deadend": 2
 	}
 ]
