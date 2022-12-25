@@ -89,6 +89,8 @@ func _create_graph() -> Node2D:
 
 func _execute_rule(rule: String, graph: Node2D):
 	match rule:
+		"initLinear":
+			$Rule.rule_init_linear(graph)
 		"init1":
 			$Rule.rule_init_1(graph)
 		"init2":
@@ -348,9 +350,9 @@ func _on_ButtonGenerateDungeon_pressed():
 		for dungeon in range(population):
 			var graph = _create_graph()
 			_execute_recipe(graph)
+			graph.preferredValueShortPath = float($"%preferredShortPath".text)
 			graph.get_fitness()
 		
-		print($Graphs.get_children())
 		
 		# compare fitness
 		for graph in $Graphs.get_children():
@@ -367,11 +369,7 @@ func _on_ButtonGenerateDungeon_pressed():
 		print($Graphs.get_children().size())
 		
 		# execute rule place
-		print("rulesNext")
-		print(rulesNext)
 		for rule in rulesNext:
-			print(rule)
-			print(targetGraph)
 			_execute_rule(rule, targetGraph)
 		
 		# makechart

@@ -1,264 +1,317 @@
 {
-	"name": "graph49",
+	"name": "graph10",
 	"value": {
-		"fitness": 0.74979
+		"fitness": 0.69237
 	},
 	"vertices": {
 		"data": [
 			{
 				"name": "Node0",
 				"type": "ENTRANCE",
-				"position": "(-6, -3)",
-				"subOf": "Node36"
+				"position": "(-5, -3)",
+				"subOf": "Node35"
 			},
 			{
 				"name": "Node1",
-				"type": "ROOM",
-				"position": "(-5, -3)"
+				"type": "CAVE",
+				"position": "(-1, -3)"
 			},
 			{
 				"name": "Node2",
-				"type": "ROOM",
+				"type": "CAVE",
 				"position": "(0, -3)"
 			},
 			{
 				"name": "Node3",
-				"type": "ROOM",
+				"type": "CAVE",
 				"position": "(0, -2)"
 			},
 			{
 				"name": "Node4",
 				"type": "GOAL",
 				"position": "(1, -2)",
-				"subOf": "Node37"
+				"subOf": "Node36"
 			},
 			{
 				"name": "Node5",
-				"type": "ROOM",
-				"position": "(-5, -2)"
+				"type": "CAVE",
+				"position": "(-1, -2)"
 			},
 			{
 				"name": "Node6",
 				"type": "CAVE",
-				"position": "(-2, -2)"
+				"position": "(-1, -5)"
 			},
 			{
 				"name": "Node7",
 				"type": "CAVE",
-				"position": "(-2, -1)"
+				"position": "(-5, -5)"
 			},
 			{
 				"name": "Node8",
 				"type": "ROOM",
-				"position": "(0, -1)"
+				"position": "(-3, -5)"
 			},
 			{
 				"name": "Node9",
-				"type": "ROOM",
-				"position": "(-2, 0)"
+				"type": "CAVE",
+				"position": "(-1, -1)"
 			},
 			{
 				"name": "Node10",
-				"type": "CAVE",
-				"position": "(0, 0)"
+				"type": "ROOM",
+				"position": "(0, -1)"
 			},
 			{
 				"name": "Node11",
 				"type": "ROOM",
-				"position": "(0, -4)"
+				"position": "(-3, -1)"
 			},
 			{
 				"name": "Node12",
 				"type": "CAVE",
-				"position": "(-5, -4)"
+				"position": "(-3, -2)"
 			},
 			{
 				"name": "Node13",
 				"type": "SECRET",
-				"position": "(-7, -3)",
-				"subOf": "Node38"
+				"position": "(0, 0)",
+				"subOf": "Node37"
 			},
 			{
 				"name": "Node14",
 				"type": "OBSTACLE",
-				"position": "(0, -1)",
-				"subOf": "Node8"
+				"position": "(-1, -3)",
+				"subOf": "Node1"
 			},
 			{
 				"name": "Node15",
 				"type": "OBSTACLE",
-				"position": "(0, -3)",
-				"subOf": "Node2"
+				"position": "(-1, -2)",
+				"subOf": "Node5"
 			},
 			{
 				"name": "Node16",
 				"type": "OBSTACLE",
-				"position": "(-2, -1)",
-				"subOf": "Node7"
+				"position": "(0, -1)",
+				"subOf": "Node10"
 			},
 			{
 				"name": "Node17",
 				"type": "OBSTACLE",
-				"position": "(-2, 0)",
-				"subOf": "Node9"
+				"position": "(-1, -3)",
+				"subOf": "Node1"
 			},
 			{
 				"name": "Node18",
 				"type": "REWARD",
-				"position": "(-2, 0)",
-				"subOf": "Node9"
+				"position": "(-1, -3)",
+				"subOf": "Node1"
 			},
 			{
 				"name": "Node19",
 				"type": "OBSTACLE",
-				"position": "(-5, -4)",
-				"subOf": "Node12"
+				"position": "(-1, -3)",
+				"subOf": "Node1"
 			},
 			{
 				"name": "Node20",
 				"type": "REWARD",
-				"position": "(-5, -4)",
-				"subOf": "Node12"
+				"position": "(-1, -3)",
+				"subOf": "Node1"
 			},
 			{
 				"name": "Node21",
-				"type": "CAVE",
-				"position": "(-1, 0)"
+				"type": "KEY",
+				"position": "(-3, -1)",
+				"subOf": "Node11"
 			},
 			{
 				"name": "Node22",
-				"type": "LOCK",
-				"position": "(-1.942059, 0.178323)",
-				"subOf": "Node18"
+				"type": "ROOM",
+				"position": "(-2, -1)"
 			},
 			{
 				"name": "Node23",
-				"type": "KEY",
-				"position": "(-1, 2)",
-				"subOf": "Node39"
+				"type": "LOCK",
+				"position": "(-2, -1)",
+				"subOf": "Node22"
 			},
 			{
 				"name": "Node24",
-				"type": "ROOM",
-				"position": "(0, 2)"
+				"type": "KEY",
+				"position": "(-3, -5)",
+				"subOf": "Node8"
 			},
 			{
 				"name": "Node25",
 				"type": "ROOM",
-				"position": "(-1, -4)"
+				"position": "(-4, -5)"
 			},
 			{
 				"name": "Node26",
 				"type": "LOCK",
-				"position": "(-5, -4)",
-				"subOf": "Node12"
+				"position": "(-5, -5)",
+				"subOf": "Node7"
 			},
 			{
 				"name": "Node27",
 				"type": "ROOM",
-				"position": "(-1, -5)"
+				"position": "(-5, -4)"
 			},
 			{
 				"name": "Node28",
-				"type": "KEY",
-				"position": "(0, -5)",
-				"subOf": "Node40"
+				"type": "LOCK",
+				"position": "(-5, -3)",
+				"subOf": "Node35"
 			},
 			{
 				"name": "Node29",
 				"type": "KEY",
-				"position": "(-3, -2)",
-				"subOf": "Node41"
+				"position": "(-7, -4)",
+				"subOf": "Node39"
 			},
 			{
 				"name": "Node30",
 				"type": "ROOM",
-				"position": "(-4, -2)"
+				"position": "(-7, -5)"
 			},
 			{
 				"name": "Node31",
-				"type": "LOCK",
-				"position": "(-5, -2)",
-				"subOf": "Node5"
+				"type": "CAVE",
+				"position": "(-6, -5)"
 			},
 			{
 				"name": "Node32",
-				"type": "ROOM",
-				"position": "(0, 1)"
+				"type": "LOCK",
+				"position": "(-6, -5)",
+				"subOf": "Node31"
 			},
 			{
 				"name": "Node33",
-				"type": "LOCK",
-				"position": "(0, 2)",
-				"subOf": "Node24"
+				"type": "ROOM",
+				"position": "(-6, -6)"
 			},
 			{
 				"name": "Node34",
 				"type": "KEY",
-				"position": "(1, 0)",
-				"subOf": "Node35"
+				"position": "(-5, -6)",
+				"subOf": "Node38"
 			},
 			{
 				"name": "Node35",
-				"type": "ROOM",
-				"position": "(1, 0)"
+				"type": "CAVE",
+				"position": "(-5, -3)"
 			},
 			{
 				"name": "Node36",
-				"type": "ROOM",
-				"position": "(-6, -3)"
-			},
-			{
-				"name": "Node37",
 				"type": "CAVE",
 				"position": "(1, -2)"
 			},
 			{
+				"name": "Node37",
+				"type": "CAVE",
+				"position": "(0, 0)"
+			},
+			{
 				"name": "Node38",
 				"type": "ROOM",
-				"position": "(-7, -3)"
+				"position": "(-5, -6)"
 			},
 			{
 				"name": "Node39",
-				"type": "ROOM",
-				"position": "(-1, 2)"
-			},
-			{
-				"name": "Node40",
 				"type": "CAVE",
-				"position": "(0, -5)"
-			},
-			{
-				"name": "Node41",
-				"type": "CAVE",
-				"position": "(-3, -2)"
-			},
-			{
-				"name": "Node42",
-				"type": "CONNECTOR",
-				"position": "(1, 1)"
-			},
-			{
-				"name": "Node43",
-				"type": "KEY",
-				"position": "(-2, -2)",
-				"subOf": "Node6"
-			},
-			{
-				"name": "Node44",
-				"type": "LOCK",
-				"position": "(0, 2)",
-				"subOf": "Node24"
+				"position": "(-7, -4)"
 			}
 		],
-		"count": 45
+		"count": 40
 	},
 	"edges": {
 		"data": [
 			{
-				"type": "PATH",
-				"from": "Node36",
+				"type": "GATE",
+				"from": "Node35",
 				"to": "Node1"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node1",
+				"to": "Node14"
+			},
+			{
+				"type": "PATH",
+				"from": "Node2",
+				"to": "Node3"
+			},
+			{
+				"type": "PATH",
+				"from": "Node3",
+				"to": "Node36"
+			},
+			{
+				"type": "GATE",
+				"from": "Node3",
+				"to": "Node5"
+			},
+			{
+				"type": "PATH",
+				"from": "Node5",
+				"to": "Node1"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node1",
+				"to": "Node17"
+			},
+			{
+				"type": "GATE",
+				"from": "Node6",
+				"to": "Node8"
+			},
+			{
+				"type": "GATE",
+				"from": "Node7",
+				"to": "Node27"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node8",
+				"to": "Node24"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node5",
+				"to": "Node15"
+			},
+			{
+				"type": "PATH",
+				"from": "Node9",
+				"to": "Node10"
+			},
+			{
+				"type": "GATE",
+				"from": "Node10",
+				"to": "Node3"
+			},
+			{
+				"type": "PATH",
+				"from": "Node5",
+				"to": "Node12"
+			},
+			{
+				"type": "PATH",
+				"from": "Node12",
+				"to": "Node11"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node11",
+				"to": "Node21"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node10",
+				"to": "Node16"
 			},
 			{
 				"type": "GATE",
@@ -266,94 +319,14 @@
 				"to": "Node2"
 			},
 			{
-				"type": "GATE",
-				"from": "Node2",
-				"to": "Node3"
-			},
-			{
 				"type": "PATH",
-				"from": "Node3",
-				"to": "Node37"
-			},
-			{
-				"type": "GATE",
-				"from": "Node3",
-				"to": "Node6"
-			},
-			{
-				"type": "GATE",
 				"from": "Node5",
-				"to": "Node1"
-			},
-			{
-				"type": "GATE",
-				"from": "Node6",
-				"to": "Node41"
-			},
-			{
-				"type": "GATE",
-				"from": "Node3",
-				"to": "Node8"
-			},
-			{
-				"type": "PATH",
-				"from": "Node8",
-				"to": "Node7"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node7",
-				"to": "Node16"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node8",
-				"to": "Node14"
-			},
-			{
-				"type": "GATE",
-				"from": "Node10",
-				"to": "Node21"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node9",
-				"to": "Node17"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node2",
-				"to": "Node15"
-			},
-			{
-				"type": "GATE",
-				"from": "Node11",
-				"to": "Node25"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node12",
-				"to": "Node19"
+				"to": "Node9"
 			},
 			{
 				"type": "HIDDEN",
-				"from": "Node36",
-				"to": "Node38"
-			},
-			{
-				"type": "GATE",
-				"from": "Node8",
-				"to": "Node10"
-			},
-			{
-				"type": "GATE",
-				"from": "Node2",
-				"to": "Node11"
-			},
-			{
-				"type": "GATE",
-				"from": "Node7",
-				"to": "Node6"
+				"from": "Node10",
+				"to": "Node37"
 			},
 			{
 				"type": "ELEMENT",
@@ -361,9 +334,9 @@
 				"to": "Node18"
 			},
 			{
-				"type": "GATE",
-				"from": "Node9",
-				"to": "Node7"
+				"type": "ELEMENT",
+				"from": "Node18",
+				"to": "Node19"
 			},
 			{
 				"type": "ELEMENT",
@@ -372,145 +345,125 @@
 			},
 			{
 				"type": "GATE",
-				"from": "Node12",
-				"to": "Node1"
-			},
-			{
-				"type": "GATE",
-				"from": "Node21",
-				"to": "Node9"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node22",
-				"to": "Node9"
-			},
-			{
-				"type": "GATE",
-				"from": "Node10",
-				"to": "Node32"
-			},
-			{
-				"type": "GATE",
-				"from": "Node39",
-				"to": "Node21"
+				"from": "Node1",
+				"to": "Node6"
 			},
 			{
 				"type": "PATH",
-				"from": "Node24",
-				"to": "Node39"
-			},
-			{
-				"type": "KEY_LOCK",
-				"from": "Node23",
+				"from": "Node11",
 				"to": "Node22"
 			},
 			{
 				"type": "GATE",
+				"from": "Node22",
+				"to": "Node23"
+			},
+			{
+				"type": "GATE",
+				"from": "Node22",
+				"to": "Node9"
+			},
+			{
+				"type": "KEY_LOCK",
+				"from": "Node21",
+				"to": "Node23"
+			},
+			{
+				"type": "GATE",
+				"from": "Node8",
+				"to": "Node25"
+			},
+			{
+				"type": "GATE",
 				"from": "Node25",
-				"to": "Node12"
+				"to": "Node7"
 			},
 			{
 				"type": "ELEMENT",
 				"from": "Node26",
-				"to": "Node12"
-			},
-			{
-				"type": "GATE",
-				"from": "Node40",
-				"to": "Node11"
-			},
-			{
-				"type": "GATE",
-				"from": "Node25",
-				"to": "Node27"
-			},
-			{
-				"type": "GATE",
-				"from": "Node27",
-				"to": "Node40"
+				"to": "Node7"
 			},
 			{
 				"type": "KEY_LOCK",
-				"from": "Node28",
+				"from": "Node24",
 				"to": "Node26"
 			},
 			{
 				"type": "GATE",
-				"from": "Node41",
-				"to": "Node30"
-			},
-			{
-				"type": "GATE",
-				"from": "Node30",
-				"to": "Node5"
+				"from": "Node27",
+				"to": "Node35"
 			},
 			{
 				"type": "ELEMENT",
-				"from": "Node31",
-				"to": "Node5"
-			},
-			{
-				"type": "KEY_LOCK",
-				"from": "Node29",
-				"to": "Node31"
-			},
-			{
-				"type": "GATE",
-				"from": "Node32",
-				"to": "Node24"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node33",
-				"to": "Node24"
-			},
-			{
-				"type": "GATE",
-				"from": "Node10",
+				"from": "Node28",
 				"to": "Node35"
 			},
 			{
 				"type": "GATE",
-				"from": "Node35",
-				"to": "Node42"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node35",
-				"to": "Node34"
-			},
-			{
-				"type": "KEY_LOCK",
-				"from": "Node34",
-				"to": "Node33"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node12",
-				"to": "Node20"
-			},
-			{
-				"type": "ELEMENT",
-				"from": "Node9",
-				"to": "Node18"
-			},
-			{
-				"type": "GATE",
-				"from": "Node42",
-				"to": "Node32"
-			},
-			{
-				"type": "KEY_LOCK",
-				"from": "Node43",
+				"from": "Node7",
 				"to": "Node31"
 			},
 			{
+				"type": "GATE",
+				"from": "Node39",
+				"to": "Node27"
+			},
+			{
+				"type": "GATE",
+				"from": "Node30",
+				"to": "Node39"
+			},
+			{
+				"type": "KEY_LOCK",
+				"from": "Node29",
+				"to": "Node28"
+			},
+			{
+				"type": "GATE",
+				"from": "Node31",
+				"to": "Node32"
+			},
+			{
+				"type": "PATH",
+				"from": "Node31",
+				"to": "Node30"
+			},
+			{
+				"type": "GATE",
+				"from": "Node38",
+				"to": "Node7"
+			},
+			{
+				"type": "GATE",
+				"from": "Node31",
+				"to": "Node33"
+			},
+			{
+				"type": "GATE",
+				"from": "Node33",
+				"to": "Node38"
+			},
+			{
 				"type": "KEY_LOCK",
 				"from": "Node34",
-				"to": "Node44"
+				"to": "Node32"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node1",
+				"to": "Node18"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node1",
+				"to": "Node19"
+			},
+			{
+				"type": "ELEMENT",
+				"from": "Node1",
+				"to": "Node20"
 			}
 		],
-		"count": 51
+		"count": 47
 	}
 }

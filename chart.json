@@ -2,51 +2,16 @@
 	{
 		"name": "1",
 		"branch": 6,
-		"deadend": 1
+		"deadend": 2
 	},
 	{
 		"name": "2",
-		"branch": 8,
-		"deadend": 2
+		"branch": 6,
+		"deadend": 1
 	},
 	{
 		"name": "3",
-		"branch": 6,
-		"deadend": 1
-	},
-	{
-		"name": "4",
-		"branch": 4,
-		"deadend": 1
-	},
-	{
-		"name": "5",
-		"branch": 5,
-		"deadend": 1
-	},
-	{
-		"name": "6",
-		"branch": 5,
-		"deadend": 1
-	},
-	{
-		"name": "7",
-		"branch": 6,
-		"deadend": 2
-	},
-	{
-		"name": "8",
-		"branch": 5,
-		"deadend": 1
-	},
-	{
-		"name": "9",
-		"branch": 4,
-		"deadend": 1
-	},
-	{
-		"name": "10",
-		"branch": 6,
+		"branch": 7,
 		"deadend": 2
 	}
 ]

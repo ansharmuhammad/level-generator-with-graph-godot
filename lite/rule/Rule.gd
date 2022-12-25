@@ -3,6 +3,28 @@ extends Node
 var cellSize: Vector2 = Vector2(256,256)
 const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
+func rule_init_linear(graph: Node2D):
+	var matchEdge: Array = []
+	for edge in graph.get_edges():
+		#check if there is init vertex
+		if edge.from.type == TYPE_VERTEX.INIT and edge.to == null:
+			matchEdge.append(edge)
+
+	if matchEdge.size() > 0:
+		var chosenEdge: Node2D = matchEdge[randi() % matchEdge.size()]
+		var vertex1: Node2D = chosenEdge.from
+		var vertex2: Node2D = graph.add_vertex()
+		var vertex3: Node2D = graph.add_vertex("",TYPE_VERTEX.GOAL)
+		
+		vertex2.add_to_group("placeVertices" + graph.name)
+		
+		vertex1.type = TYPE_VERTEX.START
+		graph.change_vertex_pos(vertex2, vertex1.position + (Vector2.RIGHT * cellSize))
+		graph.change_vertex_pos(vertex3, vertex2.position + (Vector2.RIGHT * cellSize))
+		
+		chosenEdge.init_object(vertex1, vertex2, TYPE_EDGE.PATH, Vector2.RIGHT)
+		graph.connect_vertex(vertex2, vertex3, TYPE_EDGE.PATH, Vector2.RIGHT)
+
 func rule_init_1(graph: Node2D):
 	var matchEdge: Array = []
 	for edge in graph.get_edges():
